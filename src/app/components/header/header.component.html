@@ -1,1 +1,33 @@
-<p>header works!</p>
+<header class="w-100" [ngClass]="{'scrolled': isScrolled}">
+    <nav class="">
+        <div class="container-fluid d-flex gap-4 px-lg-5 px-3 py-4 w-100 align-items-center justify-content-between">
+            <a class="navbar-brand text-primary fw-bold fs-5" routerLink="/">MOODFLIX</a>
+            <button class="btn d-block d-lg-none fs-4 p-0" type="button" >
+                <i class="bi bi-list"></i>
+            </button>
+            <div class="d-none d-lg-block flex-grow-1 w-100">
+                <div class="d-flex justify-content-between  align-items-center">
+                <ul class="d-flex gap-3 m-0 list-unstyled px-3">
+                    <li class="nav-item">
+                        <a class="nav-link" routerLink="/">Home</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" routerLink="/movies">Movies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" routerLink="/tv-shows">TV Shows</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" routerLink="/about">About</a>
+                    </li>
+                </ul>
+                <div class="actions">
+                    <button class="small btn fs-5 mx-2"><i class="bi bi-search"></i></button>
+                    <button class="btn btn-outline-primary rounded-5 small px-4 "> Login</button>
+                </div>
+            </div>
+            </div>
+        </div>
+    </nav>
+</header>
