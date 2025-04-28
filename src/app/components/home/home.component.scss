@@ -1,0 +1,18 @@
+.main-hero {
+    background-image: url("/assets/images/hero.png");
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.hero-content {
+    h1 {
+        font-size: 4rem; 
+        @media (max-width: 768px) {
+            font-size: 3rem;
+            
+        }
+    }
+}

@@ -1,1 +1,68 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --primary-yellow: #fdca00;
+  --mf-blue: #3f37c9;
+  --mf-green: #25a244;
+  --mf-red: #ef233c;
+  --mf-orange: #f35b04;
+}
+
+$yellow: #fdca00;
+$blue: #3f37c9;
+$red: #ef233c;
+$green: #25a244;
+$orange: #f35b04;
+
+$primary: $yellow;
+$info: $blue;
+$warning: $orange;
+
+$enable-negative-margins: true;
+
+$spacer: 1rem !default;
+$spacers: (
+  0: 0,
+  1: $spacer * 0.25,
+  2: $spacer * 0.5,
+  3: $spacer,
+  4: $spacer * 1.5,
+  5: $spacer * 3,
+  6: $spacer * 5,
+  7: $spacer * 7,
+  8: $spacer * 8,
+  9: $spacer * 9,
+  10: $spacer * 10,
+  15: $spacer * 15,
+);
+
+$position-values: (
+  0: 0,
+  10: 10%,
+  25: 25%,
+  40: 50%,
+  50: 50%,
+  60: 60%,
+  75: 75%,
+  85: 85%,
+  100: 100%,
+);
+
+/* Importing Bootstrap SCSS file. */
+@import "../node_modules/bootstrap/scss/bootstrap.scss";
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Vazirmatn:wght@100..900&display=swap");
+
+html[lang="fa"] * {
+  font-family: "Vazirmatn", sans-serif;
+}
+
+html[lang="en"] * {
+  font-family: "Roboto", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
