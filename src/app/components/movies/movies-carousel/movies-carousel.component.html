@@ -1,0 +1,7 @@
+<div class="movies-carousel">
+  <owl-carousel-o class="w-100" [options]="carouselOptions">
+    <ng-template carouselSlide *ngFor="let movie of movies">
+      <app-movies-card [movie]="movie" [isTvShow]="listType === 'tvShow' ? true : false"></app-movies-card>
+    </ng-template>
+  </owl-carousel-o>
+</div>

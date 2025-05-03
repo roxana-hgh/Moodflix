@@ -50,7 +50,8 @@ $position-values: (
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
 @import "../node_modules/bootstrap-icons/font/bootstrap-icons.css";
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Vazirmatn:wght@100..900&display=swap");
-
+@import "ngx-owl-carousel-o/lib/styles/scss/owl.carousel";
+@import "ngx-owl-carousel-o/lib/styles/scss/owl.theme.default";
 html[lang="fa"] * {
   font-family: "Vazirmatn", sans-serif;
 }
@@ -67,3 +68,25 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+.owl-theme .owl-nav {
+  margin-top: 0;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+  position: absolute;
+  bottom: calc(100% + 0.5em);
+  right: 0;
+}
+
+.owl-theme .owl-nav [class*="owl-"] {
+  background-color: transparent;
+  color: $primary;
+  border: 1px solid $yellow;
+  border-radius: 50%;
+
+  &:hover {
+    background-color: $yellow;
+    color: $dark;
+  }
+}
+

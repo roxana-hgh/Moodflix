@@ -2,12 +2,13 @@
   "name": "moodflix",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
+    "config": "node set-env.js",
+    "prestart": "npm run config",
     "start": "ng serve",
+    "prebuild": "npm run config",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:moodflix": "node dist/moodflix/server/server.mjs"
+    "predeploy": "npm run config",
+    "deploy": "ng build --configuration production --base-href \"https://roxana-hgh.github.io/Moodflix/\" && npx angular-cli-ghpages --dir=/dist/moodflix/browser"
   },
   "private": true,
   "dependencies": {
@@ -26,6 +27,7 @@
     "bootstrap": "^5.3.5",
     "bootstrap-icons": "^1.11.3",
     "express": "^4.18.2",
+    "ngx-owl-carousel-o": "^17.0.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
@@ -38,6 +40,7 @@
     "@types/express": "^4.17.17",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^18.18.0",
+    "dotenv": "^16.5.0",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",

@@ -1,0 +1,31 @@
+<div class="movie-card position-relative h-100">
+  <img [src]="imageUrl + movie.poster_path" class="mb-2" alt="..." />
+  <div class="card-body p-1">
+    <h5 class="card-title mb-2 fs-6">
+      <span *ngIf="!isTvShow">{{ movie.title }}</span>
+      <span *ngIf="isTvShow">{{ movie.name }}</span>
+    </h5>
+    <div class="d-flex gap-3 py-1">
+      <div class="rate small d-flex align-items-center gap-1">
+        <i class="bi bi-star-fill text-primary"></i>
+        <span class="text-primary">
+          {{ movie.vote_average | number : "1.1-1" }}
+          <small class="text-muted"> /10</small>
+        </span>
+      </div>
+      <div class="span mx-2">|</div>
+      <div class="small d-flex align-items-center gap-1">
+        <!-- <i class="bi bi-star-fill text-primary"></i> -->
+        <span *ngIf="!isTvShow" class="text-muted"> {{ movie.release_date | date : "y" }}</span>
+        <span *ngIf="isTvShow" class="text-muted"> {{ movie.first_air_date | date : "y" }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay">
+    <p class="card-text text-muted small m-0">
+      {{ movie.overview }}
+    </p>
+  </div>
+  <a href="#" class="stretched-link"></a>
+</div>

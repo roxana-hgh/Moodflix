@@ -12,13 +12,17 @@
     </div>
 </div>
 
-<div class="my-5 p-5"></div>
-<div class="my-5 p-5"></div>
-<div class="my-5 p-5"></div>
-<div class="my-5 p-5"></div>
-<div class="my-5 p-5"></div>
-<div class="my-5 p-5"></div>
-<div class="my-5 p-5"></div>
-<div class="my-5 p-5"></div>
-<div class="my-5 p-5"></div>
-<div class="my-5 p-5"></div>
+<div class="container-fluid  px-3 px-lg-5">
+    <div class="my-4 py-4" *ngIf="TrendingMovies">
+        <h4 class="mb-3">Trending Movies</h4>
+        <app-movies-carousel [movies]="TrendingMovies"></app-movies-carousel>
+    </div>
+    <div class="my-4 py-4" *ngIf="TrendingTvShows">
+        <h4 class="mb-3">Trending Shows</h4>
+        <app-movies-carousel [movies]="TrendingTvShows" [listType]="'tvShow'"></app-movies-carousel>
+    </div>
+</div>
+
+
+
+
