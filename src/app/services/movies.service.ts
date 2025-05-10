@@ -48,4 +48,18 @@ export class MoviesService {
       catchError(this.handleError.bind(this))
     );
   }
+
+  getTvShowDetail(id: number): Observable<any> {
+    const url = `${this.baseUrl}tv/${id}?append_to_response=credits`;
+    return this.http.get(url, { headers: this.createHeaders() }).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  getTMovieDetail(id: number): Observable<any> {
+    const url = `${this.baseUrl}movie/${id}?append_to_response=credits`;
+    return this.http.get(url, { headers: this.createHeaders() }).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
 }

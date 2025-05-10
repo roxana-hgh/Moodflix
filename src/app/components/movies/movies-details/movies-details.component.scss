@@ -1,0 +1,60 @@
+.main-infos-container {
+  background-size: cover;
+  aspect-ratio: 16/9;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+
+  .main-content {
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    height: 100%;
+    padding-top: 5em;
+    padding-bottom: 3em;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 0;
+    background: linear-gradient(
+      75deg,
+      rgb(0 0 0 / 95%) 0%,
+      rgb(0 0 0 / 91%) 19%,
+      rgb(0 0 0 / 85%) 42%
+    );
+  }
+}
+
+.Genres {
+  .genre-item {
+    font-size: 0.8rem;
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+
+  @media (max-width:992px){
+    .main-infos-container{
+
+      aspect-ratio: unset;
+
+      .main-content{
+        padding-top: 4em;
+      }
+    }
+    
+  }

@@ -1,0 +1,123 @@
+<div *ngIf="movie" class="detail-page">
+  <div
+    class="main-infos-container"
+    [ngStyle]="{
+      'background-image': 'url(' + imageUrl + movie.backdrop_path + ')'
+    }"
+  >
+    <div class="main-content">
+      <div class="container-fluid px-3 px-lg-5">
+        <div
+          class="row justify-content-center justify-content-lg-start gap-4 g-0"
+        >
+          <div
+            class="col-11 col-lg-3 d-flex justify-content-center align-items-center"
+          >
+            <div class="py-4 pe-lg-4">
+              <img
+                [src]="imageUrl + movie.poster_path"
+                class="mb-2 img-fluid rounded-4"
+                alt="..."
+              />
+            </div>
+          </div>
+          <div
+            class="col-12 col-lg-6 d-flex flex-column justify-content-center align-items-start gap-3"
+          >
+            <div class="p-3">
+              <div class="title mb-3">
+                <h1 class="text-white mb-2 m-0">
+                  <span *ngIf="!isTvShow">{{ movie.title }}</span>
+                  <span *ngIf="isTvShow">{{ movie.name }}</span>
+                </h1>
+                <div class="d-inline my-1">
+                  <span *ngIf="!isTvShow" class="text-muted">
+                    {{ movie.release_date | date : "y" }}</span
+                  >
+                  <span *ngIf="isTvShow" class="text-muted">
+                    {{ movie.first_air_date | date : "y" }}</span
+                  >
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-1 mb-3 Genres">
+                <span class="small me-2 text-muted">Genres:</span>
+                <span
+                  class="text-primary fw-medium genre-item"
+                  *ngFor="let genre of movie.genres; let isLast = last"
+                  >{{ genre.name }}
+                  <small *ngIf="!isLast">, </small>
+                </span>
+              </div>
+              <p class="text-muted text-justify fs-6 mb-lg-3">
+                {{ movie.overview }}
+              </p>
+
+              <div class="d-flex gap-1 py-1 mb-3">
+                <div class="d-flex align-items-center gap-1">
+                  <i class="bi bi-star-fill small px-1 text-primary lh-1"></i>
+                  <span class="text-primary">{{
+                    movie.vote_average | number : "1.1-1"
+                  }}</span>
+                  <small class="text-muted"> / 10</small>
+                </div>
+                <div class="span mx-1">|</div>
+                <div class="small d-flex align-items-center gap-1">
+                  <span *ngIf="!isTvShow" class="text-muted">
+                    {{ movie.runtime }} min</span
+                  >
+                  <span *ngIf="isTvShow" class="text-muted">
+                    S{{ movie.last_episode_to_air?.season_number }} E{{
+                      movie.last_episode_to_air?.episode_number
+                    }}
+                    Relessed -
+                  </span>
+                  <span *ngIf="isTvShow" class="text-muted">
+                    {{ movie.status }}
+                  </span>
+                </div>
+              </div>
+              <div class="d-flex gap-2 py-1">
+                <button
+                  class="btn btn-primary rounded-5 d-flex align-items-center justify-content-center small gap-1"
+                >
+                  <i class="bi bi-list"></i>
+                  Add to List
+                </button>
+                <button
+                  class="btn btn-outline-primary rounded-5 d-flex align-items-center justify-content-center small gap-1"
+                >
+                  <i class="bi bi-heart lh-1 small pt-1"></i>
+                </button>
+                <button
+                  class="btn btn-outline-primary rounded-5 d-flex align-items-center justify-content-center small gap-1"
+                >
+                  <i class="bi bi-bookmark lh-1 small"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-3 border">
+    <h3>actors</h3>
+    <div class="row g-3">
+      <div
+        class="col-6 col-md-3 col-lg-2"
+        *ngFor="let actor of movie.credits.cast"
+      >
+        <div class="border p-2 rounded h-100">
+          <img
+            [src]="imageUrl + actor.profile_path"
+            alt=""
+            class="img-fluid rounded-2"
+          />
+          <h5 class="">{{ actor.name }}</h5>
+          <p class="text-muted">{{ actor.character }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

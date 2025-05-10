@@ -27,5 +27,5 @@
       {{ movie.overview }}
     </p>
   </div>
-  <a href="#" class="stretched-link"></a>
+  <a href="#" (click)="goToDetail($event,isTvShow, movie.id)" class="stretched-link"></a>
 </div>

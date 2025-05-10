@@ -21,7 +21,6 @@ export class HomeComponent {
   getTrendingMovies() {
     this.moviesServices.getTrendingMovies().subscribe(
       (response) => {
-        console.log(response);
         this.TrendingMovies = response.results;
       },
       (error) => {
@@ -33,7 +32,7 @@ export class HomeComponent {
   getpTrendingTv() {
     this.moviesServices.getTrendingTvShows().subscribe(
       (response) => {
-        console.log(response);
+  
         this.TrendingTvShows = response.results;
       },
       (error) => {
