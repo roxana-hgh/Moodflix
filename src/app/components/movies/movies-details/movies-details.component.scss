@@ -46,6 +46,19 @@
   }
 }
 
+.actors-card {
+  img {
+    border-radius: 0.75em;
+    width: 4em;
+    height: 4em;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+
+  }
+}
+
 
   @media (max-width:992px){
     .main-infos-container{
