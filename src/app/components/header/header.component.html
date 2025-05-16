@@ -1,5 +1,5 @@
 <header class="w-100" [ngClass]="{ scrolled: isScrolled }">
-    <nav class="">
+    <nav class="position-relative">
         <div class="container-fluid d-flex gap-4 px-lg-5 px-3 py-4 w-100 align-items-center justify-content-between">
             <a class="navbar-brand text-primary fw-bold fs-5" routerLink="/">MOODFLIX</a>
 
@@ -22,10 +22,60 @@
                     </ul>
                 </div>
             </div>
-            <div class="actions d-flex gap-1">
-                <button class="small btn fs-5 mx-2">
-                    <i class="bi bi-search"></i>
-                </button>
+            <div class="actions d-flex align-items-center gap-1">
+                <div class="search-container" [ngClass]="{ iscollapse: !isCollapsed }">
+                    <div class="d-flex input-container rounded-5 px-3 position-relative"
+                        [ngClass]="{ 'bg-dark border rounded-5': !isCollapsed }">
+                        <div #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed" [horizontal]="true">
+                            <div class="collapse-content" style="width: 350px">
+                                <div class="input-group d-flex align-items-center w-100">
+                                    <i class="bi bi-search text-primary small"></i>
+                                    <input type="text" class="form-control border-0 rounded-5" placeholder="Search"
+                                        aria-label="Search" aria-describedby="button-addon2"
+                                        (input)="searchMovies($event)"
+                                        />
+                                </div>
+
+                                <div 
+                                    class="result-sec position-absolute w-100 start-0 top-100 mt-2">
+
+                                    <div  *ngIf="searchResults.length" class="p-2 bg-dark border  rounded-4 shadow-sm ">
+                                        <div
+                                            class="d-flex justify-content-between align-items-end pb-2 px-1 mb-2 border-bottom">
+                                            <h5 class="text-primary small mb-0">Search Results</h5>
+                                            <a href="" class="d-flex small link">view all </a>
+
+                                        </div>
+                                        <div *ngFor="let movie of searchResults.slice(0, 4)"
+                                            class="result-item d-flex align-items-center gap-2 border-bottom mb-2 py-1 pb-2 position-relative">
+                                            <img [src]="imageUrl + movie.poster_path"
+                                                alt="" class="rounded-3 d-block img-fluid" />
+                                            <div class="text">
+                                                <h6 class="mb-1">
+                                                    <span *ngIf="movie.media_type == 'tv'">{{movie.name}}</span>
+                                                     <span *ngIf="movie.media_type == 'movie'">{{movie.title}}</span>
+                                                </h6>
+                                                <p class="m-0 small text-muted">
+                                                     <span *ngIf="movie.media_type == 'tv'">{{movie.first_air_date | date : "y"}}</span>
+                                                     <span *ngIf="movie.media_type == 'movie'">{{movie.release_date | date : "y"}}</span>
+                                                </p>
+                                            </div>
+                                            <a href="#" (click)="goToDetail($event,movie.media_type, movie.id)" class="stretched-link"></a>
+                                        </div>
+                                       
+                                    </div>
+                                    <!-- <div *ngIf="!searchResults.length" class="text-center py-3">
+                                        <p class="m-0 text-muted">No results found</p>
+                                    </div> -->
+                                </div>
+                            </div>
+                        </div>
+                        <button (click)="collapse.toggle()" [attr.aria-expanded]="!isCollapsed"
+                            aria-controls="collapseExample" class="small btn p-0 fs-5">
+                            <i class="bi" [ngClass]="!isCollapsed ? 'bi-x' : 'bi-search'"></i>
+                        </button>
+                    </div>
+                </div>
                 <button class="btn btn-outline-primary rounded-5 small px-4 d-none d-lg-block" type="button"
                     routerLink="/login">
                     Login

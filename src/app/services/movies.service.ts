@@ -28,6 +28,13 @@ export class MoviesService {
     return throwError(error);
   }
 
+  searchMovies(query: string, page: number = 1): Observable<any> {
+    const url = `${this.baseUrl}search/multi?query=${query}&language=en-US&page=${page}`;
+    return this.http.get(url, { headers: this.createHeaders() }).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
   getPopularMovies(page: number = 1): Observable<any> {
     const url = `${this.baseUrl}movie/popular?language=en-US&page=${page}`;
     return this.http.get(url, { headers: this.createHeaders() }).pipe(

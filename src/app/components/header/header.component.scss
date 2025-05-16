@@ -1,19 +1,73 @@
 header {
-    position: fixed;
-    top: 0;
-    width: 100%;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+
+  &.scrolled {
+    background-color: rgba($color: #212529, $alpha: 1);
+    box-shadow: 0 10px 15px rgba(25, 25, 25, 0.1);
     z-index: 1000;
-   
+  }
+}
 
-    &.scrolled {
-        background-color: rgba($color: #212529, $alpha: 1);
-        box-shadow: 0 10px 15px rgba(25, 25, 25, 0.1);
-        z-index: 1000;
+.search-container {
+  .collapse-content {
+    width: 350px;
+    max-width: 350px;
+
+    input {
+        &:focus {
+          box-shadow: none;
+          border-color: transparent;
+          outline-width: 0;
+        }
     }
+  }
 
+  .input-container {
+    &:has(input:focus) {
+     
+      border-color: var(--primary-yellow) !important;
+    } 
+  }
+  @media (max-width: 768px) {
+    &.iscollapse {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+      background-color: rgba($color: #212529, $alpha: 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75em 0.5em;
+    }
+    .collapse-content {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+
+  .result-sec {
+    .result-item {
+        img {
+            width: 45px;
+            height: auto;
+            
+            margin-right: 0.5em;
+        }
+        &:last-of-type {
+            border-bottom: none !important;
+            padding-bottom: 0.25em !important;
+
+        }
+    }
+  }
 }
 
 ::ng-deep .offcanvas.offcanvas-end {
-    max-width: 350px;
-  }
-
+  max-width: 350px;
+}
