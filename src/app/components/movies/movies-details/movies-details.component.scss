@@ -1,6 +1,6 @@
 .main-infos-container {
   background-size: cover;
-  aspect-ratio: 16/9;
+  // aspect-ratio: 16/9;
   background-position: center;
   background-repeat: no-repeat;
   width: 100%;
@@ -49,13 +49,13 @@
 .actors-card {
   img {
     border-radius: 0.75em;
-    width: 4em;
-    height: 4em;
+    width: 4rem;
+    height: 4rem;
     display: block;
     overflow: hidden;
     aspect-ratio: 1/1;
     object-fit: cover;
-
+    flex-shrink: 0;
   }
 }
 

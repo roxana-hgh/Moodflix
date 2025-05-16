@@ -1,29 +1,16 @@
 <div *ngIf="movie" class="detail-page">
-  <div
-    class="main-infos-container"
-    [ngStyle]="{
+  <div class="main-infos-container mb-3" [ngStyle]="{
       'background-image': 'url(' + imageUrl + movie.backdrop_path + ')'
-    }"
-  >
+    }">
     <div class="main-content">
       <div class="container-fluid px-3 px-lg-5">
-        <div
-          class="row justify-content-center justify-content-lg-start gap-4 g-0"
-        >
-          <div
-            class="col-11 col-lg-3 d-flex justify-content-center align-items-center"
-          >
+        <div class="row justify-content-center justify-content-lg-start gap-4 g-0">
+          <div class="col-11 col-lg-3 d-flex justify-content-center align-items-center">
             <div class="py-4 pe-lg-4">
-              <img
-                [src]="imageUrl + movie.poster_path"
-                class="mb-2 img-fluid rounded-4"
-                alt="..."
-              />
+              <img [src]="imageUrl + movie.poster_path" class="mb-2 img-fluid rounded-4" alt="..." />
             </div>
           </div>
-          <div
-            class="col-12 col-lg-6 d-flex flex-column justify-content-center align-items-start gap-3"
-          >
+          <div class="col-12 col-lg-6 d-flex flex-column justify-content-center align-items-start gap-3">
             <div class="p-3">
               <div class="title mb-3">
                 <h1 class="text-white mb-2 m-0">
@@ -32,19 +19,15 @@
                 </h1>
                 <div class="d-inline my-1">
                   <span *ngIf="!isTvShow" class="text-muted">
-                    {{ movie.release_date | date : "y" }}</span
-                  >
+                    {{ movie.release_date | date : "y" }}</span>
                   <span *ngIf="isTvShow" class="text-muted">
-                    {{ movie.first_air_date | date : "y" }}</span
-                  >
+                    {{ movie.first_air_date | date : "y" }}</span>
                 </div>
               </div>
               <div class="d-flex align-items-center gap-1 mb-3 Genres">
                 <span class="small me-2 text-muted">Genres:</span>
-                <span
-                  class="text-primary fw-medium genre-item"
-                  *ngFor="let genre of movie.genres; let isLast = last"
-                  >{{ genre.name }}
+                <span class="text-primary fw-medium genre-item" *ngFor="let genre of movie.genres; let isLast = last">{{
+                  genre.name }}
                   <small *ngIf="!isLast">, </small>
                 </span>
               </div>
@@ -57,17 +40,16 @@
                   <i class="bi bi-star-fill small px-1 text-primary lh-1"></i>
                   <span class="text-primary">{{
                     movie.vote_average | number : "1.1-1"
-                  }}</span>
+                    }}</span>
                   <small class="text-muted"> / 10</small>
                 </div>
                 <div class="span mx-1">|</div>
                 <div class="small d-flex align-items-center gap-1">
                   <span *ngIf="!isTvShow" class="text-muted">
-                    {{ movie.runtime }} min</span
-                  >
+                    {{ movie.runtime }} min</span>
                   <span *ngIf="isTvShow" class="text-muted">
                     S{{ movie.last_episode_to_air?.season_number }} E{{
-                      movie.last_episode_to_air?.episode_number
+                    movie.last_episode_to_air?.episode_number
                     }}
                     Relessed -
                   </span>
@@ -77,20 +59,16 @@
                 </div>
               </div>
               <div class="d-flex gap-2 py-1">
-                <button
-                  class="btn btn-primary rounded-5 d-flex align-items-center justify-content-center small gap-1"
-                >
+                <button class="btn btn-primary rounded-5 d-flex align-items-center justify-content-center small gap-1">
                   <i class="bi bi-list"></i>
                   Add to List
                 </button>
                 <button
-                  class="btn btn-outline-primary rounded-5 d-flex align-items-center justify-content-center small gap-1"
-                >
+                  class="btn btn-outline-primary rounded-5 d-flex align-items-center justify-content-center small gap-1">
                   <i class="bi bi-heart lh-1 small pt-1"></i>
                 </button>
                 <button
-                  class="btn btn-outline-primary rounded-5 d-flex align-items-center justify-content-center small gap-1"
-                >
+                  class="btn btn-outline-primary rounded-5 d-flex align-items-center justify-content-center small gap-1">
                   <i class="bi bi-bookmark lh-1 small"></i>
                 </button>
               </div>
@@ -101,15 +79,15 @@
     </div>
   </div>
 
-  <div class="py-2 py-md-3 py-lg-4">
+  <div class="  ">
     <div class="container-fluid p-3 px-lg-5">
       <div class="bg-extra-dark p-3 p-lg-4 rounded-4">
         <h3 class="small mb-4 mt-2 text-primary px-2">
           <i class="bi bi-info-circle"></i> More Informations
         </h3>
 
-        <div class="row m-0 g-4 my-1 ">
-          <div class="col-12 col-lg-4 border-bottom ">
+        <div class="row m-0 g-4 my-1">
+          <div class="col-12 col-lg-4 border-bottom">
             <div class="d-flex align-items-center justify-content-between mb-3 small">
               <div class="">
                 <i class="bi bi-calendar text-primary"></i>
@@ -117,15 +95,15 @@
               </div>
               <span class="text-white">
                 <span *ngIf="!isTvShow">{{
-                  movie.release_date | date : "y"
-                }}</span>
+                  movie.release_date | date : "MMMM d, y"
+                  }}</span>
                 <span *ngIf="isTvShow">{{
                   movie.first_air_date | date : "y"
-                }}</span>
+                  }}</span>
               </span>
             </div>
           </div>
-          <div class="col-12 col-lg-4 border-bottom " *ngIf="isTvShow">
+          <div class="col-12 col-lg-4 border-bottom" *ngIf="isTvShow">
             <div class="d-flex align-items-center justify-content-between small mb-3">
               <div class="">
                 <i class="bi bi-tv text-primary"></i>
@@ -133,17 +111,14 @@
               </div>
               <span class="text-white">
                 <span>
-                  <span
-                    *ngFor="let network of movie.networks; let isLast = last"
-                    >{{ network.name }}
+                  <span *ngFor="let network of movie.networks; let isLast = last">{{ network.name }}
                     <small *ngIf="!isLast">, </small>
                   </span>
                 </span>
-               
               </span>
             </div>
           </div>
-          <div class="col-12 col-lg-4 border-bottom ">
+          <div class="col-12 col-lg-4 border-bottom">
             <div class="d-flex align-items-center justify-content-between small mb-3">
               <div class="">
                 <i class="bi bi-translate text-primary"></i>
@@ -157,21 +132,24 @@
               </span>
             </div>
           </div>
-          <div class="col-12 col-lg-4 border-bottom ">
+          <div class="col-12 col-lg-4 border-bottom">
             <div class="d-flex align-items-center justify-content-between small mb-3">
-              <div class="">
+              <div class="flex-shrink-0">
                 <i class="bi bi-globe text-primary"></i>
                 <span class="text-muted mx-2">Production Countries</span>
               </div>
-              <span class="text-white d-flex flex-wrap">
-                <span class="small" *ngFor="let country of movie.production_countries; let isLast = last">
+              <span class="text-white d-flex flex-wrap w-100 justify-content-end">
+                <span class="small" *ngFor="
+                    let country of movie.production_countries;
+                    let isLast = last
+                  ">
                   {{ country.name }}
                   <small *ngIf="!isLast">, </small>
                 </span>
               </span>
             </div>
           </div>
-           <div class="col-12 col-lg-4 border-bottom ">
+          <div class="col-12 col-lg-4 border-bottom">
             <div class="d-flex align-items-center justify-content-between small mb-3">
               <div class="">
                 <i class="bi bi-clock text-primary"></i>
@@ -184,91 +162,81 @@
                 </span>
               </span>
             </div>
-          
-        </div>
-          <div class="col-12 col-lg-4 border-bottom " *ngIf="isTvShow">
+          </div>
+          <div class="col-12 col-lg-4 border-bottom" *ngIf="isTvShow">
             <div class="d-flex align-items-center justify-content-between small mb-3">
               <div class="">
                 <i class="bi bi-list-ol text-primary"></i>
-                <span class="text-muted mx-2" >No. seasons</span>
-               
+                <span class="text-muted mx-2">No. seasons</span>
               </div>
-             
-              <span  class="text-white">
-                <span >
-                  {{ movie.number_of_seasons }} 
+
+              <span class="text-white">
+                <span>
+                  {{ movie.number_of_seasons }}
                 </span>
               </span>
             </div>
           </div>
-           <div class="col-12 col-lg-4 border-bottom " *ngIf="isTvShow">
+          <div class="col-12 col-lg-4 border-bottom" *ngIf="isTvShow">
             <div class="d-flex align-items-center justify-content-between small mb-3">
               <div class="">
                 <i class="bi bi-list-ol text-primary"></i>
-                <span class="text-muted mx-2" >No. Episode</span>
-               
+                <span class="text-muted mx-2">No. Episode</span>
               </div>
-             
-              <span  class="text-white">
-                <span >
-                  {{ movie.number_of_episodes }} 
+
+              <span class="text-white">
+                <span>
+                  {{ movie.number_of_episodes }}
                 </span>
               </span>
             </div>
           </div>
-          <div class="col-12 col-lg-4 border-bottom ">
+          <div class="col-12 col-lg-4 border-bottom">
             <div class="d-flex align-items-center justify-content-between small mb-3">
               <div class="">
                 <i class="bi bi-calendar-check text-primary"></i>
                 <span class="text-muted mx-2">Status</span>
               </div>
               <span class="text-white">
-                <span >{{ movie.status }}</span>
-                
+                <span>{{ movie.status }}</span>
               </span>
             </div>
-          
-        </div>
-         <div class="col-12 col-lg-4 border-bottom ">
+          </div>
+          <div class="col-12 col-lg-4 border-bottom">
             <div class="d-flex align-items-center justify-content-between small mb-3">
               <div class="">
                 <i class="bi bi-calendar-check text-primary"></i>
                 <span class="text-muted mx-2"> HomePage </span>
               </div>
               <span class="text-white">
-                <a href="{{ movie.homepage }}" class="link small" >view<i class="bi bi-box-arrow-up-right mx-1"></i></a>
-                
+                <a href="{{ movie.homepage }}" class="link small">view<i class="bi bi-box-arrow-up-right mx-1"></i></a>
               </span>
             </div>
-          
-        </div>
-      </div>
-    </div>
-  </div>
-  </div>
-
-  <div class="py-2 py-md-3 py-lg-4">
-    <div class="container-fluid p-3 px-lg-5">
-       <div class="bg-extra-dark p-3 p-lg-4 rounded-4">
-<h3 class="fs-6 mb-3 mt-2 text-primary px-2"><i class="bi bi-people"></i> Actors</h3>
-      <div class="row  g-3 my-1">
-        <div
-          class="col-12 col-md-3 col-lg-2 "
-          *ngFor="let actor of movie.credits.cast"
-        >
-          <div class="actors-card p-2 rounded d-flex align-items-center gap-2 h-100">
-            <img
-              [src]="imageUrl + actor.profile_path"
-              alt=""
-              class="img-fluid  d-block rounded-circle "
-            />
-            <div class=""><h5 class="fs-6">{{ actor.name }}</h5>
-            <p class="text-muted m-0 small">{{ actor.character }}</p></div>
           </div>
         </div>
       </div>
-       </div>
-      
     </div>
   </div>
 
+  <div class="  ">
+    <div class="container-fluid p-3 px-lg-5">
+      <div class="bg-extra-dark p-3 p-lg-4 rounded-4">
+        <h3 class="fs-6 mb-3 mt-2 text-primary px-2">
+          <i class="bi bi-people"></i> Actors
+        </h3>
+        <div class="row g-3 my-1">
+          <div class="col-12 col-md-3 col-lg-2 col-xl-2" *ngFor="let actor of movie.credits.cast">
+            <div class="actors-card p-1 rounded d-flex align-items-center gap-2 h-100">
+              <img [src]="actor.profile_path ? imageUrl + actor.profile_path : 'assets/images/user.jpg'" alt=""
+                class="img-fluid d-block rounded-circle" />
+              <div class="">
+                <h5 class="fs-6">{{ actor.name }}</h5>
+                <p class="text-muted m-0 small">{{ actor.character }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
