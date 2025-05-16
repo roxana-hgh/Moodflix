@@ -1,33 +1,90 @@
-<header class="w-100" [ngClass]="{'scrolled': isScrolled}">
+<header class="w-100" [ngClass]="{ scrolled: isScrolled }">
     <nav class="">
         <div class="container-fluid d-flex gap-4 px-lg-5 px-3 py-4 w-100 align-items-center justify-content-between">
             <a class="navbar-brand text-primary fw-bold fs-5" routerLink="/">MOODFLIX</a>
-            <button class="btn d-block d-lg-none fs-4 p-0" type="button" >
-                <i class="bi bi-list"></i>
-            </button>
-            <div class="d-none d-lg-block flex-grow-1 w-100">
-                <div class="d-flex justify-content-between  align-items-center">
-                <ul class="d-flex gap-3 m-0 list-unstyled px-3">
-                    <li class="nav-item">
-                        <a class="nav-link" routerLink="/">Home</a>
-                    </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" routerLink="/movies">Movies</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" routerLink="/tv-shows">TV Shows</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" routerLink="/about">About</a>
-                    </li>
-                </ul>
-                <div class="actions">
-                    <button class="small btn fs-5 mx-2"><i class="bi bi-search"></i></button>
-                    <button class="btn btn-outline-primary rounded-5 small px-4 "> Login</button>
+            <div class="d-none d-lg-block flex-grow-1 w-100">
+                <div class="d-flex justify-content-between align-items-center">
+                    <ul class="d-flex gap-3 m-0 list-unstyled px-3">
+                        <li class="nav-item">
+                            <a class="nav-link" routerLink="/">Home</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" routerLink="/movies">Movies</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" routerLink="/tv-shows">TV Shows</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" routerLink="/about">About</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
+            <div class="actions d-flex gap-1">
+                <button class="small btn fs-5 mx-2">
+                    <i class="bi bi-search"></i>
+                </button>
+                <button class="btn btn-outline-primary rounded-5 small px-4 d-none d-lg-block" type="button"
+                    routerLink="/login">
+                    Login
+                </button>
+                <button class="btn d-block d-lg-none fs-3 p-0" type="button" (click)="openMenu(menuOffcanvas)">
+                    <i class="bi bi-list"></i>
+                </button>
             </div>
         </div>
     </nav>
 </header>
+
+<ng-template #menuOffcanvas let-offcanvas>
+    <div class="offcanvas-header">
+        <a class="d-block text-center" href="">
+            <div class="logo d-flex align-items-center gap-2 w-100 justify-content-center p-2">
+                <h6><span class="text-primary fw-bold">MOODFLIX</span></h6>
+            </div>
+        </a>
+
+        <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+    </div>
+    <div class="offcanvas-body position-relative h-100">
+        <div class="menu-list px-2">
+            <ul class="list-unstyled">
+                <li class="nav-item py-2">
+                    <a class="nav-link" routerLink="/">Home</a>
+                </li>
+
+                <li class="nav-item py-2">
+                    <a class="nav-link" routerLink="/movies">Movies</a>
+                </li>
+                <li class="nav-item py-2">
+                    <a class="nav-link" routerLink="/tv-shows">TV Shows</a>
+                </li>
+                <li class="nav-item py-2">
+                    <a class="nav-link" routerLink="/about">About</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="offcanvas-btns d-flex justify-content-between position-absolute w-100 bottom-0 start-0 p-3">
+            <!-- <div ngbDropdown placement="top-start" class="d-inline-block">
+                <button type="button" class="btn text-primary" id="languageSelection" ngbDropdownToggle><i class="bi bi-globe2"></i></button>
+                <div class="w-auto" ngbDropdownMenu aria-labelledby="languageSelection">
+                    <button ngbDropdownItem (click)="set_lang('en')">English</button>
+                    <button ngbDropdownItem (click)="set_lang('fa')">Farsi</button>
+                  
+                </div>
+            </div>
+
+            <div ngbDropdown placement="top-end" class="d-inline-block">
+                <button type="button" class="btn text-primary" id="ThemeSelection" ngbDropdownToggle><i class="bi bi-brightness-high"></i></button>
+                <div class="w-auto" ngbDropdownMenu aria-labelledby="ThemeSelection">
+                    <button ngbDropdownItem >Dark</button>
+                    <button ngbDropdownItem >Light</button>
+                  
+                </div>
+            </div> -->
+        </div>
+    </div>
+</ng-template>

@@ -1,5 +1,6 @@
-import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, inject, Inject, PLATFORM_ID, TemplateRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-header',
@@ -7,6 +8,7 @@ import { isPlatformBrowser } from '@angular/common';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
+  private offcanvasService = inject(NgbOffcanvas)
   isScrolled = false;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
@@ -16,4 +18,8 @@ export class HeaderComponent {
       });
     }
   }
+
+  openMenu(content: TemplateRef<any>) {
+		this.offcanvasService.open(content, { position: 'end' });
+	}
 }
