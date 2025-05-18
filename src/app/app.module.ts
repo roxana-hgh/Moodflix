@@ -15,6 +15,7 @@ import { ToastComponent } from './components/shared/toast/toast.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CarouselModule } from 'ngx-owl-carousel-o';
 import { MoviesDetailsComponent } from './components/movies/movies-details/movies-details.component';
+import { LoaderComponent } from './components/shared/loader/loader.component';
 
 
 @NgModule({
@@ -27,6 +28,7 @@ import { MoviesDetailsComponent } from './components/movies/movies-details/movie
     MoviesCardComponent,
     ToastComponent,
     MoviesDetailsComponent,
+    LoaderComponent,
   ],
   imports: [
     BrowserModule,
