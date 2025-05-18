@@ -14,7 +14,9 @@ export class MoviesDetailsComponent implements OnInit {
   id: number = 0;
   imageUrl: string = environment.tmdb.imagesUrl;
   isTvShow: boolean = false;
+  similar: any[] = [];
   constructor(private route: ActivatedRoute, private moviesService: MoviesService) {}
+
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -22,6 +24,7 @@ export class MoviesDetailsComponent implements OnInit {
       this.id = +params['id'];
       this.isTvShow = this.mediaType === 'tv';
       this.getMovieDetails(this.mediaType, this.id);
+      this.getSimilarMovies(this.mediaType, this.id);
     });
   }
 
@@ -35,8 +38,19 @@ export class MoviesDetailsComponent implements OnInit {
         this.movie = data;
       });
     }
-    console.log(this.movie);
-    
+   
+  }
+
+  getSimilarMovies(mediaType: string, id: number): void {
+    if (mediaType === 'movie') {
+      this.moviesService.getSimilarMovies(id).subscribe(data => {
+        this.similar = data.results;
+      });
+    } else if (mediaType === 'tv') {
+      this.moviesService.getSimilarTvShows(id).subscribe(data => {
+        this.similar = data.results;
+      });
+    }
   }
 
 }

@@ -21,6 +21,22 @@
         <h4 class="mb-3">Trending Shows</h4>
         <app-movies-carousel [movies]="TrendingTvShows" [listType]="'tvShow'"></app-movies-carousel>
     </div>
+    <div class="my-4 py-4" *ngIf="nowPlayingMovies">
+        <h4 class="mb-3">Now Playing Movies</h4>
+        <app-movies-carousel [movies]="nowPlayingMovies" ></app-movies-carousel>
+    </div>
+    <div class="my-4 py-4" *ngIf="nowPlayingTvShows">
+        <h4 class="mb-3">On The Air Shows</h4>
+        <app-movies-carousel [movies]="nowPlayingTvShows" [listType]="'tvShow'"></app-movies-carousel>
+    </div>
+    <div class="my-4 py-4" *ngIf="TopRatedMovies">
+        <h4 class="mb-3">Top Rated Movies</h4>
+        <app-movies-carousel [movies]="TopRatedMovies"></app-movies-carousel>
+    </div>
+    <div class="my-4 py-4" *ngIf="TopRatedTvShows">
+        <h4 class="mb-3">Top Rated Shows</h4>
+        <app-movies-carousel [movies]="TopRatedTvShows" [listType]="'tvShow'"></app-movies-carousel>
+    </div>
 </div>
 
 

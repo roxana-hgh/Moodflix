@@ -56,6 +56,34 @@ export class MoviesService {
     );
   }
 
+  getNowPlayingMovies(page: number = 1): Observable<any> {
+    const url = `${this.baseUrl}movie/now_playing?language=en-US&page=${page}`;
+    return this.http.get(url, { headers: this.createHeaders() }).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  getNowPlayingTvShows(page: number = 1): Observable<any> {
+    const url = `${this.baseUrl}tv/on_the_air?language=en-US&page=${page}`;
+    return this.http.get(url, { headers: this.createHeaders() }).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  getTopRatedMovies(page: number = 1): Observable<any> {
+    const url = `${this.baseUrl}movie/top_rated?language=en-US&page=${page}`;
+    return this.http.get(url, { headers: this.createHeaders() }).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  getTopRatedTvShows(page: number = 1): Observable<any> {
+    const url = `${this.baseUrl}tv/top_rated?language=en-US&page=${page}`;
+    return this.http.get(url, { headers: this.createHeaders() }).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
   getTvShowDetail(id: number): Observable<any> {
     const url = `${this.baseUrl}tv/${id}?append_to_response=credits`;
     return this.http.get(url, { headers: this.createHeaders() }).pipe(
@@ -65,6 +93,20 @@ export class MoviesService {
 
   getTMovieDetail(id: number): Observable<any> {
     const url = `${this.baseUrl}movie/${id}?append_to_response=credits`;
+    return this.http.get(url, { headers: this.createHeaders() }).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  getSimilarMovies(id: number): Observable<any> {
+    const url = `${this.baseUrl}movie/${id}/similar?language=en-US`;
+    return this.http.get(url, { headers: this.createHeaders() }).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  getSimilarTvShows(id: number): Observable<any> {
+    const url = `${this.baseUrl}tv/${id}/similar?language=en-US`;
     return this.http.get(url, { headers: this.createHeaders() }).pipe(
       catchError(this.handleError.bind(this))
     );
