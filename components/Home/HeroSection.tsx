@@ -6,7 +6,7 @@ function HeroSec() {
     return (
         <div className="h-dvh relative">
             <Image src={HeroImg} alt="MoodFlix" className="block object-cover aspect-16/8 w-full h-full" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/20">
+            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-black/20">
                 <div className="container h-full">
                     <div className="h-full flex flex-col gap-4 justify-center lg:max-w-1/2" >
                         <span className="text-primary texy-xl font-bold ">
