@@ -146,3 +146,58 @@
     padding-inline: 2rem;
   }
 }
+
+/* Theme-aware scrollbar — colors follow your CSS variables, so it flips with dark mode automatically */
+* {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--border) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 9999px;
+  border: 2px solid var(--background);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--muted-foreground);
+}
+
+/* Utility: scrolling still works, scrollbar is just invisible */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* old Edge/IE */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Utility: thin scrollbar on both axes, independent of the global default above */
+.sm-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.sm-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.sm-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sm-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 9999px;
+}
+.sm-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--muted-foreground);
+}

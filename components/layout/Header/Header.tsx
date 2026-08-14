@@ -14,6 +14,10 @@ import {
   SheetClose,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { useDebounce } from "@/hooks/use-debounce";
+
+import { SearchResultsDropdown } from "@/features/search/components/search-results-dropdown";
+import { useSearchMedia } from "@/features/search/hook";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -28,15 +32,42 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const debouncedQuery = useDebounce(searchQuery, 350);
+  const {
+    data: results,
+    isLoading,
+    isFetching,
+  } = useSearchMedia(debouncedQuery);
+
+  const closeSearch = () => {
+    setIsSearchOpen(false);
+    setSearchQuery("");
+  };
+
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isSearchOpen) closeSearch();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSearchOpen]);
+
+
+
   const toggleSearch = () => {
     setIsMenuOpen(false);
-    setIsSearchOpen((v) => !v);
+    if (isSearchOpen) {
+      closeSearch();
+    } else {
+      setIsSearchOpen(true);
+    }
   };
 
   return (
@@ -48,30 +79,27 @@ function Header() {
     >
       <nav className="relative">
         <div className="container flex items-center justify-between gap-4 px-4 lg:px-8 py-4">
-         <div className="flex gap-6">
-             {/* Brand */}
-          <Link href="/" className="text-primary font-bold text-lg shrink-0">
-            MOODFLIX
-          </Link>
+          <div className="flex gap-6">
+            <Link href="/" className="text-primary font-bold text-lg shrink-0">
+              MOODFLIX
+            </Link>
 
-          {/* Desktop nav */}
-          <div className="hidden lg:flex flex-1 justify-center">
-            <ul className="flex gap-6 list-none m-0 p-0">
-              {navLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-foreground/80 hover:text-primary transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <div className="hidden lg:flex flex-1 justify-center">
+              <ul className="flex gap-6 list-none m-0 p-0">
+                {navLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-foreground/80 hover:text-primary transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-         </div>
 
-          {/* Actions */}
           <div className="flex items-center gap-2">
             {/* Desktop search — inline expand */}
             <div className="hidden lg:flex relative items-center">
@@ -81,9 +109,7 @@ function Header() {
                   isSearchOpen ? "w-72 bg-secondary border px-3" : "w-9"
                 )}
               >
-                {isSearchOpen && (
-                  <Search className="size-4 text-primary shrink-0" />
-                )}
+                {isSearchOpen && <Search className="size-4 text-primary shrink-0" />}
                 {isSearchOpen && (
                   <Input
                     autoFocus
@@ -100,24 +126,24 @@ function Header() {
                   onClick={toggleSearch}
                   aria-label={isSearchOpen ? "Close search" : "Open search"}
                 >
-                  {isSearchOpen ? (
-                    <X className="size-4" />
-                  ) : (
-                    <Search className="size-4" />
-                  )}
+                  {isSearchOpen ? <X className="size-4" /> : <Search className="size-4" />}
                 </Button>
               </div>
 
-              {isSearchOpen && searchQuery && (
-                <div className="absolute top-full mt-2 w-full rounded-2xl border bg-card p-2 shadow-sm">
-                  <p className="text-sm text-muted-foreground text-center py-3">
-                    No results found
-                  </p>
+              {isSearchOpen && searchQuery.trim().length >= 2 && (
+                <div className="absolute top-full mt-2 w-full">
+                  <SearchResultsDropdown
+                    query={searchQuery}
+                    results={results}
+                    isLoading={isLoading}
+                    isFetching={isFetching}
+                    onSelect={closeSearch}
+                  />
                 </div>
               )}
             </div>
 
-            {/* Mobile search trigger — icon only */}
+            {/* Mobile search trigger */}
             <Button
               variant="ghost"
               size="icon"
@@ -125,37 +151,22 @@ function Header() {
               onClick={toggleSearch}
               aria-label={isSearchOpen ? "Close search" : "Open search"}
             >
-              {isSearchOpen ? (
-                <X className="size-5" />
-              ) : (
-                <Search className="size-5" />
-              )}
+              {isSearchOpen ? <X className="size-5" /> : <Search className="size-5" />}
             </Button>
 
-            {/* Login (desktop) */}
-            <Button
-              asChild
-              variant="outline"
-              className="hidden lg:inline-flex rounded-full px-5"
-            >
+            <Button asChild variant="outline" className="hidden lg:inline-flex rounded-full px-5">
               <Link href="/login">Login</Link>
             </Button>
 
-            {/* Mobile menu */}
             <Sheet
               open={isMenuOpen}
               onOpenChange={(open) => {
                 setIsMenuOpen(open);
-                if (open) setIsSearchOpen(false);
+                if (open) closeSearch();
               }}
             >
               <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="lg:hidden"
-                  aria-label="Open menu"
-                >
+                <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu">
                   <Menu className="size-6" />
                 </Button>
               </SheetTrigger>
@@ -196,7 +207,7 @@ function Header() {
         {/* Mobile search — full-width dropdown bar */}
         {isSearchOpen && (
           <div className="lg:hidden border-t bg-background/50 backdrop-blur px-4 py-3 animate-in slide-in-from-top-2 duration-200">
-            <div className="flex items-center gap-2 rounded-full border   px-3">
+            <div className="flex items-center gap-2 rounded-full border px-3">
               <Search className="size-4 text-primary shrink-0" />
               <Input
                 autoFocus
@@ -207,11 +218,15 @@ function Header() {
               />
             </div>
 
-            {searchQuery && (
-              <div className="mt-2 rounded-2xl border bg-card p-2 shadow-sm">
-                <p className="text-sm text-muted-foreground text-center py-3">
-                  No results found
-                </p>
+            {searchQuery.trim().length >= 2 && (
+              <div className="mt-2">
+                <SearchResultsDropdown
+                  query={searchQuery}
+                  results={results}
+                  isLoading={isLoading}
+                  isFetching={isFetching}
+                  onSelect={closeSearch}
+                />
               </div>
             )}
           </div>

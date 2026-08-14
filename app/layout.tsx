@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { Providers } from "@/app/providers";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -28,8 +29,9 @@ export default function RootLayout({
         className={cn("min-h-screen font-sans antialiased")}
         suppressHydrationWarning
       >
+        <Providers>{children}</Providers>
        
-        {children}
+
       </body>
     </html>
   );
