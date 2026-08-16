@@ -14,7 +14,7 @@ function HeroSec() {
                         </span>
                         <h1 className="text-white font bold text-4xl">Find your next favorite <span className="text-primary">Movie</span> & <span className="text-primary">Show</span></h1>
                         <p className="text-muted-foreground text-base">Discover, rate, and share your favorite movies with Moodflix</p>
-                        <Button size="lg" className="w-fit text-lg py-2 px-5 ">Discover</Button>
+                        <Button size="sm" className="w-fit text-lg py-2 px-5 ">Discover</Button>
                     </div>
                 </div>
             </div>

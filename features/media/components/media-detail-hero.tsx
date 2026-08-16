@@ -43,7 +43,7 @@ export function MediaDetailHero({ detail }: MediaDetailHeroProps) {
       </div>
 
       <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 pb-10 pt-[32vh] sm:flex-row sm:items-end sm:pt-[30vh] sm:px-6 lg:pt-[28vh] lg:min-h-[95dvh]">
-        <div className="relative hidden aspect-[2/3] w-40 shrink-0 overflow-hidden rounded-xl border border-white/10 shadow-2xl shadow-black/50 sm:block lg:w-52">
+        <div className="relative  aspect-[2/3] w-32 sm:w-40 shrink-0 overflow-hidden rounded-xl border border-white/10 shadow-2xl shadow-black/50 sm:block lg:w-52">
           {posterPath ? (
             <Image
               src={tmdbImageUrl(posterPath, "w500")}
@@ -100,7 +100,7 @@ export function MediaDetailHero({ detail }: MediaDetailHeroProps) {
             </div>
           )}
 
-          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground ">
             {overview}
           </p>
 
