@@ -1,5 +1,7 @@
-function LoginPage() {
-    return (  );
+function RegisterPage() {
+    return ( 
+        <div className="">RegisterPage</div>
+     );
 }
 
-export default LoginPage;
+export default RegisterPage;
