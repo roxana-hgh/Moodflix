@@ -1,3 +1,4 @@
+import LoadingPage from "@/app/loading";
 import HeroSec from "@/components/Home/HeroSection";
 import SectionContext from "@/components/layout/SectionContext";
 import SectionWrapper from "@/components/layout/SectionWrapper";
