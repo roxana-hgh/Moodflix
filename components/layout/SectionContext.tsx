@@ -13,7 +13,7 @@ function SectionContext({ title, description, buttonText, ButtonLink }: SectionC
     return (
         <div className="pb-4">
             <div className="flex justify-between flex-wrap items-start mb-2">
-                <h2 className="text-lg lg:text-2xl text-primary font-bold ">{title}</h2>
+                <h2 className="text-lg lg:text-xl text-primary font-semibold ">{title}</h2>
                 {buttonText && (
                     <Link href={ButtonLink || "#"}>
                         <Button asChild  variant="outline" size="sm" className="">

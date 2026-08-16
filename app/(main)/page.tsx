@@ -12,10 +12,10 @@ export default async function Home() {
   ]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-5">
       <HeroSec />
       <SectionWrapper>
-        <div className="container mx-auto">
+        <div className="max-w-6xl mx-auto">
           <SectionContext title="Trending TV Shows" buttonText="See More" ButtonLink="/learn-more" />
 
           <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }}  autoplay={false}>
@@ -27,7 +27,7 @@ export default async function Home() {
       </SectionWrapper>
 
       <SectionWrapper>
-        <div className="container mx-auto">
+        <div className="max-w-6xl mx-auto">
           <SectionContext title="Trending Movies" buttonText="See More" ButtonLink="/learn-more" />
 
           <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }}  autoplay={false}>

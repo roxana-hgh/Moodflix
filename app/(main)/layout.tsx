@@ -1,3 +1,4 @@
+import Footer from "@/components/layout/Footer/Footer";
 import Header from "@/components/layout/Header/Header";
 
 function MainLayout({
@@ -11,6 +12,7 @@ function MainLayout({
             <main className="">
                 {children}
             </main>
+            <Footer />
         </div>
     );
 }

@@ -73,12 +73,12 @@ function Header() {
   return (
     <header
       className={cn(
-        "w-full bg-transparent top-0 z-50 absolute transition-colors",
+        "w-full  bg-transparent top-0 z-50 absolute transition-colors",
         isScrolled && "bg-background/80 backdrop-blur sticky border-b"
       )}
     >
       <nav className="relative">
-        <div className="container flex items-center justify-between gap-4 px-4 lg:px-8 py-4">
+        <div className="container  flex items-center justify-between gap-4  py-4">
           <div className="flex gap-6">
             <Link href="/" className="text-primary font-bold text-lg shrink-0">
               MOODFLIX
