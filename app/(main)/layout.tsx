@@ -9,7 +9,7 @@ function MainLayout({
     return (
         <div className="">
             <Header />
-            <main className="">
+            <main className="min-h-screen">
                 {children}
             </main>
             <Footer />

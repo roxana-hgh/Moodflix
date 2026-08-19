@@ -22,7 +22,7 @@ import { useSearchMedia } from "@/features/search/hook";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/movies", label: "Movies" },
-  { href: "/tv-shows", label: "TV Shows" },
+  { href: "/shows", label: "TV Shows" },
   { href: "/about", label: "About" },
 ];
 
