@@ -120,7 +120,10 @@ export function MediaDiscoverFiltersBar({ mediaType, filters, genres, onChange }
             </Button>
           </SheetTrigger>
 
-          <SheetContent side={isDesktop ? "right" : "bottom"} className={isDesktop ? "w-[340px] sm:w-[380px]" : "h-[75vh] rounded-t-2xl"}>
+          <SheetContent 
+          side={isDesktop ? "right" : "bottom"} 
+          className={isDesktop ? "w-[340px] sm:w-[380px]" : "h-[75dvh] rounded-t-2xl"}
+          >
             <SheetHeader>
               <SheetTitle>Filters</SheetTitle>
             </SheetHeader>
@@ -256,7 +259,7 @@ export function MediaDiscoverFiltersBar({ mediaType, filters, genres, onChange }
               </div>
             </div>
 
-            <SheetFooter className="flex-row gap-2">
+            <SheetFooter className="flex-row gap-2 max-sm:pb-5">
               <Button variant="ghost" className="flex-1" onClick={resetAll}>
                 Reset
               </Button>
