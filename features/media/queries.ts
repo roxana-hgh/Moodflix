@@ -97,3 +97,40 @@ export async function getMovieGenres(): Promise<TMDBGenre[]> {
 
   return data.genres;
 }
+
+
+export async function getPopularMovies(page = 1): Promise<MediaCardItem[]> {
+  const data = await serverApi<TMDBPaginatedResponse<TMDBMovieResult>>('/movie/popular', {
+    params: { page },
+    next: { revalidate: 3600 },
+  });
+
+  return data.results.map((item) => toMediaCardItem({ ...item, media_type: 'movie' }));
+}
+
+export async function getPopularTv(page = 1): Promise<MediaCardItem[]> {
+  const data = await serverApi<TMDBPaginatedResponse<TMDBTVResult>>('/tv/popular', {
+    params: { page },
+    next: { revalidate: 3600 },
+  });
+
+  return data.results.map((item) => toMediaCardItem({ ...item, media_type: 'tv' }));
+}
+
+export async function getTopRatedMovies(page = 1): Promise<MediaCardItem[]> {
+  const data = await serverApi<TMDBPaginatedResponse<TMDBMovieResult>>('/movie/top_rated', {
+    params: { page },
+    next: { revalidate: 3600 },
+  });
+
+  return data.results.map((item) => toMediaCardItem({ ...item, media_type: 'movie' }));
+}
+
+export async function getTopRatedTv(page = 1): Promise<MediaCardItem[]> {
+  const data = await serverApi<TMDBPaginatedResponse<TMDBTVResult>>('/tv/top_rated', {
+    params: { page },
+    next: { revalidate: 3600 },
+  });
+
+  return data.results.map((item) => toMediaCardItem({ ...item, media_type: 'tv' }));
+}
