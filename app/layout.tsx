@@ -22,11 +22,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("dark h-full", roboto.variable)}
+      className={cn("dark", roboto.variable)}
       suppressHydrationWarning
     >
       <body
-        className={cn("min-h-screen font-sans antialiased")}
+        className={cn(" font-sans antialiased")}
         suppressHydrationWarning
       >
         <Providers>{children}</Providers>

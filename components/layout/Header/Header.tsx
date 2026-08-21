@@ -73,12 +73,12 @@ function Header() {
   return (
     <header
       className={cn(
-        "w-full  bg-transparent top-0 z-50 absolute transition-colors",
-        isScrolled && "bg-background/80 backdrop-blur sticky border-b"
+        "w-full bg-transparent fixed top-0 z-50 transition-colors h-(--header-height)",
+        isScrolled && "bg-background/80 backdrop-blur border-b"
       )}
     >
-      <nav className="relative">
-        <div className="container  flex items-center justify-between gap-4  py-4">
+      <nav className="relative h-full">
+        <div className="container h-full flex items-center justify-between gap-4  py-4">
           <div className="flex gap-6">
             <Link href="/" className="text-primary font-bold text-lg shrink-0">
               MOODFLIX
@@ -177,14 +177,14 @@ function Header() {
                   </SheetTitle>
                 </SheetHeader>
 
-                <nav className="flex-1 px-2">
+                <nav className="flex-1 px-3">
                   <ul className="list-none m-0 p-0">
                     {navLinks.map((link) => (
                       <li key={link.href} className="py-2">
                         <SheetClose asChild>
                           <Link
                             href={link.href}
-                            className="block text-base text-foreground/80 hover:text-primary transition-colors"
+                            className="block text-sm sm:text-base text-foreground/80 hover:text-primary transition-colors"
                           >
                             {link.label}
                           </Link>
@@ -195,7 +195,7 @@ function Header() {
                 </nav>
 
                 <div className="p-3 border-t">
-                  <Button asChild className="w-full rounded-full">
+                  <Button asChild size="sm" className="w-full rounded-full">
                     <Link href="/login">Login</Link>
                   </Button>
                 </div>

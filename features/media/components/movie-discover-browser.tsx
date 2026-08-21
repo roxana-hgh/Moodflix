@@ -5,20 +5,20 @@ import { MediaDiscoverFiltersBar } from "./media-discover-filters";
 import { MediaDiscoverGrid } from "./media-discover-grid";
 
 import { defaultMediaDiscoverFilters } from "../schema";
-import { useDiscoverTVShows } from "@/features/media/hook";
+import { useDiscoverMovies } from "@/features/media/hook";
 
-interface TVGenre {
+interface MovieGenre {
   id: number;
   name: string;
 }
 
-export function TVDiscoverBrowser({ genres }: { genres: TVGenre[] }) {
+export function MovieDiscoverBrowser({ genres }: { genres: MovieGenre[] }) {
   const [filters, setFilters] = useState(defaultMediaDiscoverFilters);
-  const query = useDiscoverTVShows(filters);
+  const query = useDiscoverMovies(filters);
 
   return (
     <div className="py-3 flex flex-col gap-4">
-      <MediaDiscoverFiltersBar mediaType="tv" filters={filters} genres={genres} onChange={setFilters} />
+      <MediaDiscoverFiltersBar mediaType="movie" filters={filters} genres={genres} onChange={setFilters} />
       <MediaDiscoverGrid {...query} />
     </div>
   );

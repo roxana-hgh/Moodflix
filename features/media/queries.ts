@@ -10,8 +10,8 @@ import type {
   TMDBGenre,
 } from '@/services/tmdb/types';
 import type { MediaCardItem } from '@/types/media';
-import { buildDiscoverTVParams } from '@/features/media/schema';
-import type { TVDiscoverFilters } from '@/features/media/schema';
+import { buildDiscoverMovieParams, buildDiscoverTVParams } from '@/features/media/schema';
+import type { MediaDiscoverFilters, TVDiscoverFilters } from '@/features/media/schema';
 
 export async function getTrendingTv(window: 'day' | 'week'): Promise<MediaCardItem[]> {
   const data = await serverApi<TMDBPaginatedResponse<TMDBTVResult>>(`/trending/tv/${window}`, {
@@ -69,6 +69,30 @@ export async function discoverTVShows(
 export async function getTVGenres(): Promise<TMDBGenre[]> {
   const data = await serverApi<{ genres: TMDBGenre[] }>('/genre/tv/list', {
     next: { revalidate: 60 * 60 * 24 }, // genre list is basically static
+  });
+
+  return data.genres;
+}
+
+
+export async function discoverMovies(
+  filters: MediaDiscoverFilters,
+  page = 1
+): Promise<TMDBPaginatedResponse<MediaCardItem>> {
+  const data = await serverApi<TMDBPaginatedResponse<TMDBMovieResult>>('/discover/movie', {
+    params: buildDiscoverMovieParams(filters, page),
+    next: { revalidate: 3600 },
+  });
+
+  return {
+    ...data,
+    results: data.results.map((item) => toMediaCardItem({ ...item, media_type: 'movie' })),
+  };
+}
+
+export async function getMovieGenres(): Promise<TMDBGenre[]> {
+  const data = await serverApi<{ genres: TMDBGenre[] }>('/genre/movie/list', {
+    next: { revalidate: 60 * 60 * 24 },
   });
 
   return data.genres;

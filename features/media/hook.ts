@@ -1,10 +1,10 @@
 "use client";
 
-import { buildDiscoverTVParams } from "@/features/media/schema";
-import type { TVDiscoverFilters } from "@/features/media/schema";
+import { buildDiscoverMovieParams, buildDiscoverTVParams } from "@/features/media/schema";
+import type { MediaDiscoverFilters, TVDiscoverFilters } from "@/features/media/schema";
 import { toMediaCardItem } from "@/features/media/types";
 import { clientApi } from "@/lib/api-client";
-import type { TMDBPaginatedResponse, TMDBTVResult } from "@/services/tmdb/types";
+import type { TMDBMovieResult, TMDBPaginatedResponse, TMDBTVResult } from "@/services/tmdb/types";
 import type { MediaCardItem } from "@/types/media";
 import { useInfiniteQuery, type InfiniteData } from "@tanstack/react-query";
 
@@ -30,6 +30,27 @@ export function useDiscoverTVShows(filters: TVDiscoverFilters) {
         results: data.results.map((item) =>
           toMediaCardItem({ ...item, media_type: "tv" })
         ),
+      };
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.page < lastPage.total_pages ? lastPage.page + 1 : undefined,
+  });
+}
+
+
+export function useDiscoverMovies(filters: MediaDiscoverFilters) {
+  return useInfiniteQuery({
+    queryKey: ["movie", "discover", filters] as const,
+    queryFn: async ({ pageParam }: { pageParam: number }) => {
+      const { data } = await clientApi.get<TMDBPaginatedResponse<TMDBMovieResult>>(
+        "/tmdb/discover/movie",
+        { params: buildDiscoverMovieParams(filters, pageParam) }
+      );
+
+      return {
+        ...data,
+        results: data.results.map((item) => toMediaCardItem({ ...item, media_type: "movie" })),
       };
     },
     initialPageParam: 1,

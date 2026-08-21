@@ -4,7 +4,7 @@ import Image from "next/image";
 
 function HeroSec() {
     return (
-        <div className="h-dvh relative">
+        <div className="h-dvh relative  -mt-[var(--header-height)]">
             <Image src={HeroImg} alt="MoodFlix" className="block object-cover aspect-16/8 w-full h-full" />
             <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-black/20">
                 <div className="container h-full">

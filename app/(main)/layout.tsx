@@ -7,13 +7,13 @@ function MainLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <div className="">
+        <>
             <Header />
-            <main className="min-h-screen">
+            <main className="min-h-screen pt-[var(--header-height)]">
                 {children}
             </main>
             <Footer />
-        </div>
+        </>
     );
 }
 

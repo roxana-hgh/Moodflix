@@ -11,7 +11,7 @@ import SectionWrapper from "@/components/layout/SectionWrapper";
 
 export function MediaDetailView({ detail }: { detail: MediaDetail }) {
   return (
-    <div className="pb-16">
+    <div className="pb-16 -mt-[var(--header-height)]">
       <MediaDetailHero detail={detail} />
 
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 pt-8 sm:px-6">

@@ -81,6 +81,8 @@
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.705 0.015 286.067);
+
+   --header-height: 4.5rem; 
 }
 
 .dark {
@@ -151,6 +153,19 @@
   }
 }
 
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+html {
+  scrollbar-gutter: stable;
+}
+
 /* Theme-aware scrollbar — colors follow your CSS variables, so it flips with dark mode automatically */
 * {
   scrollbar-width: thin; /* Firefox */
@@ -185,6 +200,8 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+
 
 /* Utility: thin scrollbar on both axes, independent of the global default above */
 .sm-scrollbar {
