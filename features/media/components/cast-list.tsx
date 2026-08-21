@@ -1,15 +1,25 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
+import { ChevronDown } from "lucide-react";
 import { tmdbImageUrl } from "@/utils/image";
 import type { CastMember } from "../types";
 
+const PREVIEW_COUNT = 12;
+
 export function CastList({ cast }: { cast: CastMember[] }) {
+  const [expanded, setExpanded] = useState(false);
   if (cast.length === 0) return null;
+
+  const visible = expanded ? cast : cast.slice(0, PREVIEW_COUNT);
+  const hasMore = cast.length > PREVIEW_COUNT;
 
   return (
     <div>
       <h2 className="mb-4 text-sm font-semibold text-primary">Cast</h2>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        {cast.map((member) => (
+        {visible.map((member) => (
           <div key={member.id} className="flex items-center gap-3 rounded-xl border border-border/60 bg-card/50 p-2">
             <div className="relative size-10 sm:size-12 shrink-0 overflow-hidden rounded-full bg-muted">
               {member.profilePath ? (
@@ -32,6 +42,16 @@ export function CastList({ cast }: { cast: CastMember[] }) {
           </div>
         ))}
       </div>
+
+      {hasMore && (
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          className="mt-4 flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+        >
+          {expanded ? "Show less" : `Show all ${cast.length} cast members`}
+          <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
+        </button>
+      )}
     </div>
   );
 }

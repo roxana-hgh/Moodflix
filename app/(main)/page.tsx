@@ -35,8 +35,8 @@ export default async function Home() {
       <HeroSec />
 
       <SectionWrapper>
-        <div className="max-w-6xl px-4 sm:px-6 mx-auto">
-          <SectionContext title="Trending TV Shows" buttonText="See More" ButtonLink="/learn-more" />
+        <div className="max-w-6xl px-4 sm:px-6 mx-auto" id="trending-tv">
+          <SectionContext title="Trending TV Shows" buttonText="See More" ButtonLink="/shows" />
           <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }} autoplay={false}>
             {trendingTv?.map((show) => (
               <MediaCard key={show.id} {...show} />
@@ -47,7 +47,7 @@ export default async function Home() {
 
       <SectionWrapper>
         <div className="max-w-6xl px-4 sm:px-6 mx-auto">
-          <SectionContext title="Trending Movies" buttonText="See More" ButtonLink="/learn-more" />
+          <SectionContext title="Trending Movies" buttonText="See More" ButtonLink="/movies" />
           <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }} autoplay={false}>
             {trendingMovies?.map((movie) => (
               <MediaCard key={movie.id} {...movie} />

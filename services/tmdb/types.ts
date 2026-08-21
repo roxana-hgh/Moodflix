@@ -82,8 +82,36 @@ export interface TMDBCastMember {
   order: number;
 }
 
+export interface TMDBCrewMember {
+  id: number;
+  name: string;
+  job: string;
+  department: string;
+  profile_path: string | null;
+}
+
 export interface TMDBCredits {
   cast: TMDBCastMember[];
+  crew: TMDBCrewMember[];
+}
+
+export interface TMDBCreator {
+  id: number;
+  credit_id: string;
+  name: string;
+  gender: number | null;
+  profile_path: string | null;
+}
+
+export interface TMDBSeason {
+  id: number;
+  name: string;
+  overview: string;
+  season_number: number;
+  episode_count: number;
+  air_date: string | null;
+  poster_path: string | null;
+  vote_average: number;
 }
 
 export interface TMDBImage {
@@ -145,6 +173,8 @@ export interface TMDBTVDetails {
   status: string;
   homepage: string | null;
   genres: TMDBGenre[];
+  created_by: TMDBCreator[];        // NEW
+  seasons: TMDBSeason[];            // NEW
   networks: TMDBNetwork[];
   production_countries: TMDBProductionCountry[];
   spoken_languages: TMDBSpokenLanguage[];
@@ -155,6 +185,30 @@ export interface TMDBTVDetails {
   images: TMDBImages;
   recommendations: TMDBPaginatedResponse<TMDBTVResult>;
   similar: TMDBPaginatedResponse<TMDBTVResult>;
+}
+
+export interface TMDBSeasonEpisode {
+  id: number;
+  name: string;
+  overview: string;
+  episode_number: number;
+  season_number: number;
+  air_date: string | null;
+  runtime: number | null;
+  still_path: string | null;
+  vote_average: number;
+  vote_count: number;
+}
+
+export interface TMDBSeasonDetails {
+  id: number;
+  name: string;
+  overview: string;
+  air_date: string | null;
+  season_number: number;
+  poster_path: string | null;
+  vote_average: number;
+  episodes: TMDBSeasonEpisode[];
 }
 
 export interface TMDBPersonResult {

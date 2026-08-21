@@ -11,8 +11,8 @@ export async function generateMetadata({ params }: TVPageProps): Promise<Metadat
   const { id } = await params;
   const show = await getTVDetails(id).catch(() => null);
   return show
-    ? { title: `${show.title} — Moodflix`, description: show.overview }
-    : { title: "TV Show — Moodflix" };
+    ? { title: `${show.title} | Moodflix`, description: show.overview }
+    : { title: "TV Show | Moodflix" };
 }
 
 export default async function TVPage({ params }: TVPageProps) {

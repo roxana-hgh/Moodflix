@@ -1,6 +1,7 @@
 import HeroImg from "@/assets/imgs/hero3.png"
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 function HeroSec() {
     return (
@@ -14,7 +15,9 @@ function HeroSec() {
                         </span>
                         <h1 className="text-white font bold text-4xl">Find your next favorite <span className="text-primary">Movie</span> & <span className="text-primary">Show</span></h1>
                         <p className="text-muted-foreground text-base">Discover, rate, and share your favorite movies with Moodflix</p>
-                        <Button size="sm" className="w-fit text-lg py-2 px-5 ">Discover</Button>
+                        <Link href="#" className="w-fit">
+                        <Button  size="sm" className="w-fit text-lg py-2 px-5 ">Discover</Button>
+                        </Link>
                     </div>
                 </div>
             </div>

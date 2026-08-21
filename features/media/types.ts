@@ -1,9 +1,17 @@
-import type { TMDBCastMember, TMDBMediaResult, TMDBMovieDetails, TMDBMovieResult, TMDBTVDetails, TMDBTVResult } from '@/services/tmdb/types';
-import type { MediaCardItem } from '@/types/media';
+import type {
+  TMDBCastMember,
+  TMDBMediaResult,
+  TMDBMovieDetails,
+  TMDBMovieResult,
+  TMDBSeasonDetails,
+  TMDBTVDetails,
+  TMDBTVResult,
+} from "@/services/tmdb/types";
+import type { MediaCardItem } from "@/types/media";
 
 function isTVResult(result: TMDBMediaResult): result is TMDBTVResult {
-  if (result.media_type) return result.media_type === 'tv';
-  return 'first_air_date' in result;
+  if (result.media_type) return result.media_type === "tv";
+  return "first_air_date" in result;
 }
 
 export function toMediaCardItem(result: TMDBMediaResult): MediaCardItem {
@@ -17,7 +25,7 @@ export function toMediaCardItem(result: TMDBMediaResult): MediaCardItem {
     voteAverage: result.vote_average,
     releaseYear: rawDate ? rawDate.slice(0, 4) : null,
     overview: result.overview,
-    mediaType: isTV ? 'tv' : 'movie',
+    mediaType: isTV ? "tv" : "movie",
   };
 }
 
@@ -27,6 +35,22 @@ export interface CastMember {
   character: string;
   profilePath: string | null;
 }
+
+export type Creator = {
+  id: number;
+  name: string;
+  profilePath: string | null;
+};
+
+export type SeasonSummary = {
+  id: number;
+  seasonNumber: number;
+  name: string;
+  episodeCount: number;
+  airDate: string | null;
+  posterPath: string | null;
+  overview: string;
+};
 
 export interface MediaDetail {
   id: number;
@@ -49,6 +73,8 @@ export interface MediaDetail {
   networks: string[];
   productionCountries: string[];
   spokenLanguages: string[];
+  creators: Creator[];
+  seasons: SeasonSummary[];
   cast: CastMember[];
   backdrops: string[];
   recommendations: MediaCardItem[];
@@ -86,14 +112,17 @@ export function toMovieDetail(raw: TMDBMovieDetails): MediaDetail {
     networks: [],
     productionCountries: raw.production_countries.map((c) => c.name),
     spokenLanguages: raw.spoken_languages.map((l) => l.english_name),
+    creators: raw.credits.crew
+      .filter((c) => c.job === "Director")
+      .map((c) => ({ id: c.id, name: c.name, profilePath: c.profile_path })),
+    seasons: [],
     cast: raw.credits.cast.slice(0, 12).map(toCastMember),
     backdrops: raw.images.backdrops.slice(0, 12).map((b) => b.file_path),
-    // media_type injected manually — movie-scoped recommendations don't carry it
     recommendations: raw.recommendations.results.map((item) =>
-      toMediaCardItem({ ...item, media_type: "movie" } as TMDBMovieResult)
+      toMediaCardItem({ ...item, media_type: "movie" } as TMDBMovieResult),
     ),
     similar: raw.similar.results.map((item) =>
-      toMediaCardItem({ ...item, media_type: "movie" } as TMDBMovieResult)
+      toMediaCardItem({ ...item, media_type: "movie" } as TMDBMovieResult),
     ),
   };
 }
@@ -120,13 +149,71 @@ export function toTVDetail(raw: TMDBTVDetails): MediaDetail {
     networks: raw.networks.map((n) => n.name),
     productionCountries: raw.production_countries.map((c) => c.name),
     spokenLanguages: raw.spoken_languages.map((l) => l.english_name),
+    creators: raw.created_by.map((c) => ({
+      id: c.id,
+      name: c.name,
+      profilePath: c.profile_path,
+    })),
+    seasons: raw.seasons
+      .filter((s) => s.season_number !== 0)
+      .map((s) => ({
+        id: s.id,
+        seasonNumber: s.season_number,
+        name: s.name,
+        episodeCount: s.episode_count,
+        airDate: s.air_date,
+        posterPath: s.poster_path,
+        overview: s.overview,
+      })),
     cast: raw.credits.cast.slice(0, 12).map(toCastMember),
     backdrops: raw.images.backdrops.slice(0, 12).map((b) => b.file_path),
     recommendations: raw.recommendations.results.map((item) =>
-      toMediaCardItem({ ...item, media_type: "tv" } as TMDBTVResult)
+      toMediaCardItem({ ...item, media_type: "tv" } as TMDBTVResult),
     ),
     similar: raw.similar.results.map((item) =>
-      toMediaCardItem({ ...item, media_type: "tv" } as TMDBTVResult)
+      toMediaCardItem({ ...item, media_type: "tv" } as TMDBTVResult),
     ),
+  };
+}
+
+export type EpisodeSummary = {
+  id: number;
+  episodeNumber: number;
+  name: string;
+  overview: string;
+  airDate: string | null;
+  runtime: number | null;
+  stillPath: string | null;
+  voteAverage: number;
+};
+
+export type SeasonDetail = {
+  id: number;
+  seasonNumber: number;
+  name: string;
+  overview: string;
+  posterPath: string | null;
+  airDate: string | null;
+  episodes: EpisodeSummary[];
+};
+
+export function toSeasonDetail(raw: TMDBSeasonDetails): SeasonDetail {
+  return {
+    id: raw.id,
+    seasonNumber: raw.season_number,
+    name: raw.name,
+    overview: raw.overview,
+    posterPath: raw.poster_path,
+    airDate: raw.air_date,
+    episodes: raw.episodes.map((e) => ({
+      id: e.id,
+      episodeNumber: e.episode_number,
+      name: e.name,
+      overview: e.overview,
+      airDate: e.air_date,
+      runtime: e.runtime,
+      stillPath: e.still_path,
+      voteAverage: e.vote_average,
+    })),
   };
 }

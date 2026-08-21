@@ -1,5 +1,5 @@
 import type { ElementType, ReactNode } from "react";
-import { Calendar, Tv, Globe2, Languages, Clock, ListVideo, ExternalLink, CircleCheck } from "lucide-react";
+import { Calendar, Tv, Globe2, Languages, Clock, ListVideo, ExternalLink, CircleCheck, Users } from "lucide-react";
 import type { MediaDetail } from "../types";
 
 function InfoRow({ icon: Icon, label, value }: { icon: ElementType; label: string; value: ReactNode }) {
@@ -18,7 +18,7 @@ function InfoRow({ icon: Icon, label, value }: { icon: ElementType; label: strin
 export function MediaInfoGrid({ detail }: { detail: MediaDetail }) {
   const {
     mediaType, releaseDate, networks, spokenLanguages, productionCountries,
-    runtime, numberOfSeasons, numberOfEpisodes, status, homepage,
+    runtime, numberOfSeasons, numberOfEpisodes, status, homepage, creators
   } = detail;
 
   return (
@@ -31,10 +31,10 @@ export function MediaInfoGrid({ detail }: { detail: MediaDetail }) {
           value={
             releaseDate
               ? new Date(releaseDate).toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })
               : null
           }
         />
@@ -43,6 +43,11 @@ export function MediaInfoGrid({ detail }: { detail: MediaDetail }) {
         )}
         <InfoRow icon={Languages} label="Languages" value={spokenLanguages.join(", ") || null} />
         <InfoRow icon={Globe2} label="Production countries" value={productionCountries.join(", ") || null} />
+        <InfoRow
+          icon={Users}
+          label={mediaType === "tv" ? "Created by" : "Director"}
+          value={creators.length ? creators.map((c) => c.name).join(", ") : null}
+        />
         <InfoRow icon={Clock} label="Duration" value={runtime ? `${runtime} min` : null} />
         {mediaType === "tv" && (
           <InfoRow
@@ -52,7 +57,7 @@ export function MediaInfoGrid({ detail }: { detail: MediaDetail }) {
           />
         )}
         <InfoRow icon={CircleCheck} label="Status" value={status} />
-        {homepage && (
+        {/* {homepage && (
           <InfoRow
             icon={ExternalLink}
             label="Homepage"
@@ -62,7 +67,7 @@ export function MediaInfoGrid({ detail }: { detail: MediaDetail }) {
               </a>
             }
           />
-        )}
+        )} */}
       </div>
     </div>
   );

@@ -37,7 +37,7 @@ export function SearchResultsDropdown({
           {results.map((item) => (
             <li key={`${item.mediaType}-${item.id}`}>
               <Link
-                href={`/${item.mediaType === "tv" ? "tv" : "movies"}/${item.id}`}
+                href={`/${item.mediaType === "tv" ? "tv" : "movie"}/${item.id}`}
                 onClick={onSelect}
                 className="flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-secondary"
               >

@@ -1,6 +1,6 @@
 import 'server-only';
 import { serverApi } from '@/services/tmdb/client';
-import { toMediaCardItem, toMovieDetail, toTVDetail } from './types';
+import { toMediaCardItem, toMovieDetail, toSeasonDetail, toTVDetail } from './types';
 import type {
   TMDBPaginatedResponse,
   TMDBTVResult,
@@ -8,6 +8,7 @@ import type {
   TMDBMovieDetails,
   TMDBTVDetails,
   TMDBGenre,
+  TMDBSeasonDetails,
 } from '@/services/tmdb/types';
 import type { MediaCardItem } from '@/types/media';
 import { buildDiscoverMovieParams, buildDiscoverTVParams } from '@/features/media/schema';
@@ -133,4 +134,9 @@ export async function getTopRatedTv(page = 1): Promise<MediaCardItem[]> {
   });
 
   return data.results.map((item) => toMediaCardItem({ ...item, media_type: 'tv' }));
+}
+
+export async function getSeasonDetail(tvId: number, seasonNumber: number) {
+  const raw = await serverApi<TMDBSeasonDetails>(`/tv/${tvId}/season/${seasonNumber}`);
+  return toSeasonDetail(raw);
 }

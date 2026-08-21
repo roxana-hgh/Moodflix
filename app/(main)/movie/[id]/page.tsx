@@ -11,8 +11,8 @@ export async function generateMetadata({ params }: MoviePageProps): Promise<Meta
   const { id } = await params;
   const movie = await getMovieDetails(id).catch(() => null);
   return movie
-    ? { title: `${movie.title} — Moodflix`, description: movie.overview }
-    : { title: "Movie — Moodflix" };
+    ? { title: `${movie.title} | Moodflix`, description: movie.overview }
+    : { title: "Movie | Moodflix" };
 }
 
 export default async function MoviePage({ params }: MoviePageProps) {
