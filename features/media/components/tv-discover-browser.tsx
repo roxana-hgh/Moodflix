@@ -1,19 +1,23 @@
 "use client";
 
-import { useState } from "react";
 import { MediaDiscoverFiltersBar } from "./media-discover-filters";
 import { MediaDiscoverGrid } from "./media-discover-grid";
 
-import { defaultMediaDiscoverFilters } from "../schema";
-import { useDiscoverTVShows } from "@/features/media/hook";
+import type { MediaDiscoverFilters } from "../schema";
+import { useDiscoverTVShows, useSyncedDiscoverFilters } from "@/features/media/hook";
 
 interface TVGenre {
   id: number;
   name: string;
 }
 
-export function TVDiscoverBrowser({ genres }: { genres: TVGenre[] }) {
-  const [filters, setFilters] = useState(defaultMediaDiscoverFilters);
+interface TVDiscoverBrowserProps {
+  genres: TVGenre[];
+  initialFilters: MediaDiscoverFilters;
+}
+
+export function TVDiscoverBrowser({ genres, initialFilters }: TVDiscoverBrowserProps) {
+  const [filters, setFilters] = useSyncedDiscoverFilters(initialFilters);
   const query = useDiscoverTVShows(filters);
 
   return (

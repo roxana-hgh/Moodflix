@@ -1,12 +1,14 @@
 "use client";
 
-import { buildDiscoverMovieParams, buildDiscoverTVParams } from "@/features/media/schema";
+import { buildDiscoverMovieParams, buildDiscoverTVParams, filtersToSearchParams } from "@/features/media/schema";
 import type { MediaDiscoverFilters, TVDiscoverFilters } from "@/features/media/schema";
 import { toMediaCardItem } from "@/features/media/types";
 import { clientApi } from "@/lib/api-client";
 import type { TMDBMovieResult, TMDBPaginatedResponse, TMDBTVResult } from "@/services/tmdb/types";
 import type { MediaCardItem } from "@/types/media";
 import { useInfiniteQuery, type InfiniteData } from "@tanstack/react-query";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 
 type TVDiscoverQueryKey = readonly ["tv", "discover", TVDiscoverFilters];
 
@@ -57,4 +59,21 @@ export function useDiscoverMovies(filters: MediaDiscoverFilters) {
     getNextPageParam: (lastPage) =>
       lastPage.page < lastPage.total_pages ? lastPage.page + 1 : undefined,
   });
+}
+
+export function useSyncedDiscoverFilters(initialFilters: MediaDiscoverFilters) {
+  const [filters, setFiltersState] = useState(initialFilters);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const setFilters = useCallback(
+    (next: MediaDiscoverFilters) => {
+      setFiltersState(next);
+      const query = filtersToSearchParams(next).toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    },
+    [pathname, router]
+  );
+
+  return [filters, setFilters] as const;
 }

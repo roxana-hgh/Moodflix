@@ -272,9 +272,9 @@ export function MediaDiscoverFiltersBar({ mediaType, filters, genres, onChange }
       </div>
 
       {activeFilters.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5 pt-2">
           {activeFilters.map((f) => (
-            <Badge key={f.key} variant="secondary" className="flex items-center gap-1 pr-1 font-normal">
+            <Badge key={f.key} variant="secondary" className="flex items-center gap-1 pr-1.5 pt-px font-normal">
               {f.label}
               <button onClick={() => clearFilter(f.key)} className="rounded-full hover:bg-background/50 p-0.5" aria-label={`Remove ${f.label} filter`}>
                 <X className="size-3" />

@@ -23,7 +23,7 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/movies", label: "Movies" },
   { href: "/shows", label: "TV Shows" },
-  { href: "/about", label: "About" },
+  { href: "/genres", label: "Genres" },
 ];
 
 function Header() {

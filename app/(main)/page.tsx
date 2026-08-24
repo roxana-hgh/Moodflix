@@ -58,7 +58,7 @@ export default async function Home() {
 
       <SectionWrapper>
         <div className="max-w-6xl px-4 sm:px-6 mx-auto">
-          <SectionContext title="Popular Movies" buttonText="See More" ButtonLink="/learn-more" />
+          <SectionContext title="Popular Movies" buttonText="See More" ButtonLink="/movies" />
           <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }} autoplay={false}>
             {popularMovies?.map((movie) => (
               <MediaCard key={movie.id} {...movie} />
@@ -69,7 +69,7 @@ export default async function Home() {
 
       <SectionWrapper>
         <div className="max-w-6xl px-4 sm:px-6 mx-auto">
-          <SectionContext title="Popular TV Shows" buttonText="See More" ButtonLink="/learn-more" />
+          <SectionContext title="Popular TV Shows" buttonText="See More" ButtonLink="/shows" />
           <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }} autoplay={false}>
             {popularTv?.map((show) => (
               <MediaCard key={show.id} {...show} />
@@ -80,7 +80,7 @@ export default async function Home() {
 
       <SectionWrapper>
         <div className="max-w-6xl px-4 sm:px-6 mx-auto">
-          <SectionContext title="Top Rated Movies" buttonText="See More" ButtonLink="/learn-more" />
+          <SectionContext title="Top Rated Movies" buttonText="See More" ButtonLink="/movies?sort=topRated" />
           <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }} autoplay={false}>
             {topRatedMovies?.map((movie) => (
               <MediaCard key={movie.id} {...movie} />
@@ -91,7 +91,7 @@ export default async function Home() {
 
       <SectionWrapper>
         <div className="max-w-6xl px-4 sm:px-6 mx-auto">
-          <SectionContext title="Top Rated TV Shows" buttonText="See More" ButtonLink="/learn-more" />
+          <SectionContext title="Top Rated TV Shows" buttonText="See More" ButtonLink="/shows?sort=topRated" />
           <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }} autoplay={false}>
             {topRatedTv?.map((show) => (
               <MediaCard key={show.id} {...show} />

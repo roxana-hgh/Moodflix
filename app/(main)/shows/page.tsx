@@ -1,8 +1,14 @@
 import { getTVGenres } from "@/features/media/queries";
 import { TVDiscoverBrowser } from "@/features/media/components/tv-discover-browser";
+import { searchParamsToFilters } from "@/features/media/schema";
 
-async function TvShowsPage() {
-  const genres = await getTVGenres();
+interface TvShowsPageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+async function TvShowsPage({ searchParams }: TvShowsPageProps) {
+  const [genres, params] = await Promise.all([getTVGenres(), searchParams]);
+  const initialFilters = searchParamsToFilters(params);
 
   return (
     <div className="h-full py-5">
@@ -12,7 +18,7 @@ async function TvShowsPage() {
           <p className="text-sm md:text-base text-muted-foreground">Find your next series to get lost in.</p>
         </div>
 
-        <TVDiscoverBrowser genres={genres} />
+        <TVDiscoverBrowser genres={genres} initialFilters={initialFilters} />
       </div>
     </div>
   );

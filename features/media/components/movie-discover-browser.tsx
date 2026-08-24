@@ -1,19 +1,22 @@
 "use client";
 
-import { useState } from "react";
 import { MediaDiscoverFiltersBar } from "./media-discover-filters";
 import { MediaDiscoverGrid } from "./media-discover-grid";
-
-import { defaultMediaDiscoverFilters } from "../schema";
-import { useDiscoverMovies } from "@/features/media/hook";
+import type { MediaDiscoverFilters } from "../schema";
+import { useDiscoverMovies, useSyncedDiscoverFilters } from "@/features/media/hook";
 
 interface MovieGenre {
   id: number;
   name: string;
 }
 
-export function MovieDiscoverBrowser({ genres }: { genres: MovieGenre[] }) {
-  const [filters, setFilters] = useState(defaultMediaDiscoverFilters);
+interface MovieDiscoverBrowserProps {
+  genres: MovieGenre[];
+  initialFilters: MediaDiscoverFilters;
+}
+
+export function MovieDiscoverBrowser({ genres, initialFilters }: MovieDiscoverBrowserProps) {
+  const [filters, setFilters] = useSyncedDiscoverFilters(initialFilters);
   const query = useDiscoverMovies(filters);
 
   return (

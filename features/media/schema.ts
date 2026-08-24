@@ -11,6 +11,19 @@ export const discoverSortOptions: { value: DiscoverSortKey; label: string }[] = 
   { value: "alphabetical", label: "A–Z" },
 ];
 
+const BOOL_FLAG = "1";
+
+const SEARCH_PARAM_KEYS = {
+  sort: "sort",
+  genre: "genre",
+  year: "year",
+  rating: "rating",
+  lang: "lang",
+  providers: "providers",
+  airing: "airing",
+  theaters: "theaters",
+} as const;
+
 // Same abstract sort concept maps to different TMDB sort_by values per type
 const SORT_BY_MAP: Record<MediaKind, Record<DiscoverSortKey, string>> = {
   movie: {
@@ -122,4 +135,68 @@ export function buildDiscoverTVParams(filters: MediaDiscoverFilters, page: numbe
 
 export function buildDiscoverMovieParams(filters: MediaDiscoverFilters, page: number) {
   return buildDiscoverParams("movie", filters, page);
+}
+
+
+export function filtersToSearchParams(filters: MediaDiscoverFilters): URLSearchParams {
+  const params = new URLSearchParams();
+
+  if (filters.sortBy !== defaultMediaDiscoverFilters.sortBy) {
+    params.set(SEARCH_PARAM_KEYS.sort, filters.sortBy);
+  }
+  if (filters.genreId) params.set(SEARCH_PARAM_KEYS.genre, filters.genreId);
+  if (filters.year) params.set(SEARCH_PARAM_KEYS.year, String(filters.year));
+  if (filters.minRating) params.set(SEARCH_PARAM_KEYS.rating, String(filters.minRating));
+  if (!filters.englishOnly) params.set(SEARCH_PARAM_KEYS.lang, "all");
+  if (filters.watchProviderIds?.length) {
+    params.set(SEARCH_PARAM_KEYS.providers, filters.watchProviderIds.join(","));
+  }
+  if (filters.airingOnly) params.set(SEARCH_PARAM_KEYS.airing, BOOL_FLAG);
+  if (filters.inTheatersOnly) params.set(SEARCH_PARAM_KEYS.theaters, BOOL_FLAG);
+
+  return params;
+}
+
+type RawSearchParams = Record<string, string | string[] | undefined>;
+
+function readParam(params: RawSearchParams, key: string): string | undefined {
+  const value = params[key];
+  return Array.isArray(value) ? value[0] : value;
+}
+
+// Booleans are read explicitly rather than via z.coerce.boolean(), since
+// z.coerce.boolean() treats any non-empty string (including "false") as true.
+export function searchParamsToFilters(params: RawSearchParams): MediaDiscoverFilters {
+  const sortParam = readParam(params, SEARCH_PARAM_KEYS.sort);
+  const sortBy = discoverSortOptions.some((opt) => opt.value === sortParam)
+    ? (sortParam as DiscoverSortKey)
+    : defaultMediaDiscoverFilters.sortBy;
+
+  const yearParam = readParam(params, SEARCH_PARAM_KEYS.year);
+  const ratingParam = readParam(params, SEARCH_PARAM_KEYS.rating);
+  const providersParam = readParam(params, SEARCH_PARAM_KEYS.providers);
+
+  const year = yearParam ? Number(yearParam) : undefined;
+  const minRating = ratingParam ? Number(ratingParam) : undefined;
+  const watchProviderIds = providersParam
+    ? providersParam
+        .split(",")
+        .map(Number)
+        .filter((id) => !Number.isNaN(id))
+    : undefined;
+
+  const candidate: MediaDiscoverFilters = {
+    sortBy,
+    genreId: readParam(params, SEARCH_PARAM_KEYS.genre) || undefined,
+    year: year !== undefined && !Number.isNaN(year) ? year : undefined,
+    minRating: minRating !== undefined && !Number.isNaN(minRating) ? minRating : undefined,
+    englishOnly: readParam(params, SEARCH_PARAM_KEYS.lang) === "all" ? false : true,
+    watchProviderIds,
+    airingOnly: readParam(params, SEARCH_PARAM_KEYS.airing) === BOOL_FLAG,
+    inTheatersOnly: readParam(params, SEARCH_PARAM_KEYS.theaters) === BOOL_FLAG,
+  };
+
+  // parse (not just trust the object shape) so an old/malformed URL can't
+  // sneak a bad value past the schema
+  return mediaDiscoverFiltersSchema.parse(candidate);
 }
