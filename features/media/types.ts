@@ -1,5 +1,6 @@
 import type {
   TMDBCastMember,
+  TMDBGenre,
   TMDBMediaResult,
   TMDBMovieDetails,
   TMDBMovieResult,
@@ -66,7 +67,7 @@ export interface MediaDetail {
   voteCount: number;
   status: string;
   homepage: string | null;
-  genres: string[];
+  genres: TMDBGenre[];
   runtime: number | null;
   numberOfSeasons: number | null;
   numberOfEpisodes: number | null;
@@ -105,7 +106,7 @@ export function toMovieDetail(raw: TMDBMovieDetails): MediaDetail {
     voteCount: raw.vote_count,
     status: raw.status,
     homepage: raw.homepage,
-    genres: raw.genres.map((g) => g.name),
+    genres: raw.genres.map((g) => g),
     runtime: raw.runtime,
     numberOfSeasons: null,
     numberOfEpisodes: null,
@@ -142,7 +143,7 @@ export function toTVDetail(raw: TMDBTVDetails): MediaDetail {
     voteCount: raw.vote_count,
     status: raw.status,
     homepage: raw.homepage,
-    genres: raw.genres.map((g) => g.name),
+    genres: raw.genres.map((g) => g),
     runtime: raw.last_episode_to_air?.runtime ?? null,
     numberOfSeasons: raw.number_of_seasons,
     numberOfEpisodes: raw.number_of_episodes,

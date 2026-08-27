@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { tmdbImageUrl } from "@/utils/image";
 import { RatingRing } from "./rating-ring";
 import type { MediaDetail } from "../types";
+import Link from "next/link";
 
 interface MediaDetailHeroProps {
   detail: MediaDetail;
@@ -93,9 +94,11 @@ export function MediaDetailHero({ detail }: MediaDetailHeroProps) {
           {genres.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {genres.map((genre) => (
-                <Badge key={genre} className="rounded-full bg-white/10 text-foreground hover:bg-white/15">
-                  {genre}
-                </Badge>
+                <Link key={genre.id} href={mediaType === "movie" ? `/movies?genre=${genre.id}` : `/shows?genre=${genre.id}`}>
+                  <Badge className="rounded-full bg-white/10 text-foreground hover:bg-white/15">
+                    {genre.id && genre.name ? genre.name : "Unknown"}
+                  </Badge>
+                </Link>
               ))}
             </div>
           )}
