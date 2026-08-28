@@ -2,9 +2,19 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, X, Menu } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Search, X, Menu, User as UserIcon, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Sheet,
   SheetContent,
@@ -18,6 +28,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 
 import { SearchResultsDropdown } from "@/features/search/components/search-results-dropdown";
 import { useSearchMedia } from "@/features/search/hook";
+import { authClient } from "@/lib/auth-client";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -26,7 +37,19 @@ const navLinks = [
   { href: "/genres", label: "Genres" },
 ];
 
+function getInitials(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
 function Header() {
+  const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -59,8 +82,6 @@ function Header() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSearchOpen]);
 
-
-
   const toggleSearch = () => {
     setIsMenuOpen(false);
     if (isSearchOpen) {
@@ -68,6 +89,13 @@ function Header() {
     } else {
       setIsSearchOpen(true);
     }
+  };
+
+  const handleLogout = async () => {
+    await authClient.signOut();
+    setIsMenuOpen(false);
+    router.push("/");
+    router.refresh();
   };
 
   return (
@@ -154,9 +182,53 @@ function Header() {
               {isSearchOpen ? <X className="size-5" /> : <Search className="size-5" />}
             </Button>
 
-            <Button asChild variant="outline" className="hidden lg:inline-flex rounded-full px-5">
-              <Link href="/login">Login</Link>
-            </Button>
+            {/* Desktop auth area */}
+            <div className="hidden lg:block">
+              {isPending ? (
+                <div className="size-8.5 rounded-full bg-secondary animate-pulse" />
+              ) : session?.user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="rounded-full "
+                      aria-label="Open user menu"
+                    >
+                      <Avatar className="size-8">
+                        <AvatarFallback>
+                          {getInitials(session.user.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel className="flex flex-col gap-0.5">
+                      <span className="text-sm font-medium">{session.user.name}</span>
+                      <span className="text-xs text-muted-foreground font-normal">
+                        {session.user.email}
+                      </span>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile">
+                        <UserIcon />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem variant="destructive" onClick={handleLogout}>
+                      <LogOut />
+                      Log out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Button asChild variant="outline" className="rounded-full px-5">
+                  <Link href="/login">Login</Link>
+                </Button>
+              )}
+            </div>
 
             <Sheet
               open={isMenuOpen}
@@ -194,10 +266,54 @@ function Header() {
                   </ul>
                 </nav>
 
+                {/* Mobile auth area */}
                 <div className="p-3 border-t">
-                  <Button asChild size="sm" className="w-full rounded-full">
-                    <Link href="/login">Login</Link>
-                  </Button>
+                  {isPending ? (
+                    <div className="h-10 rounded-full bg-secondary animate-pulse" />
+                  ) : session?.user ? (
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center gap-3 px-1">
+                        <Avatar className="size-10">
+                          <AvatarFallback>
+                            {getInitials(session.user.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-sm font-medium truncate">
+                            {session.user.name}
+                          </span>
+                          <span className="text-xs text-muted-foreground truncate">
+                            {session.user.email}
+                          </span>
+                        </div>
+                      </div>
+
+                      <SheetClose asChild>
+                        <Button asChild variant="outline" size="sm" className="w-full rounded-full">
+                          <Link href="/profile">
+                            <UserIcon />
+                            Profile
+                          </Link>
+                        </Button>
+                      </SheetClose>
+
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="w-full rounded-full"
+                        onClick={handleLogout}
+                      >
+                        <LogOut />
+                        Log out
+                      </Button>
+                    </div>
+                  ) : (
+                    <SheetClose asChild>
+                      <Button asChild size="sm" className="w-full rounded-full">
+                        <Link href="/login">Login</Link>
+                      </Button>
+                    </SheetClose>
+                  )}
                 </div>
               </SheetContent>
             </Sheet>
