@@ -22,13 +22,14 @@ import {
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 
+type BasisCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
 type ResponsiveBasis = {
-  base?: 1 | 2 | 3 | 4 | 5 | 6; // items visible on mobile (default 2)
-  sm?: 1 | 2 | 3 | 4 | 5 | 6;
-  md?: 1 | 2 | 3 | 4 | 5 | 6;
-  lg?: 1 | 2 | 3 | 4 | 5 | 6;
-  xl?: 1 | 2 | 3 | 4 | 5 | 6;
+  base?: BasisCount; // items visible on mobile (default 2)
+  sm?: BasisCount;
+  md?: BasisCount;
+  lg?: BasisCount;
+  xl?: BasisCount;
 };
 
 interface MediaCarouselProps {
@@ -59,12 +60,62 @@ const DEFAULT_BASIS: Required<ResponsiveBasis> = {
 // Tailwind's JIT scanner only picks up class names it can find as literal
 // text in source — building "basis-1/${n}" at runtime would get purged in
 // production. Static map keeps every class spelled out.
+//
+// Tailwind's default flexBasis scale has no native 1/7 or 1/8 utility, so
+// those two use arbitrary-value syntax (basis-[calc(100%/n)]). It's still a
+// fully static, literally-spelled class per breakpoint, so it's picked up
+// by the scanner exactly like the rest.
 const BASIS_MAP: Record<keyof ResponsiveBasis, Record<number, string>> = {
-  base: { 1: "basis-full", 2: "basis-1/2", 3: "basis-1/3", 4: "basis-1/4", 5: "basis-1/5", 6: "basis-1/6" },
-  sm: { 1: "sm:basis-full", 2: "sm:basis-1/2", 3: "sm:basis-1/3", 4: "sm:basis-1/4", 5: "sm:basis-1/5", 6: "sm:basis-1/6" },
-  md: { 1: "md:basis-full", 2: "md:basis-1/2", 3: "md:basis-1/3", 4: "md:basis-1/4", 5: "md:basis-1/5", 6: "md:basis-1/6" },
-  lg: { 1: "lg:basis-full", 2: "lg:basis-1/2", 3: "lg:basis-1/3", 4: "lg:basis-1/4", 5: "lg:basis-1/5", 6: "lg:basis-1/6" },
-  xl: { 1: "xl:basis-full", 2: "xl:basis-1/2", 3: "xl:basis-1/3", 4: "xl:basis-1/4", 5: "xl:basis-1/5", 6: "xl:basis-1/6" },
+  base: {
+    1: "basis-full",
+    2: "basis-1/2",
+    3: "basis-1/3",
+    4: "basis-1/4",
+    5: "basis-1/5",
+    6: "basis-1/6",
+    7: "basis-[calc(100%/7)]",
+    8: "basis-[calc(100%/8)]",
+  },
+  sm: {
+    1: "sm:basis-full",
+    2: "sm:basis-1/2",
+    3: "sm:basis-1/3",
+    4: "sm:basis-1/4",
+    5: "sm:basis-1/5",
+    6: "sm:basis-1/6",
+    7: "sm:basis-[calc(100%/7)]",
+    8: "sm:basis-[calc(100%/8)]",
+  },
+  md: {
+    1: "md:basis-full",
+    2: "md:basis-1/2",
+    3: "md:basis-1/3",
+    4: "md:basis-1/4",
+    5: "md:basis-1/5",
+    6: "md:basis-1/6",
+    7: "md:basis-[calc(100%/7)]",
+    8: "md:basis-[calc(100%/8)]",
+  },
+  lg: {
+    1: "lg:basis-full",
+    2: "lg:basis-1/2",
+    3: "lg:basis-1/3",
+    4: "lg:basis-1/4",
+    5: "lg:basis-1/5",
+    6: "lg:basis-1/6",
+    7: "lg:basis-[calc(100%/7)]",
+    8: "lg:basis-[calc(100%/8)]",
+  },
+  xl: {
+    1: "xl:basis-full",
+    2: "xl:basis-1/2",
+    3: "xl:basis-1/3",
+    4: "xl:basis-1/4",
+    5: "xl:basis-1/5",
+    6: "xl:basis-1/6",
+    7: "xl:basis-[calc(100%/7)]",
+    8: "xl:basis-[calc(100%/8)]",
+  },
 };
 
 const GAP_MARGIN_MAP: Record<"sm" | "md" | "lg", string> = {

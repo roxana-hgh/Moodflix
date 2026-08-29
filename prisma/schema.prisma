@@ -1,7 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
   provider = "prisma-client"
@@ -32,6 +28,8 @@ model User {
   accounts      Account[]
   age    Int?
   gender Gender?
+
+  lists List[]
 
   @@unique([email])
   @@map("user")
@@ -85,4 +83,47 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+enum ListType {
+  WATCHLIST
+  FAVORITE
+  CUSTOM
+}
+
+enum ListMediaType {
+  MOVIE
+  TV
+}
+
+model List {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      ListType
+  name      String
+  isPublic  Boolean    @default(false)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  items     ListItem[]
+
+  @@index([userId])
+  @@map("list")
+}
+
+model ListItem {
+  id          String        @id @default(cuid())
+  listId      String
+  list        List          @relation(fields: [listId], references: [id], onDelete: Cascade)
+  tmdbId      Int
+  mediaType   ListMediaType
+  title       String
+  posterPath  String?
+  releaseYear String?
+  addedAt     DateTime      @default(now())
+
+  @@unique([listId, tmdbId, mediaType])
+  @@index([listId])
+  @@map("list_item")
 }

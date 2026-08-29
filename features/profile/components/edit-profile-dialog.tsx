@@ -86,13 +86,13 @@ function onSubmit(values: UpdateProfileInput) {
 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
+          <DialogTitle className="text-base mb-3">Edit profile</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <FieldGroup>
-            <Field data-invalid={!!errors.name}>
-              <FieldLabel htmlFor="name">Name</FieldLabel>
+          <FieldGroup className="gap-5">
+            <Field className="gap-2" data-invalid={!!errors.name}>
+              <FieldLabel className="text-sm px-1" htmlFor="name">Name</FieldLabel>
               <Input
                 id="name"
                 autoComplete="off"
@@ -102,13 +102,13 @@ function onSubmit(values: UpdateProfileInput) {
               <FieldError errors={errors.name ? [errors.name] : undefined} />
             </Field>
 
-            <Field>
-              <FieldLabel htmlFor="email">Email</FieldLabel>
+            <Field className="gap-2">
+              <FieldLabel className="text-sm px-1" htmlFor="email">Email</FieldLabel>
               <Input id="email" value={profile.email} disabled />
             </Field>
 
-            <Field data-invalid={!!errors.age}>
-              <FieldLabel htmlFor="age">Age</FieldLabel>
+            <Field className="gap-2" data-invalid={!!errors.age}>
+              <FieldLabel className="text-sm px-1" htmlFor="age">Age</FieldLabel>
               <Input
                 id="age"
                 type="number"
@@ -124,8 +124,8 @@ function onSubmit(values: UpdateProfileInput) {
               control={control}
               name="gender"
               render={({ field }) => (
-                <Field data-invalid={!!errors.gender}>
-                  <FieldLabel htmlFor="gender">Gender</FieldLabel>
+                <Field className="gap-2" data-invalid={!!errors.gender}>
+                  <FieldLabel className="text-sm px-1" htmlFor="gender">Gender</FieldLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger id="gender" aria-invalid={!!errors.gender}>
                       <SelectValue placeholder="Select gender" />

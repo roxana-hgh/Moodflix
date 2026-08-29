@@ -3,7 +3,7 @@ export interface MediaCardItem {
   title: string;
   posterPath: string | null;
   voteAverage: number;
-  releaseYear: string | null;
+  releaseYear: string | number | null;
   overview: string;
   mediaType: 'movie' | 'tv';
 }

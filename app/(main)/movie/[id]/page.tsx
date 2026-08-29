@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getMovieDetails } from "@/features/media/queries";
 import { MediaDetailView } from "@/features/media/components/media-detail-view";
+import { getCurrentUserId } from "@/lib/auth";
+import { getItemListMembership } from "@/features/lists/queries";
+import { toListMediaType } from "@/features/lists/types";
 
 interface MoviePageProps {
   params: Promise<{ id: string }>;
@@ -20,5 +23,10 @@ export default async function MoviePage({ params }: MoviePageProps) {
   const movie = await getMovieDetails(id).catch(() => null);
   if (!movie) notFound();
 
-  return <MediaDetailView detail={movie} />;
+   const userId = await getCurrentUserId();
+  const membership = userId
+    ? await getItemListMembership(userId, movie.id, toListMediaType(movie.mediaType))
+    : { favorited: false, watchlisted: false };
+
+  return <MediaDetailView detail={movie} initialFavorited={membership.favorited} initialWatchlisted={membership.watchlisted} />;
 }

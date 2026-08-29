@@ -3,7 +3,10 @@ import HeroSec from "@/components/Home/HeroSection";
 import SectionContext from "@/components/layout/SectionContext";
 import SectionWrapper from "@/components/layout/SectionWrapper";
 import { MediaCard } from "@/components/media/media-card";
+import { MediaCardWithActions } from "@/components/media/media-card-with-actions";
 import { MediaCarousel } from "@/components/shared/Slider/media-carousel";
+import { getFavoritedKeys, toFavoritedKey } from "@/features/lists/queries";
+import { toListMediaType } from "@/features/lists/types";
 import {
   getTrendingTv,
   getTrendingMovies,
@@ -12,23 +15,40 @@ import {
   getTopRatedMovies,
   getTopRatedTv,
 } from "@/features/media/queries";
+import { getCurrentUserId } from "@/lib/auth";
+import { MediaCardItem } from "@/types/media";
 
 export default async function Home() {
-  const [
-    trendingTv,
-    trendingMovies,
-    popularMovies,
-    popularTv,
-    topRatedMovies,
-    topRatedTv,
-  ] = await Promise.all([
-    getTrendingTv('week'),
-    getTrendingMovies('week'),
-    getPopularMovies(),
-    getPopularTv(),
-    getTopRatedMovies(),
-    getTopRatedTv(),
-  ]);
+    const [trendingTv, trendingMovies, popularMovies, popularTv, topRatedMovies, topRatedTv] =
+    await Promise.all([
+      getTrendingTv("week"),
+      getTrendingMovies("week"),
+      getPopularMovies(),
+      getPopularTv(),
+      getTopRatedMovies(),
+      getTopRatedTv(),
+    ]);
+
+  const userId = await getCurrentUserId();
+
+  const allItems: MediaCardItem[] = [
+    ...(trendingTv ?? []),
+    ...(trendingMovies ?? []),
+    ...(popularMovies ?? []),
+    ...(popularTv ?? []),
+    ...(topRatedMovies ?? []),
+    ...(topRatedTv ?? []),
+  ];
+
+  const favoritedKeys = userId
+    ? await getFavoritedKeys(
+        userId,
+        allItems.map((item) => ({ tmdbId: item.id, mediaType: toListMediaType(item.mediaType) }))
+      )
+    : new Set<string>();
+
+  const isFavorited = (item: MediaCardItem) =>
+    favoritedKeys.has(toFavoritedKey(item.id, toListMediaType(item.mediaType)));
 
   return (
     <div className="flex flex-col gap-5">
@@ -39,7 +59,7 @@ export default async function Home() {
           <SectionContext title="Trending TV Shows" buttonText="See More" ButtonLink="/shows" />
           <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }} autoplay={false}>
             {trendingTv?.map((show) => (
-              <MediaCard key={show.id} {...show} />
+               <MediaCardWithActions key={show.id} {...show} initialFavorited={isFavorited(show)} />
             ))}
           </MediaCarousel>
         </div>
@@ -50,7 +70,7 @@ export default async function Home() {
           <SectionContext title="Trending Movies" buttonText="See More" ButtonLink="/movies" />
           <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }} autoplay={false}>
             {trendingMovies?.map((movie) => (
-              <MediaCard key={movie.id} {...movie} />
+               <MediaCardWithActions key={movie.id} {...movie} initialFavorited={isFavorited(movie)} />
             ))}
           </MediaCarousel>
         </div>
@@ -61,7 +81,8 @@ export default async function Home() {
           <SectionContext title="Popular Movies" buttonText="See More" ButtonLink="/movies" />
           <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }} autoplay={false}>
             {popularMovies?.map((movie) => (
-              <MediaCard key={movie.id} {...movie} />
+                <MediaCardWithActions key={movie.id} {...movie} initialFavorited={isFavorited(movie)} />
+               
             ))}
           </MediaCarousel>
         </div>
@@ -72,7 +93,7 @@ export default async function Home() {
           <SectionContext title="Popular TV Shows" buttonText="See More" ButtonLink="/shows" />
           <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }} autoplay={false}>
             {popularTv?.map((show) => (
-              <MediaCard key={show.id} {...show} />
+              <MediaCardWithActions key={show.id} {...show} initialFavorited={isFavorited(show)} />
             ))}
           </MediaCarousel>
         </div>
@@ -83,7 +104,7 @@ export default async function Home() {
           <SectionContext title="Top Rated Movies" buttonText="See More" ButtonLink="/movies?sort=topRated" />
           <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }} autoplay={false}>
             {topRatedMovies?.map((movie) => (
-              <MediaCard key={movie.id} {...movie} />
+              <MediaCardWithActions key={movie.id} {...movie} initialFavorited={isFavorited(movie)} />
             ))}
           </MediaCarousel>
         </div>
@@ -94,7 +115,7 @@ export default async function Home() {
           <SectionContext title="Top Rated TV Shows" buttonText="See More" ButtonLink="/shows?sort=topRated" />
           <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }} autoplay={false}>
             {topRatedTv?.map((show) => (
-              <MediaCard key={show.id} {...show} />
+              <MediaCardWithActions key={show.id} {...show} initialFavorited={isFavorited(show)} />
             ))}
           </MediaCarousel>
         </div>

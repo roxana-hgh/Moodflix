@@ -1,9 +1,13 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { Star, Heart, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { tmdbImageUrl } from '@/utils/image';
-import type { MediaCardItem } from '@/types/media';
+import Image from "next/image";
+import Link from "next/link";
+import { Star } from "lucide-react";
+import { tmdbImageUrl } from "@/utils/image";
+import type { MediaCardItem } from "@/types/media";
+import type { ReactNode } from "react";
+
+interface MediaCardProps extends MediaCardItem {
+  actions?: ReactNode;
+}
 
 export function MediaCard({
   id,
@@ -13,7 +17,8 @@ export function MediaCard({
   releaseYear,
   overview,
   mediaType,
-}: MediaCardItem) {
+  actions,
+}: MediaCardProps) {
   return (
     <div className="group relative h-full">
       <div className="relative aspect-[2/3] overflow-hidden rounded-lg bg-muted">
@@ -31,27 +36,11 @@ export function MediaCard({
           </div>
         )}
 
-        {/* Placeholder action buttons — not wired up yet */}
-        <div className="absolute right-2 top-2 z-10 flex flex-col gap-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          <Button
-            type="button"
-            size="icon"
-            variant="secondary"
-            className="h-7 w-7 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
-          >
-            <Heart className="h-3.5 w-3.5" />
-            <span className="sr-only">Add to favorites</span>
-          </Button>
-          <Button
-            type="button"
-            size="icon"
-            variant="secondary"
-            className="h-7 w-7 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span className="sr-only">Add to list</span>
-          </Button>
-        </div>
+        {actions && (
+          <div className="absolute right-2 top-2 z-10 flex flex-col gap-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            {actions}
+          </div>
+        )}
       </div>
 
       <div className="mt-2 space-y-1">
@@ -73,11 +62,7 @@ export function MediaCard({
         </div>
       </div>
 
-      <Link
-        href={`/${mediaType}/${id}`}
-        className="absolute inset-0 z-0"
-        aria-label={title}
-      />
+      <Link href={`/${mediaType}/${id}`} className="absolute inset-0 z-0" aria-label={title} />
     </div>
   );
 }
