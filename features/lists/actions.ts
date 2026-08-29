@@ -2,20 +2,23 @@
 
 import { revalidatePath } from "next/cache";
 import { auth, getCurrentUserId } from "@/lib/auth";
-import { headers } from "next/headers";
 import { prisma } from "@/services/db/prisma";
 import {
   createListSchema,
   addToListSchema,
   removeFromListSchema,
   toggleQuickListSchema,
+  updateListSchema,
+  deleteListSchema,
   type CreateListInput,
   type AddToListInput,
   type RemoveFromListInput,
   type ToggleQuickListInput,
+  type UpdateListInput,
+  type DeleteListInput,
 } from "./schema";
-import { toListSummary, type ListSummary, type ListMediaType } from "./types";
-import { getItemListIds, getFavoritedKeys, toFavoritedKey, getItemListMembership } from "./queries";
+import { toListSummary, type ListSummary, type ListMediaType, type ListWithPreview } from "./types";
+import { getItemListIds, getFavoritedKeys, getUserListsWithPreview } from "./queries";
 
 type ActionResult<T = void> = { success: true; data: T } | { success: false; error: string };
 
@@ -27,11 +30,12 @@ async function requireUserId(): Promise<string> {
   return userId;
 }
 
-function revalidateListPaths() {
+function revalidateListPaths(listId?: string) {
   revalidatePath("/lists");
   revalidatePath("/watchlist");
   revalidatePath("/favorites");
   revalidatePath("/profile");
+  if (listId) revalidatePath(`/lists/${listId}`);
 }
 
 export async function createCustomList(input: CreateListInput): Promise<ActionResult<ListSummary>> {
@@ -46,6 +50,42 @@ export async function createCustomList(input: CreateListInput): Promise<ActionRe
 
   revalidateListPaths();
   return { success: true, data: toListSummary(list) };
+}
+
+export async function updateList(input: UpdateListInput): Promise<ActionResult<ListSummary>> {
+  const userId = await requireUserId();
+  const parsed = updateListSchema.safeParse(input);
+  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
+  const { listId, name, isPublic } = parsed.data;
+
+  const list = await prisma.list.findFirst({ where: { id: listId, userId } });
+  if (!list) return { success: false, error: "List not found." };
+  if (list.type !== "CUSTOM") return { success: false, error: "Default lists can't be renamed." };
+
+  const updated = await prisma.list.update({
+    where: { id: listId },
+    data: { name: name.trim(), isPublic },
+    include: { _count: { select: { items: true } } },
+  });
+
+  revalidateListPaths(listId);
+  return { success: true, data: toListSummary(updated) };
+}
+
+export async function deleteList(input: DeleteListInput): Promise<ActionResult> {
+  const userId = await requireUserId();
+  const parsed = deleteListSchema.safeParse(input);
+  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
+  const { listId } = parsed.data;
+
+  const list = await prisma.list.findFirst({ where: { id: listId, userId } });
+  if (!list) return { success: false, error: "List not found." };
+  if (list.type !== "CUSTOM") return { success: false, error: "Default lists can't be deleted." };
+
+  await prisma.list.delete({ where: { id: listId } });
+
+  revalidateListPaths(listId);
+  return { success: true, data: undefined };
 }
 
 export async function addItemToList(input: AddToListInput): Promise<ActionResult> {
@@ -63,7 +103,7 @@ export async function addItemToList(input: AddToListInput): Promise<ActionResult
     update: {},
   });
 
-  revalidateListPaths();
+  revalidateListPaths(listId);
   return { success: true, data: undefined };
 }
 
@@ -78,7 +118,7 @@ export async function removeItemFromList(input: RemoveFromListInput): Promise<Ac
 
   await prisma.listItem.deleteMany({ where: { listId, tmdbId, mediaType } });
 
-  revalidateListPaths();
+  revalidateListPaths(listId);
   return { success: true, data: undefined };
 }
 
@@ -99,14 +139,14 @@ export async function toggleQuickList(
 
   if (existing) {
     await prisma.listItem.delete({ where: { id: existing.id } });
-    revalidateListPaths();
+    revalidateListPaths(list.id);
     return { success: true, data: { added: false } };
   }
 
   await prisma.listItem.create({
     data: { listId: list.id, tmdbId, mediaType, title, posterPath, releaseYear: releaseYear ?? null },
   });
-  revalidateListPaths();
+  revalidateListPaths(list.id);
   return { success: true, data: { added: true } };
 }
 
@@ -120,6 +160,12 @@ export async function getUserListsAction(): Promise<ActionResult<ListSummary[]>>
   return { success: true, data: lists.map(toListSummary) };
 }
 
+export async function getUserListsWithPreviewAction(): Promise<ActionResult<ListWithPreview[]>> {
+  const userId = await requireUserId();
+  const lists = await getUserListsWithPreview(userId);
+  return { success: true, data: lists };
+}
+
 export async function getItemListIdsAction(
   tmdbId: number,
   mediaType: ListMediaType
@@ -129,10 +175,6 @@ export async function getItemListIdsAction(
   return { success: true, data: listIds };
 }
 
-/**
- * Non-throwing on purpose: called for logged-out users too (buttons render either way),
- * just returns an empty set instead of erroring.
- */
 export async function getFavoritedKeysAction(
   items: { tmdbId: number; mediaType: ListMediaType }[]
 ): Promise<ActionResult<string[]>> {
@@ -140,14 +182,4 @@ export async function getFavoritedKeysAction(
   if (!userId) return { success: true, data: [] };
   const keys = await getFavoritedKeys(userId, items);
   return { success: true, data: Array.from(keys) };
-}
-
-export async function getItemListMembershipAction(
-  tmdbId: number,
-  mediaType: ListMediaType
-): Promise<ActionResult<{ favorited: boolean; watchlisted: boolean }>> {
-  const userId = await getCurrentUserId();
-  if (!userId) return { success: true, data: { favorited: false, watchlisted: false } };
-  const data = await getItemListMembership(userId, tmdbId, mediaType);
-  return { success: true, data };
 }

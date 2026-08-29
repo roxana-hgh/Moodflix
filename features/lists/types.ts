@@ -31,7 +31,21 @@ export interface ListCardItem {
   mediaType: "movie" | "tv";
 }
 
+export interface ListDetail extends ListSummary {
+  items: ListItemSummary[];
+  isOwner: boolean;
+}
+
+// Powers the "all lists" grid — a few poster thumbnails instead of full item data.
+export interface ListWithPreview extends ListSummary {
+  previewPosters: (string | null)[];
+}
+
 type ListWithCount = List & { _count: { items: number } };
+type ListWithItems = List & { items: ListItem[] };
+type ListWithPreviewItems = List & { _count: { items: number }; items: { posterPath: string | null }[] };
+
+const TYPE_PRIORITY: Record<ListType, number> = { WATCHLIST: 0, FAVORITE: 1, CUSTOM: 2 };
 
 export function toListSummary(list: ListWithCount): ListSummary {
   return {
@@ -65,6 +79,41 @@ export function toListCardItem(item: ListItemSummary): ListCardItem {
     releaseYear: item.releaseYear,
     mediaType: item.mediaType === "MOVIE" ? "movie" : "tv",
   };
+}
+
+export function toListDetail(list: ListWithItems, isOwner: boolean): ListDetail {
+  return {
+    id: list.id,
+    type: list.type as ListType,
+    name: list.name,
+    isPublic: list.isPublic,
+    itemCount: list.items.length,
+    createdAt: list.createdAt,
+    updatedAt: list.updatedAt,
+    items: list.items.map(toListItemSummary),
+    isOwner,
+  };
+}
+
+export function toListWithPreview(list: ListWithPreviewItems): ListWithPreview {
+  return {
+    id: list.id,
+    type: list.type as ListType,
+    name: list.name,
+    isPublic: list.isPublic,
+    itemCount: list._count.items,
+    createdAt: list.createdAt,
+    updatedAt: list.updatedAt,
+    previewPosters: list.items.map((i) => i.posterPath),
+  };
+}
+
+export function sortListsForDisplay<T extends { type: ListType; createdAt: Date }>(lists: T[]): T[] {
+  return [...lists].sort((a, b) => {
+    const priorityDiff = TYPE_PRIORITY[a.type] - TYPE_PRIORITY[b.type];
+    if (priorityDiff !== 0) return priorityDiff;
+    return a.createdAt.getTime() - b.createdAt.getTime();
+  });
 }
 
 export function toListMediaType(mediaType: "movie" | "tv"): ListMediaType {

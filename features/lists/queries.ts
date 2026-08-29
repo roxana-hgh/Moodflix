@@ -1,12 +1,18 @@
 import "server-only";
 import { prisma } from "@/services/db/prisma";
+import type { List, ListItem } from "@/lib/generated/prisma/client";
 import {
   toListSummary,
   toListItemSummary,
+  toListWithPreview,
+  sortListsForDisplay,
   type ListSummary,
   type ListItemSummary,
+  type ListWithPreview,
   type ListMediaType,
   type ListType,
+  toListDetail,
+  ListDetail,
 } from "./types";
 
 export async function getUserLists(userId: string): Promise<ListSummary[]> {
@@ -26,7 +32,23 @@ export async function getListItems(listId: string, userId: string): Promise<List
   return items.map(toListItemSummary);
 }
 
-/** Items in a user's default WATCHLIST or FAVORITE list — powers the profile carousels. */
+/** Full list + items for the detail page. Returns null if not found or not visible to viewer. */
+export async function getListWithItems(
+  listId: string,
+  viewerUserId: string | null
+): Promise<{ list: List & { items: ListItem[] }; isOwner: boolean } | null> {
+  const list = await prisma.list.findUnique({
+    where: { id: listId },
+    include: { items: { orderBy: { addedAt: "desc" } } },
+  });
+  if (!list) return null;
+
+  const isOwner = list.userId === viewerUserId;
+  if (!list.isPublic && !isOwner) return null;
+
+  return { list, isOwner };
+}
+
 export async function getUserListByType(
   userId: string,
   type: Extract<ListType, "WATCHLIST" | "FAVORITE">
@@ -39,7 +61,6 @@ export async function getUserListByType(
   return list.items.map(toListItemSummary);
 }
 
-/** Batched favorite-status lookup — one query for an arbitrary page of cards. */
 export async function getFavoritedKeys(
   userId: string,
   items: { tmdbId: number; mediaType: ListMediaType }[]
@@ -85,7 +106,6 @@ export async function getItemListIds(
   return items.map((i) => i.listId);
 }
 
-/** Both toggle states in one query — powers the detail-page hero. */
 export async function getItemListMembership(
   userId: string,
   tmdbId: number,
@@ -97,4 +117,46 @@ export async function getItemListMembership(
   });
   const types = new Set(items.map((i) => i.list.type));
   return { favorited: types.has("FAVORITE"), watchlisted: types.has("WATCHLIST") };
+}
+
+export async function getUserListsWithPreview(userId: string, previewCount = 4): Promise<ListWithPreview[]> {
+  const lists = await prisma.list.findMany({
+    where: { userId },
+    include: {
+      _count: { select: { items: true } },
+      items: { orderBy: { addedAt: "desc" }, take: previewCount, select: { posterPath: true } },
+    },
+  });
+
+  return sortListsForDisplay(lists.map(toListWithPreview));
+}
+
+export async function getRecentListsWithPreview(
+  userId: string,
+  limit = 4,
+  previewCount = 4
+): Promise<ListWithPreview[]> {
+  const lists = await prisma.list.findMany({
+    where: { userId },
+    orderBy: { updatedAt: "desc" },
+    take: limit,
+    include: {
+      _count: { select: { items: true } },
+      items: { orderBy: { addedAt: "desc" }, take: previewCount, select: { posterPath: true } },
+    },
+  });
+
+  return lists.map(toListWithPreview);
+}
+
+export async function getUserListDetailByType(
+  userId: string,
+  type: Extract<ListType, "WATCHLIST" | "FAVORITE">
+): Promise<ListDetail | null> {
+  const list = await prisma.list.findFirst({
+    where: { userId, type },
+    include: { items: { orderBy: { addedAt: "desc" } } },
+  });
+  if (!list) return null;
+  return toListDetail(list, true);
 }
