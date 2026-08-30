@@ -73,7 +73,7 @@ For the full architectural rationale and conventions, see [`CLAUDE.md`](./CLAUDE
 
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/moodflix.git
+git clone https://github.com/roxana-hgh/Moodflix.git
 cd moodflix
 
 # Install dependencies
@@ -142,9 +142,7 @@ TMDB remains the source of truth for content metadata. The database only stores 
 ---
 
 ## 🗺️ Roadmap
-
-- [ ] Differentiate "Trending" vs. "Popular" sort keys in the discover schema
-- [ ] Extract a shared `ExpandToggle` component
+- [ ] public profile
 - [ ] AI-powered recommendation system (Phase 2)
 
 ---
