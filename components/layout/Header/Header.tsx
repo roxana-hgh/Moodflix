@@ -242,7 +242,7 @@ function Header() {
                   <Menu className="size-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="flex flex-col">
+              <SheetContent side="left" className="flex flex-col">
                 <SheetHeader>
                   <SheetTitle className="text-center">
                     <span className="text-primary font-bold">MOODFLIX</span>
@@ -290,8 +290,8 @@ function Header() {
 
                       <SheetClose asChild>
                         <Button asChild variant="outline" size="sm" className="w-full rounded-full">
-                          <Link href="/profile">
-                            <UserIcon />
+                          <Link className="text-xs" href="/profile">
+                            <UserIcon size={12} />
                             Profile
                           </Link>
                         </Button>
@@ -300,16 +300,16 @@ function Header() {
                       <Button
                         variant="destructive"
                         size="sm"
-                        className="w-full rounded-full"
+                        className="w-full text-xs rounded-full"
                         onClick={handleLogout}
                       >
-                        <LogOut />
+                        <LogOut size={12} />
                         Log out
                       </Button>
                     </div>
                   ) : (
                     <SheetClose asChild>
-                      <Button asChild size="sm" className="w-full rounded-full">
+                      <Button asChild size="sm" className="w-full text-xs rounded-full">
                         <Link href="/login">Login</Link>
                       </Button>
                     </SheetClose>

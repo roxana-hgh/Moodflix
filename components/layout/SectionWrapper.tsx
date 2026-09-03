@@ -5,7 +5,7 @@ interface Iprops {
 
 function SectionWrapper({ children }: Iprops) {
     return ( 
-        <section className="py-6 lg:py-10 ">
+        <section className="py-5 lg:py-6 ">
             {children}
         </section>
      );
