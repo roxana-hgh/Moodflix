@@ -17,10 +17,11 @@ export const auth = betterAuth({
       create: {
         after: async (user) => {
           await prisma.list.createMany({
-            data: [
-              { userId: user.id, type: "WATCHLIST", name: "Watch Later", isPublic: false },
-              { userId: user.id, type: "FAVORITE", name: "Favorites", isPublic: false },
-            ],
+           data: [
+            { userId: user.id, type: "WATCHLIST", name: "Watch Later", isPublic: false },
+            { userId: user.id, type: "FAVORITE", name: "Favorites", isPublic: false },
+            { userId: user.id, type: "WATCHED", name: "Watched", isPublic: false },
+          ],
           });
         },
       },

@@ -26,7 +26,7 @@ export const removeFromListSchema = z.object({
 });
 
 export const toggleQuickListSchema = mediaRefSchema.extend({
-  listType: z.enum(["WATCHLIST", "FAVORITE"]),
+  listType: z.enum(["WATCHLIST", "FAVORITE", "WATCHED"]),
 });
 
 export const updateListSchema = z.object({

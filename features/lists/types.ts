@@ -1,6 +1,6 @@
 import type { List, ListItem } from "@/lib/generated/prisma/client";
 
-export type ListType = "WATCHLIST" | "FAVORITE" | "CUSTOM";
+export type ListType = "WATCHLIST" | "FAVORITE" | "WATCHED" | "CUSTOM";
 export type ListMediaType = "MOVIE" | "TV";
 
 export interface ListSummary {
@@ -45,7 +45,13 @@ type ListWithCount = List & { _count: { items: number } };
 type ListWithItems = List & { items: ListItem[] };
 type ListWithPreviewItems = List & { _count: { items: number }; items: { posterPath: string | null }[] };
 
-const TYPE_PRIORITY: Record<ListType, number> = { WATCHLIST: 0, FAVORITE: 1, CUSTOM: 2 };
+
+const TYPE_PRIORITY: Record<ListType, number> = {
+  WATCHLIST: 0,
+  FAVORITE: 1,
+  WATCHED: 2,
+  CUSTOM: 3,
+};
 
 export function toListSummary(list: ListWithCount): ListSummary {
   return {

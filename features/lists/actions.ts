@@ -18,7 +18,7 @@ import {
   type DeleteListInput,
 } from "./schema";
 import { toListSummary, type ListSummary, type ListMediaType, type ListWithPreview } from "./types";
-import { getItemListIds, getFavoritedKeys, getUserListsWithPreview } from "./queries";
+import { getItemListIds, getFavoritedKeys, getUserListsWithPreview, getWatchedKeys } from "./queries";
 
 type ActionResult<T = void> = { success: true; data: T } | { success: false; error: string };
 
@@ -34,6 +34,7 @@ function revalidateListPaths(listId?: string) {
   revalidatePath("/lists");
   revalidatePath("/watchlist");
   revalidatePath("/favorites");
+  revalidatePath("/watched");
   revalidatePath("/profile");
   if (listId) revalidatePath(`/lists/${listId}`);
 }
@@ -181,5 +182,14 @@ export async function getFavoritedKeysAction(
   const userId = await getCurrentUserId();
   if (!userId) return { success: true, data: [] };
   const keys = await getFavoritedKeys(userId, items);
+  return { success: true, data: Array.from(keys) };
+}
+
+export async function getWatchedKeysAction(
+  items: { tmdbId: number; mediaType: ListMediaType }[]
+): Promise<ActionResult<string[]>> {
+  const userId = await getCurrentUserId();
+  if (!userId) return { success: true, data: [] };
+  const keys = await getWatchedKeys(userId, items);
   return { success: true, data: Array.from(keys) };
 }

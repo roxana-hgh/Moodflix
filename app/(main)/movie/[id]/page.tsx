@@ -26,7 +26,7 @@ export default async function MoviePage({ params }: MoviePageProps) {
    const userId = await getCurrentUserId();
   const membership = userId
     ? await getItemListMembership(userId, movie.id, toListMediaType(movie.mediaType))
-    : { favorited: false, watchlisted: false };
+    : { favorited: false, watchlisted: false, watched: false };
 
-  return <MediaDetailView detail={movie} initialFavorited={membership.favorited} initialWatchlisted={membership.watchlisted} />;
+  return <MediaDetailView  detail={movie} initialFavorited={membership.favorited } initialWatched={membership.watched} initialWatchlisted={membership.watchlisted} />;
 }

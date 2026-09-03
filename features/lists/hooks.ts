@@ -12,6 +12,7 @@ import {
   getUserListsWithPreviewAction,
   getItemListIdsAction,
   getFavoritedKeysAction,
+  getWatchedKeysAction,
 } from "./actions";
 import type {
   AddToListInput,
@@ -142,5 +143,11 @@ export function useDeleteList() {
 export function useFetchFavoritedKeys() {
   return useMutation({
     mutationFn: (items: { tmdbId: number; mediaType: ListMediaType }[]) => getFavoritedKeysAction(items),
+  });
+}
+
+export function useFetchWatchedKeys() {
+  return useMutation({
+    mutationFn: (items: { tmdbId: number; mediaType: ListMediaType }[]) => getWatchedKeysAction(items),
   });
 }

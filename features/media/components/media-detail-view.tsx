@@ -10,17 +10,20 @@ import SectionContext from "@/components/layout/SectionContext";
 import SectionWrapper from "@/components/layout/SectionWrapper";
 import { SeasonsList } from "@/features/media/components/seasons-list";
 
-export function MediaDetailView({ detail, initialFavorited, initialWatchlisted }: { detail: MediaDetail; initialFavorited: boolean; initialWatchlisted: boolean }) {
+export function MediaDetailView({ detail, initialFavorited, initialWatchlisted, initialWatched }: { detail: MediaDetail; initialFavorited: boolean; initialWatchlisted: boolean; initialWatched: boolean }) {
   return (
     <div className="pb-16 -mt-[var(--header-height)]">
       <MediaDetailHero initialFavorited={initialFavorited}
-        initialWatchlisted={initialWatchlisted} detail={detail} />
+        initialWatchlisted={initialWatchlisted}
+        initialWatched={initialWatched}
+        detail={detail} />
 
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 pt-8 sm:px-6">
         <MediaInfoGrid detail={detail} />
         {detail.mediaType === "tv" && <SeasonsList tvId={detail.id} seasons={detail.seasons} />}
         <CastList cast={detail.cast} />
         <BackdropGallery backdrops={detail.backdrops} title={detail.title} />
+        
         {detail.recommendations.length > 0 && (
 
           <SectionWrapper>

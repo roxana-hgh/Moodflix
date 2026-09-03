@@ -48,10 +48,9 @@ export async function getListWithItems(
 
   return { list, isOwner };
 }
-
 export async function getUserListByType(
   userId: string,
-  type: Extract<ListType, "WATCHLIST" | "FAVORITE">
+  type: Extract<ListType, "WATCHLIST" | "FAVORITE" | "WATCHED">
 ): Promise<ListItemSummary[]> {
   const list = await prisma.list.findFirst({
     where: { userId, type },
@@ -61,24 +60,25 @@ export async function getUserListByType(
   return list.items.map(toListItemSummary);
 }
 
-export async function getFavoritedKeys(
+async function getKeysByListType(
   userId: string,
-  items: { tmdbId: number; mediaType: ListMediaType }[]
+  items: { tmdbId: number; mediaType: ListMediaType }[],
+  type: Extract<ListType, "FAVORITE" | "WATCHED">
 ): Promise<Set<string>> {
   if (items.length === 0) return new Set();
 
-  const favoriteList = await prisma.list.findFirst({
-    where: { userId, type: "FAVORITE" },
+  const list = await prisma.list.findFirst({
+    where: { userId, type },
     select: { id: true },
   });
-  if (!favoriteList) return new Set();
+  if (!list) return new Set();
 
   const movieIds = items.filter((i) => i.mediaType === "MOVIE").map((i) => i.tmdbId);
   const tvIds = items.filter((i) => i.mediaType === "TV").map((i) => i.tmdbId);
 
   const matches = await prisma.listItem.findMany({
     where: {
-      listId: favoriteList.id,
+      listId: list.id,
       OR: [
         ...(movieIds.length ? [{ mediaType: "MOVIE" as const, tmdbId: { in: movieIds } }] : []),
         ...(tvIds.length ? [{ mediaType: "TV" as const, tmdbId: { in: tvIds } }] : []),
@@ -88,6 +88,20 @@ export async function getFavoritedKeys(
   });
 
   return new Set(matches.map((m) => toFavoritedKey(m.tmdbId, m.mediaType as ListMediaType)));
+}
+
+export async function getFavoritedKeys(
+  userId: string,
+  items: { tmdbId: number; mediaType: ListMediaType }[]
+): Promise<Set<string>> {
+  return getKeysByListType(userId, items, "FAVORITE");
+}
+
+export async function getWatchedKeys(
+  userId: string,
+  items: { tmdbId: number; mediaType: ListMediaType }[]
+): Promise<Set<string>> {
+  return getKeysByListType(userId, items, "WATCHED");
 }
 
 export function toFavoritedKey(tmdbId: number, mediaType: ListMediaType): string {
@@ -110,13 +124,17 @@ export async function getItemListMembership(
   userId: string,
   tmdbId: number,
   mediaType: ListMediaType
-): Promise<{ favorited: boolean; watchlisted: boolean }> {
+): Promise<{ favorited: boolean; watchlisted: boolean; watched: boolean }> {
   const items = await prisma.listItem.findMany({
-    where: { tmdbId, mediaType, list: { userId, type: { in: ["FAVORITE", "WATCHLIST"] } } },
+    where: { tmdbId, mediaType, list: { userId, type: { in: ["FAVORITE", "WATCHLIST", "WATCHED"] } } },
     select: { list: { select: { type: true } } },
   });
   const types = new Set(items.map((i) => i.list.type));
-  return { favorited: types.has("FAVORITE"), watchlisted: types.has("WATCHLIST") };
+  return {
+    favorited: types.has("FAVORITE"),
+    watchlisted: types.has("WATCHLIST"),
+    watched: types.has("WATCHED"),
+  };
 }
 
 export async function getUserListsWithPreview(userId: string, previewCount = 4): Promise<ListWithPreview[]> {
@@ -151,7 +169,7 @@ export async function getRecentListsWithPreview(
 
 export async function getUserListDetailByType(
   userId: string,
-  type: Extract<ListType, "WATCHLIST" | "FAVORITE">
+  type: Extract<ListType, "WATCHLIST" | "FAVORITE" | "WATCHED">
 ): Promise<ListDetail | null> {
   const list = await prisma.list.findFirst({
     where: { userId, type },

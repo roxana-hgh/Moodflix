@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, Clock, ListPlus, Heart, Bookmark } from "lucide-react";
+import { Calendar, Clock, ListPlus, Heart, Bookmark, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { tmdbImageUrl } from "@/utils/image";
@@ -13,12 +13,14 @@ interface MediaDetailHeroProps {
   detail: MediaDetail;
   initialFavorited?: boolean;
   initialWatchlisted?: boolean;
+  initialWatched?: boolean;
 }
 
 export function MediaDetailHero({
   detail,
   initialFavorited = false,
   initialWatchlisted = false,
+  initialWatched = false,
 }: MediaDetailHeroProps) {
   const {
     id,
@@ -125,21 +127,23 @@ export function MediaDetailHero({
             />
 
             <QuickListButton
-              listType="FAVORITE"
+              listType="WATCHED"
               tmdbId={id}
               mediaType={mediaType}
               title={title}
               posterPath={posterPath}
               releaseYear={releaseYear}
-              initialActive={initialFavorited}
+              initialActive={initialWatched}
               variant="outline"
               size="icon"
               className={outlineToggleClass}
-              label="Add to favorites"
-              activeLabel="Remove from favorites"
-              icon={<Heart className="h-4 w-4" />}
-              activeIcon={<Heart className="h-4 w-4 fill-primary text-primary" />}
+              label="Mark as watched"
+              activeLabel="Remove from watched"
+              icon={<CheckCircle className="h-4 w-4" />}
+              activeIcon={<CheckCircle className="h-4 w-4 stroke-primary text-primary" />}
             />
+
+            {initialWatched}
 
             <QuickListButton
               listType="WATCHLIST"
@@ -156,6 +160,22 @@ export function MediaDetailHero({
               activeLabel="Remove from watch later"
               icon={<Bookmark className="h-4 w-4" />}
               activeIcon={<Bookmark className="h-4 w-4 fill-primary text-primary" />}
+            />
+            <QuickListButton
+              listType="FAVORITE"
+              tmdbId={id}
+              mediaType={mediaType}
+              title={title}
+              posterPath={posterPath}
+              releaseYear={releaseYear}
+              initialActive={initialFavorited}
+              variant="outline"
+              size="icon"
+              className={outlineToggleClass}
+              label="Add to favorites"
+              activeLabel="Remove from favorites"
+              icon={<Heart className="h-4 w-4" />}
+              activeIcon={<Heart className="h-4 w-4 fill-primary text-primary" />}
             />
           </div>
         </div>

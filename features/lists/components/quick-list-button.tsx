@@ -8,7 +8,7 @@ import { useToggleQuickList } from "../hooks";
 import { toListMediaType } from "../types";
 
 interface QuickListButtonProps {
-  listType: "FAVORITE" | "WATCHLIST";
+  listType: "FAVORITE" | "WATCHLIST" | "WATCHED";
   tmdbId: number;
   mediaType: "movie" | "tv";
   title: string;

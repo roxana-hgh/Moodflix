@@ -5,6 +5,7 @@ import { MediaDetailView } from "@/features/media/components/media-detail-view";
 import { getCurrentUserId } from "@/lib/auth";
 import { toListMediaType } from "@/features/lists/types";
 import { getItemListMembership } from "@/features/lists/queries";
+import { watch } from "fs";
 
 
 interface TVPageProps {
@@ -27,8 +28,8 @@ export default async function TVPage({ params }: TVPageProps) {
    const userId = await getCurrentUserId();
   const membership = userId
     ? await getItemListMembership(userId, show.id, toListMediaType(show.mediaType))
-    : { favorited: false, watchlisted: false };
+    : { favorited: false, watchlisted: false , watched: false};
 
   return <MediaDetailView detail={show}  initialFavorited={membership.favorited}
-        initialWatchlisted={membership.watchlisted} />;
+        initialWatchlisted={membership.watchlisted} initialWatched={membership.watched} />;
 }

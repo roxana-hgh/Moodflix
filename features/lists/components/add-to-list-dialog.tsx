@@ -1,11 +1,12 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Check, ListPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { authClient } from "@/lib/auth-client";
 import {
   useUserLists,
@@ -43,6 +44,11 @@ export function AddToListDialog({
   const [newListName, setNewListName] = useState("");
   const [showNewListInput, setShowNewListInput] = useState(false);
 
+  // Local pending selection — diffed against `initialIds` and only committed on Save.
+  const [selectedIds, setSelectedIds] = useState<Set<string> | null>(null);
+  const [initialIds, setInitialIds] = useState<Set<string>>(new Set());
+  const [isSaving, setIsSaving] = useState(false);
+
   const listMediaType = toListMediaType(mediaType);
 
   const { data: lists, isLoading: listsLoading } = useUserLists();
@@ -55,6 +61,25 @@ export function AddToListDialog({
   const addItem = useAddItemToList();
   const removeItem = useRemoveItemFromList();
   const createList = useCreateCustomList();
+
+  // Seed local selection from server membership once it loads for this dialog session.
+  useEffect(() => {
+    if (!open || membershipLoading || selectedIds !== null) return;
+    const ids = new Set(memberListIds ?? []);
+    setSelectedIds(ids);
+    setInitialIds(ids);
+  }, [open, membershipLoading, memberListIds, selectedIds]);
+
+  function handleOpenChange(next: boolean) {
+    setOpen(next);
+    if (!next) {
+      // Discard any unsaved toggles so the next open starts fresh.
+      setSelectedIds(null);
+      setInitialIds(new Set());
+      setShowNewListInput(false);
+      setNewListName("");
+    }
+  }
 
   const defaultTrigger = (
     <Button type="button" size="icon" variant="secondary" className={defaultTriggerClassName}>
@@ -73,12 +98,16 @@ export function AddToListDialog({
     );
   }
 
-  function handleToggle(listId: string, isMember: boolean) {
-    if (isMember) {
-      removeItem.mutate({ listId, tmdbId, mediaType: listMediaType });
-    } else {
-      addItem.mutate({ listId, tmdbId, mediaType: listMediaType, title, posterPath, releaseYear });
-    }
+  function handleToggleLocal(listId: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev ?? []);
+      if (next.has(listId)) {
+        next.delete(listId);
+      } else {
+        next.add(listId);
+      }
+      return next;
+    });
   }
 
   function handleCreateList() {
@@ -88,7 +117,7 @@ export function AddToListDialog({
       {
         onSuccess: (result) => {
           if (result.success) {
-            handleToggle(result.data.id, false);
+            setSelectedIds((prev) => new Set([...(prev ?? []), result.data.id]));
             setNewListName("");
             setShowNewListInput(false);
           }
@@ -97,32 +126,60 @@ export function AddToListDialog({
     );
   }
 
-  const memberSet = new Set(memberListIds ?? []);
+  async function handleSave() {
+    if (!selectedIds) return;
+
+    const toAdd = [...selectedIds].filter((id) => !initialIds.has(id));
+    const toRemove = [...initialIds].filter((id) => !selectedIds.has(id));
+
+    if (toAdd.length === 0 && toRemove.length === 0) {
+      handleOpenChange(false);
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await Promise.all([
+        ...toAdd.map((listId) =>
+          addItem.mutateAsync({ listId, tmdbId, mediaType: listMediaType, title, posterPath, releaseYear })
+        ),
+        ...toRemove.map((listId) => removeItem.mutateAsync({ listId, tmdbId, mediaType: listMediaType })),
+      ]);
+      handleOpenChange(false);
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  const isLoadingLists = listsLoading || membershipLoading || selectedIds === null;
+  const hasChanges =
+    selectedIds !== null &&
+    ([...selectedIds].some((id) => !initialIds.has(id)) || [...initialIds].some((id) => !selectedIds.has(id)));
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{triggerNode}</DialogTrigger>
 
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent className="sm:max-w-sm p-3 md:p-4">
         <DialogHeader>
           <DialogTitle className="line-clamp-1 text-base">Save &quot;{title}&quot; to...</DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col gap-1">
-          {listsLoading || membershipLoading ? (
+          {isLoadingLists ? (
             <p className="py-4 text-center text-sm text-muted-foreground">Loading your lists…</p>
           ) : (
             lists?.map((list) => {
-              const isMember = memberSet.has(list.id);
+              const isSelected = selectedIds?.has(list.id) ?? false;
               return (
                 <button
                   key={list.id}
                   type="button"
-                  onClick={() => handleToggle(list.id, isMember)}
+                  onClick={() => handleToggleLocal(list.id)}
                   className="flex items-center justify-between rounded-md px-3 py-2 text-sm hover:bg-muted"
                 >
                   <span>{list.name}</span>
-                  {isMember && <Check className="h-4 w-4 text-primary" />}
+                  {isSelected && <Check className="h-4 w-4 text-primary" />}
                 </button>
               );
             })
@@ -153,6 +210,15 @@ export function AddToListDialog({
             New list
           </Button>
         )}
+
+        <DialogFooter className="pt-2">
+          <Button type="button" variant="ghost" size="xs" className="px-5" onClick={() => handleOpenChange(false)} disabled={isSaving}>
+            Cancel
+          </Button>
+          <Button type="button" onClick={handleSave} size="xs" className="px-5" disabled={isLoadingLists || isSaving || !hasChanges}>
+            {isSaving ? "Saving…" : "Save"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

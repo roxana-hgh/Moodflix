@@ -19,9 +19,10 @@ async function ProfilePage() {
     redirect("/login");
   }
 
-   const [favorites, watchlist, recentLists] = await Promise.all([
+  const [favorites, watchlist, watched, recentLists] = await Promise.all([
     getUserListByType(profile.id, "FAVORITE"),
     getUserListByType(profile.id, "WATCHLIST"),
+    getUserListByType(profile.id, "WATCHED"),
     getRecentListsWithPreview(profile.id, 4, 4),
   ]);
 
@@ -30,7 +31,23 @@ async function ProfilePage() {
       <div className="container h-full mx-auto">
         <div className="flex flex-col h-full gap-6">
           <ProfileHeader profile={profile} />
-           <RecentListsSection lists={recentLists} />
+          <SectionWrapper>
+            <div className="  mx-auto">
+              <SectionContext title="Watched" buttonText="See all" ButtonLink="/profile/watched" />
+              {watched.length === 0 ? (
+                <div className="py-3 text-center">
+                  <p className="text-sm text-muted-foreground">No watched items yet.</p>
+                </div>
+              ) : (
+                <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 6, xl: 8 }} autoplay={false}>
+                  {watched.map((item) => (
+                    <MediaCardCompact key={item.id} {...toListCardItem(item)} />
+                  ))}
+                </MediaCarousel>
+              )}
+            </div>
+          </SectionWrapper>
+
           <SectionWrapper>
             <div className="  mx-auto">
               <SectionContext title="Favorites" buttonText="See all" ButtonLink="/profile/favorites" />
@@ -64,7 +81,7 @@ async function ProfilePage() {
             </div>
           </SectionWrapper>
 
-
+          <RecentListsSection lists={recentLists} />
         </div>
       </div>
     </div>
