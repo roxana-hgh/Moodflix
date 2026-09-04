@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { tmdbImageUrl } from "@/utils/image";
 import type { CastMember } from "../types";
+import Link from "next/link";
 
 const PREVIEW_COUNT = 12;
 
@@ -20,7 +21,8 @@ export function CastList({ cast }: { cast: CastMember[] }) {
       <h2 className="mb-4 text-sm font-semibold text-primary">Cast</h2>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {visible.map((member) => (
-          <div key={member.id} className="flex items-center gap-3 rounded-xl border border-border/60 bg-card/50 p-2">
+          <Link key={member.id} href={`/person/${member.id}`} className="block">
+            <div  className="flex items-center gap-3 rounded-xl border border-border/60 bg-card/50 p-2">
             <div className="relative size-10 sm:size-12 shrink-0 overflow-hidden rounded-full bg-muted">
               {member.profilePath ? (
                 <Image
@@ -40,6 +42,8 @@ export function CastList({ cast }: { cast: CastMember[] }) {
               <p className="truncate text-[10px] sm:text-xs text-muted-foreground">{member.character}</p>
             </div>
           </div>
+          </Link>
+          
         ))}
       </div>
 

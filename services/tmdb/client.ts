@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import 'server-only';
 
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';

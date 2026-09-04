@@ -226,3 +226,59 @@ export type TMDBMultiSearchResult =
   | TMDBPersonResult;
 
 export type TMDBMultiSearchResponse = TMDBPaginatedResponse<TMDBMultiSearchResult>;
+
+export interface TMDBPersonDetails {
+  id: number;
+  name: string;
+  biography: string;
+  birthday: string | null;
+  deathday: string | null;
+  place_of_birth: string | null;
+  profile_path: string | null;
+  known_for_department: string;
+  popularity: number;
+  movie_credits?: TMDBPersonMovieCredits;
+  tv_credits?: TMDBPersonTvCredits;
+}
+
+export interface TMDBPersonMovieCastCredit {
+  id: number;
+  title: string;
+  overview: string;
+  poster_path: string | null;
+  release_date: string;
+  character: string;
+  vote_average: number;
+  popularity: number;
+}
+
+export interface TMDBPersonMovieCrewCredit
+  extends Omit<TMDBPersonMovieCastCredit, "character"> {
+  job: string;
+}
+
+export interface TMDBPersonMovieCredits {
+  cast: TMDBPersonMovieCastCredit[];
+  crew: TMDBPersonMovieCrewCredit[];
+}
+
+export interface TMDBPersonTvCastCredit {
+  id: number;
+  name: string;
+  poster_path: string | null;
+  first_air_date: string;
+  character: string;
+  vote_average: number;
+  popularity: number;
+  overview: string;
+}
+
+export interface TMDBPersonTvCrewCredit
+  extends Omit<TMDBPersonTvCastCredit, "character"> {
+  job: string;
+}
+
+export interface TMDBPersonTvCredits {
+  cast: TMDBPersonTvCastCredit[];
+  crew: TMDBPersonTvCrewCredit[];
+}

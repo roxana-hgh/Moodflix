@@ -125,3 +125,7 @@ export function sortListsForDisplay<T extends { type: ListType; createdAt: Date 
 export function toListMediaType(mediaType: "movie" | "tv"): ListMediaType {
   return mediaType.toUpperCase() as ListMediaType;
 }
+
+export function toFavoritedKey(tmdbId: number, mediaType: ListMediaType): string {
+  return `${mediaType}-${tmdbId}`;
+}
