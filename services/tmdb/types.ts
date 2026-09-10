@@ -282,3 +282,8 @@ export interface TMDBPersonTvCredits {
   cast: TMDBPersonTvCastCredit[];
   crew: TMDBPersonTvCrewCredit[];
 }
+
+export interface TMDBKeyword {
+  id: number;
+  name: string;
+}
