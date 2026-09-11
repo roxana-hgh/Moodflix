@@ -41,13 +41,12 @@ export function MoodResultsGrid({ results, usedFallback }: MoodResultsGridProps)
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
         <MediaTypeToggle value={activeTab} onChange={setActiveTab} counts={counts} />
         {usedFallback && (
           <p className="text-xs text-muted-foreground">Showing broader results for that search</p>
         )}
       </div>
-
       {visible.length === 0 ? (
         <p className="text-sm text-muted-foreground py-10 text-center">
           No {activeTab === "movie" ? "movies" : "shows"} matched — try &quot;All&quot; instead.

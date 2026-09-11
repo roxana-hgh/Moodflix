@@ -1,17 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Heart, Gem, CloudRain, Brain, TreePine } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-
-const QUICK_MOODS = [
-  { label: "cozy rom-com", icon: Heart },
-  { label: "heist thriller", icon: Gem },
-  { label: "something to cry to", icon: CloudRain },
-  { label: "mind-bending sci-fi", icon: Brain },
-  { label: "mystery set in nature", icon: TreePine },
-];
+import { QuickMoodSuggestions } from "./quick-mood-suggestions";
 
 interface MoodSearchBarProps {
   onSubmit: (mood: string) => void;
@@ -29,7 +21,7 @@ export function MoodSearchBar({ onSubmit, isPending }: MoodSearchBarProps) {
 
   return (
     <div className="w-full">
-      <h1 className="font-heading text-3xl sm:text-4xl font-semibold tracking-tight text-foreground mb-6 max-w-xl ">
+      <h1 className="font-heading text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-foreground mb-5 sm:mb-6 max-w-xl">
         What are you in the mood for?
       </h1>
 
@@ -38,53 +30,46 @@ export function MoodSearchBar({ onSubmit, isPending }: MoodSearchBarProps) {
           e.preventDefault();
           submit(value);
         }}
-        className="relative w-full"
       >
         <div
           className={cn(
-            "flex items-center gap-3 rounded-2xl border border-input bg-card max-sm:pe-2 px-3 py-1.5 w-full",
+            "flex items-center gap-2 sm:gap-3 rounded-xl sm:rounded-2xl border border-input bg-card",
+            "px-3 py-1 sm:px-4 sm:py-1.5 pe-1 sm:pe-1.5",
             "transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20"
           )}
         >
-          <Sparkles className="size-4.5 text-primary shrink-0" />
+          <Sparkles className="size-4 sm:size-5 text-primary shrink-0" />
           <input
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder="a mystery set in nature…"
             disabled={isPending}
-            className="flex-1 bg-transparent text-sm sm:text-base  text-foreground placeholder:text-muted-foreground/70 outline-none disabled:opacity-50"
+            className="min-w-0 flex-1 bg-transparent text-base text-foreground placeholder:text-muted-foreground/70 outline-none disabled:opacity-50"
           />
-          <Button
+          <button
             type="submit"
             disabled={isPending || value.trim().length < 3}
-           size={"sm"}
+            aria-label="Find something"
+            className={cn(
+              "shrink-0 inline-flex items-center gap-1.5 rounded-lg sm:rounded-xl bg-primary text-primary-foreground",
+              "text-sm font-medium",
+              "size-9 sm:size-auto sm:px-4 sm:py-2 justify-center",
+              "hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:pointer-events-none"
+            )}
           >
-            Find something
-          </Button>
+            <ArrowRight className="size-4 sm:hidden" />
+            <span className="hidden sm:inline">Find something</span>
+          </button>
         </div>
       </form>
 
-      <div className="flex flex-wrap gap-2 mt-4">
-        {QUICK_MOODS.map(({ label, icon: Icon }) => (
-          <button
-            key={label}
-            type="button"
-            onClick={() => {
-              setValue(label);
-              submit(label);
-            }}
-            disabled={isPending}
-            className={cn(
-              "inline-flex items-center gap-1.5 text-sm text-muted-foreground border border-border rounded-full",
-              "px-3.5 py-1.5 hover:text-foreground hover:border-foreground/30 hover:bg-accent transition-colors",
-              "disabled:opacity-40"
-            )}
-          >
-            <Icon className="size-3.5" />
-            {label}
-          </button>
-        ))}
-      </div>
+      <QuickMoodSuggestions
+        disabled={isPending}
+        onSelect={(mood) => {
+          setValue(mood);
+          submit(mood);
+        }}
+      />
     </div>
   );
 }

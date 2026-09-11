@@ -26,7 +26,7 @@ export function MoodDiscoverPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 sm:px-8 py-12 sm:py-16">
+    <div className="min-h-screen  px-4 sm:px-6 md:px-8 py-8 sm:py-12 md:py-16">
       <div className="max-w-5xl mx-auto">
         <MoodSearchBar onSubmit={handleSearch} isPending={isPending} />
 
@@ -36,7 +36,7 @@ export function MoodDiscoverPage() {
           </div>
         )}
 
-        { hasSearched && (
+        {hasSearched && (
           <div className="mt-10">
             {isPending ? (
               <MoodLoadingState />
@@ -47,5 +47,6 @@ export function MoodDiscoverPage() {
         )}
       </div>
     </div>
+
   );
 }
