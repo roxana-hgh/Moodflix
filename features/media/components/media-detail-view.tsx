@@ -13,6 +13,7 @@ import { MediaCardItem } from "@/types/media";
 import { toListMediaType } from "@/features/lists/types";
 import { getFavoritedKeys, getWatchedKeys, toFavoritedKey } from "@/features/lists/queries";
 import { MediaCardWithActions } from "@/components/media/media-card-with-actions";
+import { VideoGallery } from "@/features/media/components/video-gallery";
 
 export async function MediaDetailView({ detail, initialFavorited, initialWatchlisted, initialWatched }: { detail: MediaDetail; initialFavorited: boolean; initialWatchlisted: boolean; initialWatched: boolean }) {
   const userId = await getCurrentUserId();
@@ -49,7 +50,7 @@ export async function MediaDetailView({ detail, initialFavorited, initialWatchli
         {detail.mediaType === "tv" && <SeasonsList tvId={detail.id} seasons={detail.seasons} />}
         <CastList cast={detail.cast} />
         <BackdropGallery backdrops={detail.backdrops} title={detail.title} />
-
+<VideoGallery videos={detail.videos} title={detail.title} />
         {detail.recommendations.length > 0 && (
 
           <SectionWrapper>

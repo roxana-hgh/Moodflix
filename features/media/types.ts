@@ -7,6 +7,7 @@ import type {
   TMDBSeasonDetails,
   TMDBTVDetails,
   TMDBTVResult,
+  TMDBVideo,
 } from "@/services/tmdb/types";
 import type { MediaCardItem } from "@/types/media";
 
@@ -53,6 +54,14 @@ export type SeasonSummary = {
   overview: string;
 };
 
+export type Video = {
+  id: string;
+  key: string;
+  name: string;
+  type: string;
+  official: boolean;
+};
+
 export interface MediaDetail {
   id: number;
   mediaType: "movie" | "tv";
@@ -78,6 +87,8 @@ export interface MediaDetail {
   seasons: SeasonSummary[];
   cast: CastMember[];
   backdrops: string[];
+  videos: Video[];
+  trailerKey: string | null;
   recommendations: MediaCardItem[];
   similar: MediaCardItem[];
 }
@@ -89,6 +100,34 @@ function toCastMember(raw: TMDBCastMember): CastMember {
     character: raw.character,
     profilePath: raw.profile_path,
   };
+}
+
+// Only YouTube is embeddable via iframe, so that's all we surface.
+function toYoutubeVideos(raw: TMDBVideo[]): Video[] {
+  return raw
+    .filter((v) => v.site === "YouTube")
+    .map((v) => ({
+      id: v.id,
+      key: v.key,
+      name: v.name,
+      type: v.type,
+      official: v.official,
+    }));
+}
+
+// Priority: official trailer > any trailer > teaser > first youtube video available.
+function pickTrailerKey(raw: TMDBVideo[]): string | null {
+  const youtube = raw.filter((v) => v.site === "YouTube");
+  const officialTrailer = youtube.find((v) => v.type === "Trailer" && v.official);
+  if (officialTrailer) return officialTrailer.key;
+
+  const anyTrailer = youtube.find((v) => v.type === "Trailer");
+  if (anyTrailer) return anyTrailer.key;
+
+  const teaser = youtube.find((v) => v.type === "Teaser");
+  if (teaser) return teaser.key;
+
+  return youtube[0]?.key ?? null;
 }
 
 export function toMovieDetail(raw: TMDBMovieDetails): MediaDetail {
@@ -119,6 +158,8 @@ export function toMovieDetail(raw: TMDBMovieDetails): MediaDetail {
     seasons: [],
     cast: raw.credits.cast.slice(0, 12).map(toCastMember),
     backdrops: raw.images.backdrops.slice(0, 12).map((b) => b.file_path),
+    videos: toYoutubeVideos(raw.videos.results),
+    trailerKey: pickTrailerKey(raw.videos.results),
     recommendations: raw.recommendations.results.map((item) =>
       toMediaCardItem({ ...item, media_type: "movie" } as TMDBMovieResult),
     ),
@@ -168,6 +209,8 @@ export function toTVDetail(raw: TMDBTVDetails): MediaDetail {
       })),
     cast: raw.credits.cast.slice(0, 12).map(toCastMember),
     backdrops: raw.images.backdrops.slice(0, 12).map((b) => b.file_path),
+    videos: toYoutubeVideos(raw.videos.results),
+    trailerKey: pickTrailerKey(raw.videos.results),
     recommendations: raw.recommendations.results.map((item) =>
       toMediaCardItem({ ...item, media_type: "tv" } as TMDBTVResult),
     ),

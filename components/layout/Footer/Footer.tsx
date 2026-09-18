@@ -5,6 +5,9 @@ function Footer() {
                 <span className="text-[10px] text-muted-foreground">
                     &copy; {new Date().getFullYear()} MoodFlix. All rights reserved.
                 </span>
+                 <span className="text-[10px] text-muted-foreground">
+                   This application uses the TMDB API
+                </span>
             </div>
         </div>
      );

@@ -8,6 +8,7 @@ import { RatingRing } from "./rating-ring";
 import { QuickListButton } from "@/features/lists/components/quick-list-button";
 import { AddToListDialog } from "@/features/lists/components/add-to-list-dialog";
 import type { MediaDetail } from "../types";
+import { WatchTrailerButton } from "@/features/media/components/watch-trailer-button";
 
 interface MediaDetailHeroProps {
   detail: MediaDetail;
@@ -113,6 +114,7 @@ export function MediaDetailHero({
           <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground ">{overview}</p>
 
           <div className="flex flex-wrap gap-2 pt-1">
+             {detail.trailerKey && <WatchTrailerButton trailerKey={detail.trailerKey} title={title} />}
             <AddToListDialog
               tmdbId={id}
               mediaType={mediaType}

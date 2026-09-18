@@ -157,6 +157,7 @@ export interface TMDBMovieDetails {
   images: TMDBImages;
   recommendations: TMDBPaginatedResponse<TMDBMovieResult>;
   similar: TMDBPaginatedResponse<TMDBMovieResult>;
+  videos: TMDBVideosResponse;
 }
 
 export interface TMDBTVDetails {
@@ -173,8 +174,8 @@ export interface TMDBTVDetails {
   status: string;
   homepage: string | null;
   genres: TMDBGenre[];
-  created_by: TMDBCreator[];        // NEW
-  seasons: TMDBSeason[];            // NEW
+  created_by: TMDBCreator[];       
+  seasons: TMDBSeason[];            
   networks: TMDBNetwork[];
   production_countries: TMDBProductionCountry[];
   spoken_languages: TMDBSpokenLanguage[];
@@ -185,6 +186,7 @@ export interface TMDBTVDetails {
   images: TMDBImages;
   recommendations: TMDBPaginatedResponse<TMDBTVResult>;
   similar: TMDBPaginatedResponse<TMDBTVResult>;
+  videos: TMDBVideosResponse;
 }
 
 export interface TMDBSeasonEpisode {
@@ -286,4 +288,22 @@ export interface TMDBPersonTvCredits {
 export interface TMDBKeyword {
   id: number;
   name: string;
+}
+
+export interface TMDBVideo {
+  id: string;
+  iso_639_1: string;
+  iso_3166_1: string;
+  name: string;
+  key: string;
+  site: string; // "YouTube" | "Vimeo" | ...
+  size: number;
+  type: string; // "Trailer" | "Teaser" | "Clip" | "Featurette" | "Behind the Scenes" | "Bloopers"
+  official: boolean;
+  published_at: string;
+}
+
+export interface TMDBVideosResponse {
+  id: number;
+  results: TMDBVideo[];
 }
