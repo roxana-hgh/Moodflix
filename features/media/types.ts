@@ -4,6 +4,7 @@ import type {
   TMDBMediaResult,
   TMDBMovieDetails,
   TMDBMovieResult,
+  TMDBReview,
   TMDBSeasonDetails,
   TMDBTVDetails,
   TMDBTVResult,
@@ -91,6 +92,8 @@ export interface MediaDetail {
   trailerKey: string | null;
   recommendations: MediaCardItem[];
   similar: MediaCardItem[];
+  reviews: Review[];
+  totalReviews: number;
 }
 
 function toCastMember(raw: TMDBCastMember): CastMember {
@@ -118,7 +121,9 @@ function toYoutubeVideos(raw: TMDBVideo[]): Video[] {
 // Priority: official trailer > any trailer > teaser > first youtube video available.
 function pickTrailerKey(raw: TMDBVideo[]): string | null {
   const youtube = raw.filter((v) => v.site === "YouTube");
-  const officialTrailer = youtube.find((v) => v.type === "Trailer" && v.official);
+  const officialTrailer = youtube.find(
+    (v) => v.type === "Trailer" && v.official,
+  );
   if (officialTrailer) return officialTrailer.key;
 
   const anyTrailer = youtube.find((v) => v.type === "Trailer");
@@ -160,6 +165,8 @@ export function toMovieDetail(raw: TMDBMovieDetails): MediaDetail {
     backdrops: raw.images.backdrops.slice(0, 12).map((b) => b.file_path),
     videos: toYoutubeVideos(raw.videos.results),
     trailerKey: pickTrailerKey(raw.videos.results),
+    reviews: raw.reviews.results.map(toReview),
+    totalReviews: raw.reviews.total_results,
     recommendations: raw.recommendations.results.map((item) =>
       toMediaCardItem({ ...item, media_type: "movie" } as TMDBMovieResult),
     ),
@@ -211,6 +218,8 @@ export function toTVDetail(raw: TMDBTVDetails): MediaDetail {
     backdrops: raw.images.backdrops.slice(0, 12).map((b) => b.file_path),
     videos: toYoutubeVideos(raw.videos.results),
     trailerKey: pickTrailerKey(raw.videos.results),
+    reviews: raw.reviews.results.map(toReview),
+    totalReviews: raw.reviews.total_results,
     recommendations: raw.recommendations.results.map((item) =>
       toMediaCardItem({ ...item, media_type: "tv" } as TMDBTVResult),
     ),
@@ -259,5 +268,44 @@ export function toSeasonDetail(raw: TMDBSeasonDetails): SeasonDetail {
       stillPath: e.still_path,
       voteAverage: e.vote_average,
     })),
+  };
+}
+
+// TMDB quirk: avatar_path is either a normal TMDB image path, or (for
+// gravatar-sourced avatars) a full external URL with a stray leading slash.
+function resolveAvatarUrl(avatarPath: string | null): string | null {
+  if (!avatarPath) return null;
+  if (avatarPath.startsWith("/http")) return avatarPath.slice(1);
+  return `https://image.tmdb.org/t/p/w200${avatarPath}`;
+}
+export type Review = {
+  id: string;
+  author: string;
+  username: string | null;
+  avatarUrl: string | null;
+  rating: number | null;
+  content: string;
+  createdAtLabel: string;
+};
+
+function toReview(raw: TMDBReview): Review {
+  const author = raw.author_details.name || raw.author;
+  const username =
+    raw.author_details.username && raw.author_details.username !== author
+      ? raw.author_details.username
+      : null;
+
+  return {
+    id: raw.id,
+    author,
+    username,
+    avatarUrl: resolveAvatarUrl(raw.author_details.avatar_path),
+    rating: raw.author_details.rating,
+    content: raw.content.trim(),
+    createdAtLabel: new Date(raw.created_at).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }),
   };
 }

@@ -158,6 +158,7 @@ export interface TMDBMovieDetails {
   recommendations: TMDBPaginatedResponse<TMDBMovieResult>;
   similar: TMDBPaginatedResponse<TMDBMovieResult>;
   videos: TMDBVideosResponse;
+  reviews: TMDBPaginatedResponse<TMDBReview>;
 }
 
 export interface TMDBTVDetails {
@@ -187,6 +188,7 @@ export interface TMDBTVDetails {
   recommendations: TMDBPaginatedResponse<TMDBTVResult>;
   similar: TMDBPaginatedResponse<TMDBTVResult>;
   videos: TMDBVideosResponse;
+  reviews: TMDBPaginatedResponse<TMDBReview>;
 }
 
 export interface TMDBSeasonEpisode {
@@ -306,4 +308,21 @@ export interface TMDBVideo {
 export interface TMDBVideosResponse {
   id: number;
   results: TMDBVideo[];
+}
+
+export interface TMDBReviewAuthorDetails {
+  name: string;
+  username: string;
+  avatar_path: string | null;
+  rating: number | null;
+}
+
+export interface TMDBReview {
+  id: string;
+  author: string;
+  author_details: TMDBReviewAuthorDetails;
+  content: string;
+  created_at: string;
+  updated_at: string;
+  url: string;
 }

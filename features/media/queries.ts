@@ -30,7 +30,7 @@ export async function getTrendingMovies(window: 'day' | 'week'): Promise<MediaCa
   return data.results.map(toMediaCardItem);
 }
 
-const DETAIL_APPEND = "credits,images,recommendations,similar,videos";
+const DETAIL_APPEND = "credits,images,recommendations,similar,videos,reviews";
 
 export async function getMovieDetails(id: string | number) {
   const raw = await serverApi<TMDBMovieDetails>(`/movie/${id}`, {
