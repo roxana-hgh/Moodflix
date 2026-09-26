@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -38,23 +39,26 @@ export function EditProfileDialog({ profile }: EditProfileDialogProps) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
- const {
-  register,
-  control,
-  handleSubmit,
-  reset,
-  formState: { errors },
-} = useForm<ProfileFormInput, any, UpdateProfileInput>({
-  resolver: zodResolver(updateProfileSchema),
-  defaultValues: {
-    name: profile.name,
-    age: profile.age ?? undefined,
-    gender: profile.gender ?? undefined,
-  },
-});
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<ProfileFormInput, any, UpdateProfileInput>({
+    resolver: zodResolver(updateProfileSchema),
+    defaultValues: {
+      name: profile.name,
+      age: profile.age ?? undefined,
+      gender: profile.gender ?? undefined,
+      bio: profile.bio ?? undefined,
+    },
+  });
 
+  const bioLength = watch("bio")?.length ?? 0;
 
-function onSubmit(values: UpdateProfileInput) {
+  function onSubmit(values: UpdateProfileInput) {
     startTransition(async () => {
       const result = await updateProfile(values);
 
@@ -66,8 +70,7 @@ function onSubmit(values: UpdateProfileInput) {
       toast.success("Profile updated");
       setOpen(false);
     });
-}
-
+  }
 
   return (
     <Dialog
@@ -78,9 +81,9 @@ function onSubmit(values: UpdateProfileInput) {
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="sm:ml-auto">
+        <Button variant="outline" size="xs">
           <Pencil className="h-4 w-4" />
-          Edit profile
+          <span className="text-xs">Edit profile</span>
         </Button>
       </DialogTrigger>
 
@@ -105,6 +108,21 @@ function onSubmit(values: UpdateProfileInput) {
             <Field className="gap-2">
               <FieldLabel className="text-sm px-1" htmlFor="email">Email</FieldLabel>
               <Input id="email" value={profile.email} disabled />
+            </Field>
+
+            <Field className="gap-2" data-invalid={!!errors.bio}>
+              <div className="flex items-center justify-between px-1">
+                <FieldLabel className="text-sm" htmlFor="bio">Bio</FieldLabel>
+                <span className="text-xs text-muted-foreground">{bioLength}/160</span>
+              </div>
+              <Textarea
+                id="bio"
+                rows={3}
+                placeholder="Tell people a bit about your taste in movies & shows..."
+                aria-invalid={!!errors.bio}
+                {...register("bio")}
+              />
+              <FieldError errors={errors.bio ? [errors.bio] : undefined} />
             </Field>
 
             <Field className="gap-2" data-invalid={!!errors.age}>

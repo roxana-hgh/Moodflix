@@ -19,7 +19,21 @@ export const updateProfileSchema = z.object({
       message: "Enter a valid age (13-120)",
     }),
   gender: genderEnum.optional(),
+
+bio: z.string().trim().max(160, "Bio must be under 160 characters").optional(),
 });
+
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+export const imageUploadSchema = z.object({
+  file: z
+    .instanceof(File)
+    .refine((f) => f.size <= MAX_IMAGE_SIZE, "Image must be under 5MB")
+    .refine((f) => ACCEPTED_TYPES.includes(f.type), "Only JPEG, PNG or WebP allowed"),
+});
+
+
 
 // Shape before parsing (what the form/inputs produce)
 export type ProfileFormInput = z.input<typeof updateProfileSchema>;

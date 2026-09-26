@@ -3,7 +3,6 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@/services/db/prisma";
 import { headers } from "next/headers";
 
-
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -12,23 +11,47 @@ export const auth = betterAuth({
     enabled: true,
   },
 
+  user: {
+    additionalFields: {
+      avatarUrl: {
+        type: "string",
+        required: false,
+        input: false,
+      },
+    },
+  },
+
   databaseHooks: {
     user: {
       create: {
         after: async (user) => {
           await prisma.list.createMany({
-           data: [
-            { userId: user.id, type: "WATCHLIST", name: "Watch Later", isPublic: false },
-            { userId: user.id, type: "FAVORITE", name: "Favorites", isPublic: false },
-            { userId: user.id, type: "WATCHED", name: "Watched", isPublic: false },
-          ],
+            data: [
+              {
+                userId: user.id,
+                type: "WATCHLIST",
+                name: "Watch Later",
+                isPublic: false,
+              },
+              {
+                userId: user.id,
+                type: "FAVORITE",
+                name: "Favorites",
+                isPublic: false,
+              },
+              {
+                userId: user.id,
+                type: "WATCHED",
+                name: "Watched",
+                isPublic: false,
+              },
+            ],
           });
         },
       },
     },
   },
 });
-
 
 export async function getCurrentUserId(): Promise<string | null> {
   const session = await auth.api.getSession({ headers: await headers() });

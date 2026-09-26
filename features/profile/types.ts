@@ -10,7 +10,12 @@ export interface Profile {
   email: string;
   age: number | null;
   gender: Gender | null;
+  bio: string | null;
+  avatarUrl: string | null;
+  bannerUrl: string | null;
 }
+
+
 
 export const GENDER_LABELS: Record<Gender, string> = {
   MALE: "Male",
@@ -26,6 +31,9 @@ export function toProfile(user: User): Profile {
     email: user.email,
     age: user.age,
     gender: user.gender as Gender | null,
+    bio: user.bio,
+    avatarUrl: user.avatarUrl,
+    bannerUrl: user.bannerUrl,
   };
 }
 

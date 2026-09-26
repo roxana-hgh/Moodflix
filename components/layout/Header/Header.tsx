@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Search, X, Menu, User as UserIcon, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -195,10 +195,10 @@ function Header() {
                       className="rounded-full "
                       aria-label="Open user menu"
                     >
+
                       <Avatar className="size-8">
-                        <AvatarFallback>
-                          {getInitials(session.user.name)}
-                        </AvatarFallback>
+                        <AvatarImage src={session.user.avatarUrl ?? undefined} alt={session.user.name} />
+                        <AvatarFallback>{getInitials(session.user.name)}</AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
@@ -274,9 +274,8 @@ function Header() {
                     <div className="flex flex-col gap-3">
                       <div className="flex items-center gap-3 px-1">
                         <Avatar className="size-10">
-                          <AvatarFallback>
-                            {getInitials(session.user.name)}
-                          </AvatarFallback>
+                          <AvatarImage src={session.user.avatarUrl ?? undefined} alt={session.user.name} />
+                          <AvatarFallback>{getInitials(session.user.name)}</AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col min-w-0">
                           <span className="text-sm font-medium truncate">

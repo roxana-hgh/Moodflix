@@ -1,7 +1,7 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { getInitials, GENDER_LABELS, type Profile } from "../types";
-import { EditProfileDialog } from "@/features/profile/components/edit-profile-dialog";
-
+import { BannerUpload } from "./banner-upload";
+import { AvatarUpload } from "./avatar-upload";
+import { EditProfileDialog } from "./edit-profile-dialog";
+import { GENDER_LABELS, type Profile } from "../types";
 
 interface ProfileHeaderProps {
   profile: Profile;
@@ -9,23 +9,37 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ profile }: ProfileHeaderProps) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
-      <Avatar className="size-18 text-xl">
-        <AvatarFallback className="bg-primary/10 text-primary text-xl font-semibold">
-          {getInitials(profile.name)}
-        </AvatarFallback>
-      </Avatar>
+    <div>
+      <BannerUpload bannerUrl={profile.bannerUrl} />
 
-      <div className="flex-1 min-w-0">
-        <h3 className="text-xl font-semibold truncate">{profile.name}</h3>
-        <p className="text-sm text-muted-foreground truncate">{profile.email}</p>
-        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-sm text-muted-foreground">
-          <span>{profile.age ? `${profile.age} years old` : "Age not set"}</span>
-          <span>{profile.gender ? GENDER_LABELS[profile.gender] : "Gender not set"}</span>
+      <div className="px-2">
+     
+        <div className="flex items-end justify-between">
+          <div className="-mt-8 sm:-mt-20 px-1">
+            <AvatarUpload name={profile.name} avatarUrl={profile.avatarUrl} />
+          </div>
+          <div className="py-2">
+            <EditProfileDialog profile={profile} />
+          </div>
+        </div>
+
+     
+        <div className="mt-3 min-w-0">
+          <h1 className="truncate text-xl font-semibold sm:text-2xl">{profile.name}</h1>
+          <p className="truncate text-sm text-muted-foreground">{profile.email}</p>
+
+          {(profile.age || profile.gender) && (
+            <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-sm text-muted-foreground">
+              {profile.age && <span>{profile.age} years old</span>}
+              {profile.gender && <span>{GENDER_LABELS[profile.gender]}</span>}
+            </div>
+          )}
+
+          {profile.bio && (
+            <p className="mt-3 max-w-xl text-sm text-foreground/90">{profile.bio}</p>
+          )}
         </div>
       </div>
-
-      <EditProfileDialog profile={profile} />
     </div>
   );
 }
