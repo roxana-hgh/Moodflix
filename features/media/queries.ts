@@ -1,6 +1,6 @@
 import 'server-only';
 import { serverApi } from '@/services/tmdb/client';
-import { toMediaCardItem, toMovieDetail, toSeasonDetail, toTVDetail } from './types';
+import { CastMember, toMediaCardItem, toMovieDetail, toSeasonDetail, toTVDetail } from './types';
 import type {
   TMDBPaginatedResponse,
   TMDBTVResult,
@@ -139,4 +139,29 @@ export async function getTopRatedTv(page = 1): Promise<MediaCardItem[]> {
 export async function getSeasonDetail(tvId: number, seasonNumber: number) {
   const raw = await serverApi<TMDBSeasonDetails>(`/tv/${tvId}/season/${seasonNumber}`);
   return toSeasonDetail(raw);
+}
+
+type TMDBCreditsResponse = {
+  cast: {
+    id: number;
+    name: string;
+    character: string;
+    profile_path: string | null;
+  }[];
+};
+
+export async function getMediaCast(
+  type: 'movie' | 'tv',
+  id: number
+): Promise<CastMember[]> {
+  const data = await serverApi<TMDBCreditsResponse>(`/${type}/${id}/credits`, {
+    next: { revalidate: 60 * 60 * 12 },
+  });
+
+  return data.cast.map((member) => ({
+    id: member.id,
+    name: member.name,
+    character: member.character,
+    profilePath: member.profile_path,
+  }));
 }

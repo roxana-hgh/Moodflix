@@ -1,61 +1,50 @@
-"use client";
+import { MediaCarousel } from "@/components/shared/Slider/media-carousel";
 
-import { useState } from "react";
-import Image from "next/image";
-import { ChevronDown } from "lucide-react";
-import { tmdbImageUrl } from "@/utils/image";
+import { FavoriteCharacterButton } from "@/features/characters/components/favorite-character-button";
 import type { CastMember } from "../types";
-import Link from "next/link";
+import { PortraitTile } from "@/features/media/components/portrait-tile";
 
-const PREVIEW_COUNT = 12;
+type Props = {
+  cast: CastMember[];
+  media: { tmdbId: number; mediaType: "movie" | "tv"; title: string };
+  favoriteNames: string[];
+};
 
-export function CastList({ cast }: { cast: CastMember[] }) {
-  const [expanded, setExpanded] = useState(false);
+export function CastList({ cast, media, favoriteNames }: Props) {
   if (cast.length === 0) return null;
-
-  const visible = expanded ? cast : cast.slice(0, PREVIEW_COUNT);
-  const hasMore = cast.length > PREVIEW_COUNT;
+  const favorites = new Set(favoriteNames);
 
   return (
     <div>
       <h2 className="mb-4 text-sm font-semibold text-primary">Cast</h2>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        {visible.map((member) => (
-          <Link key={member.id} href={`/person/${member.id}`} className="block">
-            <div  className="flex items-center gap-3 rounded-xl border border-border/60 bg-card/50 p-2">
-            <div className="relative size-10 sm:size-12 shrink-0 overflow-hidden rounded-full bg-muted">
-              {member.profilePath ? (
-                <Image
-                  src={tmdbImageUrl(member.profilePath)}
-                  alt={member.name}
-                  fill
-                  className="object-cover"
+      <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 6, xl: 7 }} autoplay={false}>
+        {cast.map((member, i) => (
+          <PortraitTile
+            key={`${member.id}-${i}`}
+            href={`/person/${member.id}`}
+            imagePath={member.profilePath}
+            imageAlt={member.name}
+            title={member.name}
+            subtitle={member.character || undefined}
+            action={
+              member.character ? (
+                <FavoriteCharacterButton
+                  initialFavorite={favorites.has(member.character)}
+                  character={{
+                    characterName: member.character,
+                    actorId: member.id,
+                    actorName: member.name,
+                    profilePath: member.profilePath,
+                    mediaTmdbId: media.tmdbId,
+                    mediaType: media.mediaType,
+                    mediaTitle: media.title,
+                  }}
                 />
-              ) : (
-                <div className="flex h-full items-center justify-center text-[10px] text-muted-foreground">
-                  {member.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
-                </div>
-              )}
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-xs sm:text-sm font-medium text-foreground">{member.name}</p>
-              <p className="truncate text-[10px] sm:text-xs text-muted-foreground">{member.character}</p>
-            </div>
-          </div>
-          </Link>
-          
+              ) : null
+            }
+          />
         ))}
-      </div>
-
-      {hasMore && (
-        <button
-          onClick={() => setExpanded((v) => !v)}
-          className="mt-4 flex items-center gap-1 text-xs font-medium text-primary hover:underline"
-        >
-          {expanded ? "Show less" : `Show all ${cast.length} cast members`}
-          <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
-        </button>
-      )}
+      </MediaCarousel>
     </div>
   );
 }

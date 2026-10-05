@@ -8,9 +8,9 @@ import { MediaCardCompact } from "@/components/media/media-card-compact";
 import { MediaCarousel } from "@/components/shared/Slider/media-carousel";
 import SectionWrapper from "@/components/layout/SectionWrapper";
 import SectionContext from "@/components/layout/SectionContext";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { RecentListsSection } from "@/features/lists/components/recent-lists-section";
+import { getFavoriteCharacters } from "@/features/characters/queries";
+import { FavoriteCharactersSection } from "@/features/characters/components/favorite-characters-section";
 
 async function ProfilePage() {
   const profile = await getCurrentUserProfile();
@@ -19,11 +19,12 @@ async function ProfilePage() {
     redirect("/login");
   }
 
-  const [favorites, watchlist, watched, recentLists] = await Promise.all([
+  const [favorites, watchlist, watched, recentLists, characters] = await Promise.all([
     getUserListByType(profile.id, "FAVORITE"),
     getUserListByType(profile.id, "WATCHLIST"),
     getUserListByType(profile.id, "WATCHED"),
     getRecentListsWithPreview(profile.id, 4, 4),
+     getFavoriteCharacters(profile.id, 20),
   ]);
 
   return (
@@ -64,6 +65,9 @@ async function ProfilePage() {
               )}
             </div>
           </SectionWrapper>
+
+          <FavoriteCharactersSection characters={characters} />
+
           <SectionWrapper>
             <div className="  mx-auto">
               <SectionContext title="Watchlist" buttonText="See all" ButtonLink="/profile/watchlist" />

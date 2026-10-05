@@ -1,4 +1,3 @@
-
 import { MediaDetailHero } from "./media-detail-hero";
 import { MediaInfoGrid } from "./media-info-grid";
 import { CastList } from "./cast-list";
@@ -12,49 +11,54 @@ import { getCurrentUserId } from "@/lib/auth";
 import { MediaCardItem } from "@/types/media";
 import { toListMediaType } from "@/features/lists/types";
 import { getFavoritedKeys, getWatchedKeys, toFavoritedKey } from "@/features/lists/queries";
+
 import { MediaCardWithActions } from "@/components/media/media-card-with-actions";
 import { VideoGallery } from "@/features/media/components/video-gallery";
 import { ReviewsSection } from "@/features/media/components/reviews-section";
+import { getFavoriteCharacterNames } from "@/features/characters/queries";
 
 export async function MediaDetailView({ detail, initialFavorited, initialWatchlisted, initialWatched }: { detail: MediaDetail; initialFavorited: boolean; initialWatchlisted: boolean; initialWatched: boolean }) {
   const userId = await getCurrentUserId();
 
   const allItems: MediaCardItem[] = [
-
     ...(detail.recommendations ?? []),
     ...(detail.similar ?? []),
   ];
 
-  const [favoritedKeys, watchedKeys] = userId
+  const [favoritedKeys, watchedKeys, favoriteCharacterNames] = userId
     ? await Promise.all([
       getFavoritedKeys(userId, allItems.map((item) => ({ tmdbId: item.id, mediaType: toListMediaType(item.mediaType) }))),
       getWatchedKeys(userId, allItems.map((item) => ({ tmdbId: item.id, mediaType: toListMediaType(item.mediaType) }))),
+      getFavoriteCharacterNames(userId, detail.mediaType, detail.id),
     ])
-    : [new Set<string>(), new Set<string>()];
+    : [new Set<string>(), new Set<string>(), [] as string[]];
 
   const isFavorited = (item: MediaCardItem) =>
     favoritedKeys.has(toFavoritedKey(item.id, toListMediaType(item.mediaType)));
   const isWatched = (item: MediaCardItem) =>
     watchedKeys.has(toFavoritedKey(item.id, toListMediaType(item.mediaType)));
 
-
-
   return (
     <div className="pb-16 -mt-(--header-height)">
-      <MediaDetailHero initialFavorited={initialFavorited}
+      <MediaDetailHero
+        initialFavorited={initialFavorited}
         initialWatchlisted={initialWatchlisted}
         initialWatched={initialWatched}
-        detail={detail} />
+        detail={detail}
+      />
 
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 pt-8 sm:px-6">
         <MediaInfoGrid detail={detail} />
         {detail.mediaType === "tv" && <SeasonsList tvId={detail.id} seasons={detail.seasons} />}
-        <CastList cast={detail.cast} />
+        <CastList
+          cast={detail.cast}
+          media={{ tmdbId: detail.id, mediaType: detail.mediaType, title: detail.title }}
+          favoriteNames={favoriteCharacterNames}
+        />
         <BackdropGallery backdrops={detail.backdrops} title={detail.title} />
         <VideoGallery videos={detail.videos} title={detail.title} />
         {detail.reviews.length > 0 && (
           <SectionWrapper>
-          
             <ReviewsSection reviews={detail.reviews} />
           </SectionWrapper>
         )}
@@ -64,7 +68,6 @@ export async function MediaDetailView({ detail, initialFavorited, initialWatchli
 
             <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }}>
               {detail.recommendations.map((item) => (
-
                 <MediaCardWithActions key={item.id} {...item} initialWatched={isWatched(item)} initialFavorited={isFavorited(item)} />
               ))}
             </MediaCarousel>
@@ -73,7 +76,6 @@ export async function MediaDetailView({ detail, initialFavorited, initialWatchli
 
         {detail.similar.length > 0 && (
           <SectionWrapper>
-
             <SectionContext title={`Similar ${detail.mediaType === "tv" ? "shows" : "movies"}`} />
 
             <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 5, xl: 6 }}>

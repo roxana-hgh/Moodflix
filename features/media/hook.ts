@@ -2,11 +2,11 @@
 
 import { buildDiscoverMovieParams, buildDiscoverTVParams, filtersToSearchParams } from "@/features/media/schema";
 import type { MediaDiscoverFilters, TVDiscoverFilters } from "@/features/media/schema";
-import { toMediaCardItem } from "@/features/media/types";
+import { CastMember, toMediaCardItem } from "@/features/media/types";
 import { clientApi } from "@/lib/api-client";
 import type { TMDBMovieResult, TMDBPaginatedResponse, TMDBTVResult } from "@/services/tmdb/types";
 import type { MediaCardItem } from "@/types/media";
-import { useInfiniteQuery, type InfiniteData } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, type InfiniteData } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
@@ -76,4 +76,18 @@ export function useSyncedDiscoverFilters(initialFilters: MediaDiscoverFilters) {
   );
 
   return [filters, setFilters] as const;
+}
+
+
+export function useMediaCast(mediaType: "movie" | "tv", tmdbId: number | null) {
+  return useQuery({
+    queryKey: ["media-cast", mediaType, tmdbId],
+    queryFn: async () => {
+      const res = await fetch(`/api/tmdb/${mediaType}/${tmdbId}/cast`);
+      if (!res.ok) throw new Error("Failed to load cast");
+      return (await res.json()) as CastMember[];
+    },
+    enabled: tmdbId !== null,
+    staleTime: 10 * 60_000,
+  });
 }

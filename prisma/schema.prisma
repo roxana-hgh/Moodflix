@@ -33,6 +33,7 @@ model User {
   bio            String?
 
   lists List[]
+  favoriteCharacters FavoriteCharacter[]
 
   @@unique([email])
   @@map("user")
@@ -130,4 +131,23 @@ model ListItem {
   @@unique([listId, tmdbId, mediaType])
   @@index([listId])
   @@map("list_item")
+}
+
+
+model FavoriteCharacter {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  characterName String
+  actorId       Int
+  actorName     String
+  profilePath   String?
+  mediaTmdbId   Int
+  mediaType     ListMediaType
+  mediaTitle    String
+  addedAt       DateTime      @default(now())
+
+  @@unique([userId, mediaTmdbId, mediaType, characterName])
+  @@index([userId, addedAt])
+  @@map("favorite_character")
 }
