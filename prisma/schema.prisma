@@ -32,8 +32,11 @@ model User {
   bannerPublicId String?
   bio            String?
 
-  lists List[]
+  lists              List[]
   favoriteCharacters FavoriteCharacter[]
+  reviews            Review[]
+  reviewLikes        ReviewLike[]
+  reviewComments     ReviewComment[]
 
   @@unique([email])
   @@map("user")
@@ -133,7 +136,6 @@ model ListItem {
   @@map("list_item")
 }
 
-
 model FavoriteCharacter {
   id            String        @id @default(cuid())
   userId        String
@@ -150,4 +152,106 @@ model FavoriteCharacter {
   @@unique([userId, mediaTmdbId, mediaType, characterName])
   @@index([userId, addedAt])
   @@map("favorite_character")
+}
+
+enum ReviewType {
+  SINGLE
+  LIST
+}
+
+enum ReviewStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Review {
+  id          String       @id @default(cuid())
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug        String       @unique
+  type        ReviewType
+  status      ReviewStatus @default(DRAFT)
+  title       String
+  excerpt     String?
+  coverUrl    String?
+  content     Json
+  hasSpoilers Boolean      @default(false)
+  loved       String[]
+  disliked    String[]
+
+  overall    Int?
+  directing  Int?
+  acting     Int?
+  screenplay Int?
+  visuals    Int?
+  music      Int?
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  media    ReviewMedia[]
+  images   ReviewImage[]
+  likes    ReviewLike[]
+  comments ReviewComment[]
+
+  @@index([userId, createdAt])
+  @@index([status, publishedAt])
+  @@map("review")
+}
+
+model ReviewLike {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviewId  String
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([userId, reviewId])
+  @@index([reviewId])
+  @@map("review_like")
+}
+
+model ReviewComment {
+  id        String          @id @default(cuid())
+  reviewId  String
+  review    Review          @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parentId  String?
+  parent    ReviewComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   ReviewComment[] @relation("CommentReplies")
+  body      String
+  createdAt DateTime        @default(now())
+
+  @@index([reviewId, createdAt])
+  @@map("review_comment")
+}
+
+model ReviewMedia {
+  id          String        @id @default(cuid())
+  reviewId    String
+  review      Review        @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  tmdbId      Int
+  mediaType   ListMediaType
+  title       String
+  posterPath  String?
+  releaseYear String?
+  position    Int           @default(0)
+
+  @@unique([reviewId, tmdbId, mediaType])
+  @@index([tmdbId, mediaType])
+  @@map("review_media")
+}
+
+model ReviewImage {
+  id       String  @id @default(cuid())
+  reviewId String?
+  review   Review? @relation(fields: [reviewId], references: [id], onDelete: SetNull)
+  userId   String
+  url      String
+  publicId String  @unique
+
+  @@index([userId])
+  @@map("review_image")
 }
