@@ -5,5 +5,10 @@ import StarterKit from "@tiptap/starter-kit";
 
 export function ReviewContent({ content }: { content: JSONContent }) {
   const html = generateHTML(content, [StarterKit, Image]);
-  return <div className="review-prose" dangerouslySetInnerHTML={{ __html: html }} />;
+  return (
+    <div
+      className="review-prose review-prose-article"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
 }

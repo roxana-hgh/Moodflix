@@ -38,7 +38,7 @@ export function ReviewHero({ review }: { review: ReviewDetail }) {
         </>
       )}
 
-      <div className="flex items-start gap-4 p-4 sm:items-center sm:gap-6 sm:p-5">
+      <div className="flex items-start max-sm:flex-col flex-wrap gap-3 p-3 sm:items-center sm:p-4 md:p-5">
         {/* Posters */}
         <div className="flex shrink-0 -space-x-6 sm:-space-x-8">
           {posters.map((item) => (
@@ -75,7 +75,7 @@ export function ReviewHero({ review }: { review: ReviewDetail }) {
             <p className={kickerClass}>{kicker}</p>
           )}
 
-          <h1 className="text-balance font-heading text-xl font-bold leading-tight sm:text-2xl">
+          <h1 className="text-balance font-heading text-lg md:text-xl font-bold leading-normal lg:text-2xl">
             {review.title}
           </h1>
 
