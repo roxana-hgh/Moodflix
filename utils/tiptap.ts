@@ -24,3 +24,7 @@ export function collectImageSrcs(node: TiptapNode, acc: string[] = []): string[]
   node.content?.forEach((child) => collectImageSrcs(child, acc));
   return acc;
 }
+// ProseMirror attrs have a null prototype, which React can't serialize for Server Actions.
+export function toPlainJson<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}

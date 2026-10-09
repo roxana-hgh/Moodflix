@@ -79,15 +79,7 @@ export default async function Home() {
         </div>
       </SectionWrapper>
 
-      <div className="max-w-6xl px-4 sm:px-6 mx-auto w-full">
-        <ReviewsSection
-          title="Latest Reviews"
-          seeAllHref="/reviews"
-          reviews={latestReviews}
-          isAuthenticated={userId !== null}
-          emptyText="No reviews yet. Be the first to write one!"
-        />
-      </div>
+    
 
       <SectionWrapper>
         <div className="max-w-6xl px-4 sm:px-6 mx-auto">
@@ -132,6 +124,15 @@ export default async function Home() {
           </MediaCarousel>
         </div>
       </SectionWrapper>
+        <div className="max-w-6xl px-4 sm:px-6 mx-auto w-full">
+        <ReviewsSection
+          title="Latest Reviews"
+          seeAllHref="/reviews"
+          reviews={latestReviews}
+          isAuthenticated={userId !== null}
+          emptyText="No reviews yet. Be the first to write one!"
+        />
+      </div>
     </div>
   );
 }

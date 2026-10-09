@@ -37,8 +37,8 @@ export function DeleteReviewButton({ reviewId }: { reviewId: string }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button type="button" variant="outline" size="sm" className="gap-1.5 text-destructive">
-          <Trash2 className="size-4" /> Delete
+        <Button type="button" variant="ghost" size="sm" className="gap-1 text-destructive">
+          <Trash2 className="size-3.5" /> <span className="text-xs">Delete</span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

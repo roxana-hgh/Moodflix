@@ -17,6 +17,7 @@ import { BulletListInput } from "./bullet-list-input";
 import { MediaPicker } from "./media-picker";
 import { RatingInput } from "./rating-input";
 import { ReviewEditor } from "./review-editor";
+import { toPlainJson } from "@/utils/tiptap";
 
 interface ReviewFormProps {
   initial?: { id: string; status: "DRAFT" | "PUBLISHED"; data: ReviewInput };
@@ -58,19 +59,19 @@ export function ReviewForm({ initial }: ReviewFormProps) {
     RATING_CRITERIA.forEach(({ key }) => setValue(key, undefined));
   }
 
-  function submit(status: "DRAFT" | "PUBLISHED") {
-    void form.handleSubmit((data) => {
-      startTransition(async () => {
-        const result = await saveReview({ id: initial?.id, status, data });
-        if (!result.ok) {
-          toast.error(result.error);
-          return;
-        }
-        toast.success(status === "PUBLISHED" ? "Review published" : "Draft saved");
-        router.push(`/reviews/${result.data.slug}`);
-      });
-    })();
-  }
+function submit(status: "DRAFT" | "PUBLISHED") {
+  void form.handleSubmit((data) => {
+    startTransition(async () => {
+      const result = await saveReview(toPlainJson({ id: initial?.id, status, data }));
+      if (!result.ok) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success(status === "PUBLISHED" ? "Review published" : "Draft saved");
+      router.push(`/reviews/${result.data.slug}`);
+    });
+  })();
+}
 
   const isPublished = initial?.status === "PUBLISHED";
 

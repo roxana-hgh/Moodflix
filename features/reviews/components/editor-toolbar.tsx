@@ -83,7 +83,8 @@ export function EditorToolbar({ editor, onImageClick }: EditorToolbarProps) {
     <div
       role="toolbar"
       aria-label="Text formatting"
-      className="sticky top-0 z-10 flex items-center gap-0.5 overflow-x-auto rounded-t-lg border-b bg-card/95 p-1.5 backdrop-blur"
+      // className="sticky top-0 z-10 flex items-center gap-0.5 overflow-x-auto rounded-t-lg border-b bg-card/95 p-1.5 backdrop-blur"
+      className="flex shrink-0 items-center gap-0.5 overflow-x-auto border-b bg-card p-1.5"
     >
       <ToolbarToggle label="Bold" icon={Bold} pressed={state.bold} onPressedChange={() => chain().toggleBold().run()} />
       <ToolbarToggle label="Italic" icon={Italic} pressed={state.italic} onPressedChange={() => chain().toggleItalic().run()} />

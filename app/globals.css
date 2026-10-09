@@ -270,14 +270,11 @@ html {
 
 @layer components {
 
-
-  /* placeholder ادیتور */
   .tiptap p.is-editor-empty:first-child::before {
     @apply pointer-events-none float-left h-0 text-muted-foreground;
     content: attr(data-placeholder);
   }
 
-  /* انتخاب عکس داخل ادیتور */
   .tiptap img.ProseMirror-selectednode {
     @apply outline-2 outline-offset-2 outline-primary;
   }
@@ -287,7 +284,8 @@ html {
   .review-prose {
     @apply prose max-w-none text-foreground
       prose-headings:font-heading prose-headings:text-foreground
-      prose-p:text-foreground prose-li:text-foreground
+      prose-p:text-neutral-200 prose-p:font-normal prose-p:text-justify prose-p:text-base prose-p:leading-relaxed
+      prose-li:text-foreground
       prose-strong:text-foreground prose-em:text-foreground
       prose-blockquote:border-primary prose-blockquote:text-muted-foreground
       prose-a:text-primary prose-hr:border-border

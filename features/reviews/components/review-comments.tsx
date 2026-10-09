@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { timeAgo } from "@/utils/format";
 import { addReviewComment, deleteReviewComment } from "../actions";
 import type { ReviewCommentItem } from "../types";
+import { Badge } from "@/components/ui/badge";
 
 interface CommentFormProps {
   reviewId: string;
@@ -128,7 +129,7 @@ interface ReviewCommentsProps {
 export function ReviewComments({ reviewId, reviewOwnerId, comments, totalCount, viewerId }: ReviewCommentsProps) {
   return (
     <section id="comments" className="flex scroll-mt-24 flex-col gap-5">
-      <h2 className="font-heading text-xl font-semibold">Comments ({totalCount})</h2>
+      <h2 className="font-heading text-base font-semibold">Comments <Badge variant="outline">{totalCount}</Badge></h2>
 
       {viewerId ? (
         <CommentForm reviewId={reviewId} placeholder="Share your thoughts..." />
