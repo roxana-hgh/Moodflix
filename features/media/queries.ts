@@ -99,6 +99,57 @@ export async function getMovieGenres(): Promise<TMDBGenre[]> {
   return data.genres;
 }
 
+export async function getMediaGenreIds(
+  type: 'MOVIE' | 'TV',
+  id: number
+): Promise<number[]> {
+  const path = type === 'MOVIE' ? `/movie/${id}` : `/tv/${id}`;
+  const data = await serverApi<{ genres: TMDBGenre[] }>(path, {
+    next: { revalidate: 60 * 60 * 12 },
+  });
+  return data.genres.map((g) => g.id);
+}
+
+export interface MediaMeta {
+  genreIds: number[];
+  runtimeMinutes: number | null;
+  voteAverage: number | null;
+}
+
+export async function getMediaMeta(type: 'MOVIE' | 'TV', id: number): Promise<MediaMeta> {
+  if (type === 'MOVIE') {
+    const d = await serverApi<{
+      genres: TMDBGenre[];
+      runtime: number | null;
+      vote_average: number;
+    }>(`/movie/${id}`, { next: { revalidate: 60 * 60 * 12 } });
+
+    return {
+      genreIds: d.genres.map((g) => g.id),
+      runtimeMinutes: d.runtime || null,
+      voteAverage: d.vote_average || null,
+    };
+  }
+
+  const d = await serverApi<{
+    genres: TMDBGenre[];
+    episode_run_time: number[];
+    number_of_episodes: number;
+    last_episode_to_air: { runtime: number | null } | null;
+    vote_average: number;
+  }>(`/tv/${id}`, { next: { revalidate: 60 * 60 * 12 } });
+
+  const perEpisode = d.episode_run_time?.[0] || d.last_episode_to_air?.runtime || null;
+
+  return {
+    genreIds: d.genres.map((g) => g.id),
+    runtimeMinutes: perEpisode && d.number_of_episodes ? perEpisode * d.number_of_episodes : null,
+    voteAverage: d.vote_average || null,
+  };
+}
+
+export const EMPTY_MEDIA_META: MediaMeta = { genreIds: [], runtimeMinutes: null, voteAverage: null };
+
 
 export async function getPopularMovies(page = 1): Promise<MediaCardItem[]> {
   const data = await serverApi<TMDBPaginatedResponse<TMDBMovieResult>>('/movie/popular', {

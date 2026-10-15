@@ -129,6 +129,9 @@ model ListItem {
   title       String
   posterPath  String?
   releaseYear String?
+  genreIds    Int[]    @default([])
+  runtimeMinutes Int?    
+  voteAverage    Float? 
   addedAt     DateTime      @default(now())
 
   @@unique([listId, tmdbId, mediaType])

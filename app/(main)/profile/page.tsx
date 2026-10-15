@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUserProfile } from "@/features/profile/queries";
 import { ProfileHeader } from "@/features/profile/components/profile-header";
 import { getRecentListsWithPreview, getUserListByType } from "@/features/lists/queries";
-import { toListCardItem } from "@/features/lists/types";
+import { buildWatchedCharts, buildWatchedStats, toListCardItem } from "@/features/lists/types";
 
 import { MediaCardCompact } from "@/components/media/media-card-compact";
 import { MediaCarousel } from "@/components/shared/Slider/media-carousel";
@@ -13,6 +13,8 @@ import { getFavoriteCharacters } from "@/features/characters/queries";
 import { FavoriteCharactersSection } from "@/features/characters/components/favorite-characters-section";
 import { getUserReviews } from "@/features/reviews/queries";
 import { ReviewsSection } from "@/features/reviews/components/reviews-section";
+import { getMovieGenres, getTVGenres } from "@/features/media/queries";
+import { WatchedStatsSection } from "@/features/profile/components/watched-stats-section";
 
 async function ProfilePage() {
   const profile = await getCurrentUserProfile();
@@ -21,20 +23,27 @@ async function ProfilePage() {
     redirect("/login");
   }
 
-  const [favorites, watchlist, watched, recentLists, characters, reviews] = await Promise.all([
+  const [favorites, watchlist, watched, recentLists, characters, reviews, movieGenres, tvGenres] = await Promise.all([
     getUserListByType(profile.id, "FAVORITE"),
     getUserListByType(profile.id, "WATCHLIST"),
     getUserListByType(profile.id, "WATCHED"),
     getRecentListsWithPreview(profile.id, 4, 4),
     getFavoriteCharacters(profile.id, 20),
     getUserReviews(profile.id, { take: 6, includeDrafts: true }, profile.id),
+    getMovieGenres(),
+    getTVGenres(),
   ]);
+
+  const stats = buildWatchedStats(watched, movieGenres, tvGenres);
+const charts = buildWatchedCharts(watched, movieGenres, tvGenres);
+
 
   return (
     <div className="h-full py-5">
-      <div className="container h-full mx-auto">
+      <div className="max-w-6xl h-full mx-auto">
         <div className="flex flex-col h-full gap-6">
           <ProfileHeader profile={profile} />
+          <WatchedStatsSection stats={stats} charts={charts} />
           <SectionWrapper>
             <div className="  mx-auto">
               <SectionContext title="Watched" buttonText="See all" ButtonLink="/profile/watched" />

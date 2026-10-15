@@ -17,10 +17,26 @@ import {
   type UpdateListInput,
   type DeleteListInput,
 } from "./schema";
-import { toListSummary, type ListSummary, type ListMediaType, type ListWithPreview } from "./types";
-import { getItemListIds, getFavoritedKeys, getUserListsWithPreview, getWatchedKeys } from "./queries";
+import {
+  toListSummary,
+  type ListSummary,
+  type ListMediaType,
+  type ListWithPreview,
+} from "./types";
+import {
+  getItemListIds,
+  getFavoritedKeys,
+  getUserListsWithPreview,
+  getWatchedKeys,
+} from "./queries";
+import {
+  EMPTY_MEDIA_META,
+  getMediaGenreIds,
+  getMediaMeta,
+} from "@/features/media/queries";
 
-type ActionResult<T = void> = { success: true; data: T } | { success: false; error: string };
+type ActionResult<T = void> =
+  { success: true; data: T } | { success: false; error: string };
 
 async function requireUserId(): Promise<string> {
   const userId = await getCurrentUserId();
@@ -39,13 +55,21 @@ function revalidateListPaths(listId?: string) {
   if (listId) revalidatePath(`/lists/${listId}`);
 }
 
-export async function createCustomList(input: CreateListInput): Promise<ActionResult<ListSummary>> {
+export async function createCustomList(
+  input: CreateListInput,
+): Promise<ActionResult<ListSummary>> {
   const userId = await requireUserId();
   const parsed = createListSchema.safeParse(input);
-  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
+  if (!parsed.success)
+    return { success: false, error: parsed.error.issues[0].message };
 
   const list = await prisma.list.create({
-    data: { userId, type: "CUSTOM", name: parsed.data.name, isPublic: parsed.data.isPublic },
+    data: {
+      userId,
+      type: "CUSTOM",
+      name: parsed.data.name,
+      isPublic: parsed.data.isPublic,
+    },
     include: { _count: { select: { items: true } } },
   });
 
@@ -53,15 +77,19 @@ export async function createCustomList(input: CreateListInput): Promise<ActionRe
   return { success: true, data: toListSummary(list) };
 }
 
-export async function updateList(input: UpdateListInput): Promise<ActionResult<ListSummary>> {
+export async function updateList(
+  input: UpdateListInput,
+): Promise<ActionResult<ListSummary>> {
   const userId = await requireUserId();
   const parsed = updateListSchema.safeParse(input);
-  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
+  if (!parsed.success)
+    return { success: false, error: parsed.error.issues[0].message };
   const { listId, name, isPublic } = parsed.data;
 
   const list = await prisma.list.findFirst({ where: { id: listId, userId } });
   if (!list) return { success: false, error: "List not found." };
-  if (list.type !== "CUSTOM") return { success: false, error: "Default lists can't be renamed." };
+  if (list.type !== "CUSTOM")
+    return { success: false, error: "Default lists can't be renamed." };
 
   const updated = await prisma.list.update({
     where: { id: listId },
@@ -73,15 +101,19 @@ export async function updateList(input: UpdateListInput): Promise<ActionResult<L
   return { success: true, data: toListSummary(updated) };
 }
 
-export async function deleteList(input: DeleteListInput): Promise<ActionResult> {
+export async function deleteList(
+  input: DeleteListInput,
+): Promise<ActionResult> {
   const userId = await requireUserId();
   const parsed = deleteListSchema.safeParse(input);
-  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
+  if (!parsed.success)
+    return { success: false, error: parsed.error.issues[0].message };
   const { listId } = parsed.data;
 
   const list = await prisma.list.findFirst({ where: { id: listId, userId } });
   if (!list) return { success: false, error: "List not found." };
-  if (list.type !== "CUSTOM") return { success: false, error: "Default lists can't be deleted." };
+  if (list.type !== "CUSTOM")
+    return { success: false, error: "Default lists can't be deleted." };
 
   await prisma.list.delete({ where: { id: listId } });
 
@@ -89,18 +121,34 @@ export async function deleteList(input: DeleteListInput): Promise<ActionResult> 
   return { success: true, data: undefined };
 }
 
-export async function addItemToList(input: AddToListInput): Promise<ActionResult> {
+export async function addItemToList(
+  input: AddToListInput,
+): Promise<ActionResult> {
   const userId = await requireUserId();
   const parsed = addToListSchema.safeParse(input);
-  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
-  const { listId, tmdbId, mediaType, title, posterPath, releaseYear } = parsed.data;
+  if (!parsed.success)
+    return { success: false, error: parsed.error.issues[0].message };
+  const { listId, tmdbId, mediaType, title, posterPath, releaseYear } =
+    parsed.data;
 
   const list = await prisma.list.findFirst({ where: { id: listId, userId } });
   if (!list) return { success: false, error: "List not found." };
 
+  const meta = await getMediaMeta(mediaType, tmdbId).catch(
+    () => EMPTY_MEDIA_META,
+  );
+
   await prisma.listItem.upsert({
     where: { listId_tmdbId_mediaType: { listId, tmdbId, mediaType } },
-    create: { listId, tmdbId, mediaType, title, posterPath, releaseYear: releaseYear ?? null },
+    create: {
+      listId,
+      tmdbId,
+      mediaType,
+      title,
+      posterPath,
+      releaseYear: releaseYear ?? null,
+      ...meta,
+    },
     update: {},
   });
 
@@ -108,10 +156,13 @@ export async function addItemToList(input: AddToListInput): Promise<ActionResult
   return { success: true, data: undefined };
 }
 
-export async function removeItemFromList(input: RemoveFromListInput): Promise<ActionResult> {
+export async function removeItemFromList(
+  input: RemoveFromListInput,
+): Promise<ActionResult> {
   const userId = await requireUserId();
   const parsed = removeFromListSchema.safeParse(input);
-  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
+  if (!parsed.success)
+    return { success: false, error: parsed.error.issues[0].message };
   const { listId, tmdbId, mediaType } = parsed.data;
 
   const list = await prisma.list.findFirst({ where: { id: listId, userId } });
@@ -124,15 +175,20 @@ export async function removeItemFromList(input: RemoveFromListInput): Promise<Ac
 }
 
 export async function toggleQuickList(
-  input: ToggleQuickListInput
+  input: ToggleQuickListInput,
 ): Promise<ActionResult<{ added: boolean }>> {
   const userId = await requireUserId();
   const parsed = toggleQuickListSchema.safeParse(input);
-  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
-  const { listType, tmdbId, mediaType, title, posterPath, releaseYear } = parsed.data;
+  if (!parsed.success)
+    return { success: false, error: parsed.error.issues[0].message };
+  const { listType, tmdbId, mediaType, title, posterPath, releaseYear } =
+    parsed.data;
 
-  const list = await prisma.list.findFirst({ where: { userId, type: listType } });
-  if (!list) return { success: false, error: `Default ${listType} list not found.` };
+  const list = await prisma.list.findFirst({
+    where: { userId, type: listType },
+  });
+  if (!list)
+    return { success: false, error: `Default ${listType} list not found.` };
 
   const existing = await prisma.listItem.findUnique({
     where: { listId_tmdbId_mediaType: { listId: list.id, tmdbId, mediaType } },
@@ -143,15 +199,28 @@ export async function toggleQuickList(
     revalidateListPaths(list.id);
     return { success: true, data: { added: false } };
   }
+  const meta = await getMediaMeta(mediaType, tmdbId).catch(
+    () => EMPTY_MEDIA_META,
+  );
 
   await prisma.listItem.create({
-    data: { listId: list.id, tmdbId, mediaType, title, posterPath, releaseYear: releaseYear ?? null },
+    data: {
+      listId: list.id,
+      tmdbId,
+      mediaType,
+      title,
+      posterPath,
+      releaseYear: releaseYear ?? null,
+      ...meta,
+    },
   });
   revalidateListPaths(list.id);
   return { success: true, data: { added: true } };
 }
 
-export async function getUserListsAction(): Promise<ActionResult<ListSummary[]>> {
+export async function getUserListsAction(): Promise<
+  ActionResult<ListSummary[]>
+> {
   const userId = await requireUserId();
   const lists = await prisma.list.findMany({
     where: { userId },
@@ -161,7 +230,9 @@ export async function getUserListsAction(): Promise<ActionResult<ListSummary[]>>
   return { success: true, data: lists.map(toListSummary) };
 }
 
-export async function getUserListsWithPreviewAction(): Promise<ActionResult<ListWithPreview[]>> {
+export async function getUserListsWithPreviewAction(): Promise<
+  ActionResult<ListWithPreview[]>
+> {
   const userId = await requireUserId();
   const lists = await getUserListsWithPreview(userId);
   return { success: true, data: lists };
@@ -169,7 +240,7 @@ export async function getUserListsWithPreviewAction(): Promise<ActionResult<List
 
 export async function getItemListIdsAction(
   tmdbId: number,
-  mediaType: ListMediaType
+  mediaType: ListMediaType,
 ): Promise<ActionResult<string[]>> {
   const userId = await requireUserId();
   const listIds = await getItemListIds(userId, tmdbId, mediaType);
@@ -177,7 +248,7 @@ export async function getItemListIdsAction(
 }
 
 export async function getFavoritedKeysAction(
-  items: { tmdbId: number; mediaType: ListMediaType }[]
+  items: { tmdbId: number; mediaType: ListMediaType }[],
 ): Promise<ActionResult<string[]>> {
   const userId = await getCurrentUserId();
   if (!userId) return { success: true, data: [] };
@@ -186,7 +257,7 @@ export async function getFavoritedKeysAction(
 }
 
 export async function getWatchedKeysAction(
-  items: { tmdbId: number; mediaType: ListMediaType }[]
+  items: { tmdbId: number; mediaType: ListMediaType }[],
 ): Promise<ActionResult<string[]>> {
   const userId = await getCurrentUserId();
   if (!userId) return { success: true, data: [] };

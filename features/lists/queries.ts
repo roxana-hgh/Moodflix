@@ -13,6 +13,7 @@ import {
   type ListType,
   toListDetail,
   ListDetail,
+  GenreStat,
 } from "./types";
 
 export async function getUserLists(userId: string): Promise<ListSummary[]> {
@@ -177,4 +178,22 @@ export async function getUserListDetailByType(
   });
   if (!list) return null;
   return toListDetail(list, true);
+}
+
+export async function getWatchedGenreStats(userId: string): Promise<GenreStat[]> {
+  const items = await prisma.listItem.findMany({
+    where: { list: { userId, type: "WATCHED" } },
+    select: { genreIds: true, mediaType: true },
+  });
+
+  const counts = new Map<string, GenreStat>();
+  for (const { genreIds, mediaType } of items) {
+    for (const genreId of genreIds) {
+      const key = `${mediaType}:${genreId}`;
+      const stat = counts.get(key) ?? { genreId, mediaType: mediaType as ListMediaType, count: 0 };
+      stat.count += 1;
+      counts.set(key, stat);
+    }
+  }
+  return [...counts.values()];
 }

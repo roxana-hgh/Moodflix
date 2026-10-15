@@ -72,7 +72,7 @@ export function AvatarUpload({ name, avatarUrl }: AvatarUploadProps) {
       <div className="group relative">
         <Avatar className="size-18 border-2 border-primary/90 shadow-md sm:size-22">
           <AvatarImage src={preview ?? undefined} alt={name} />
-          <AvatarFallback className="bg-background/80 text-2xl font-semibold text-primary">
+          <AvatarFallback className="bg-background/90 backdrop-blur-md w-full h-full text-2xl font-semibold text-primary">
             {getInitials(name)}
           </AvatarFallback>
         </Avatar>
