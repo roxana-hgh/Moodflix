@@ -17,7 +17,7 @@ export function CastList({ cast, media, favoriteNames }: Props) {
   return (
     <div>
       <h2 className="mb-4 text-sm font-semibold text-primary">Cast</h2>
-      <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 6, xl: 7 }} autoplay={false}>
+      <MediaCarousel itemsPerView={{ base: 3, sm: 4, md: 5, lg: 6, xl: 8 }} autoplay={false}>
         {cast.map((member, i) => (
           <PortraitTile
             key={`${member.id}-${i}`}

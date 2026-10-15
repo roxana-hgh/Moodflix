@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 
-type BasisCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+type BasisCount = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
 type ResponsiveBasis = {
   base?: BasisCount; // items visible on mobile (default 2)
@@ -105,6 +105,7 @@ const BASIS_MAP: Record<keyof ResponsiveBasis, Record<number, string>> = {
     6: "lg:basis-1/6",
     7: "lg:basis-[calc(100%/7)]",
     8: "lg:basis-[calc(100%/8)]",
+    9: "lg:basis-[calc(100%/9)]",
   },
   xl: {
     1: "xl:basis-full",
@@ -115,6 +116,8 @@ const BASIS_MAP: Record<keyof ResponsiveBasis, Record<number, string>> = {
     6: "xl:basis-1/6",
     7: "xl:basis-[calc(100%/7)]",
     8: "xl:basis-[calc(100%/8)]",
+    9: "xl:basis-[calc(100%/9)]",
+    10: "xl:basis-[calc(100%/10)]",
   },
 };
 

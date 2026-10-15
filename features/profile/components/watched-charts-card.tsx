@@ -140,7 +140,7 @@ export function WatchedChartsCard({ charts }: { charts: WatchedCharts }) {
   const reset = () => setExpanded(false);
 
   return (
-    <Card className="h-full bg-card/60">
+    <Card className="h-full bg-card/60 ">
       <CardHeader className="gap-4">
         {/* Main view switcher: underline style */}
         <div role="tablist" className="flex gap-1 border-b">
@@ -202,9 +202,9 @@ export function WatchedChartsCard({ charts }: { charts: WatchedCharts }) {
               }}
             >
               <TabsList className="grid w-full grid-cols-3 sm:w-auto">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="movie">Movies</TabsTrigger>
-                <TabsTrigger value="tv">TV</TabsTrigger>
+                <TabsTrigger className="flex items-center justify-center" value="all"><span className="text-xs">All</span></TabsTrigger>
+                <TabsTrigger className="flex items-center justify-center" value="movie"><span className="text-xs">Movies</span></TabsTrigger>
+                <TabsTrigger className="flex items-center justify-center" value="tv"><span className="text-xs">TV</span></TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
@@ -235,7 +235,7 @@ export function WatchedChartsCard({ charts }: { charts: WatchedCharts }) {
             className="w-full gap-1 text-muted-foreground"
             onClick={() => setExpanded((v) => !v)}
           >
-            {expanded ? "Show less" : `Show all ${data.length} genres`}
+            <span className="text-xs sm:text-sm" >{expanded ? "Show less" : `Show all ${data.length} genres`}</span>
             <ChevronDown className={cn("h-4 w-4 transition-transform", expanded && "rotate-180")} />
           </Button>
         </CardFooter>

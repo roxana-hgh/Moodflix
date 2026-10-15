@@ -112,73 +112,75 @@ export function MediaDetailHero({
           )}
 
           <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground ">{overview}</p>
+          <div className="w-full flex flex-col sm:flex-row sm:items-center gap-2">
+            {detail.trailerKey && <WatchTrailerButton trailerKey={detail.trailerKey} title={title} />}
+            <div className="flex flex-wrap gap-2 pt-1">
 
-          <div className="flex flex-wrap gap-2 pt-1">
-             {detail.trailerKey && <WatchTrailerButton trailerKey={detail.trailerKey} title={title} />}
-            <AddToListDialog
-              tmdbId={id}
-              mediaType={mediaType}
-              title={title}
-              posterPath={posterPath}
-              releaseYear={releaseYear}
-              trigger={
-                <Button className="gap-2 rounded-full">
-                  <ListPlus className="h-4 w-4" /> Add to List
-                </Button>
-              }
-            />
+              <AddToListDialog
+                tmdbId={id}
+                mediaType={mediaType}
+                title={title}
+                posterPath={posterPath}
+                releaseYear={releaseYear}
+                trigger={
+                  <Button className="gap-1 rounded-full">
+                    <ListPlus className="h-3.5 w-3.5" /> <span className="text-xs sm:text-sm">Add to List</span>
+                  </Button>
+                }
+              />
 
-            <QuickListButton
-              listType="WATCHED"
-              tmdbId={id}
-              mediaType={mediaType}
-              title={title}
-              posterPath={posterPath}
-              releaseYear={releaseYear}
-              initialActive={initialWatched}
-              variant="outline"
-              size="icon"
-              className={outlineToggleClass}
-              label="Mark as watched"
-              activeLabel="Remove from watched"
-              icon={<CheckCircle className="h-4 w-4" />}
-              activeIcon={<CheckCircle className="h-4 w-4 stroke-primary text-primary" />}
-            />
+              <QuickListButton
+                listType="WATCHED"
+                tmdbId={id}
+                mediaType={mediaType}
+                title={title}
+                posterPath={posterPath}
+                releaseYear={releaseYear}
+                initialActive={initialWatched}
+                variant="outline"
+                size="icon"
+                className={outlineToggleClass}
+                label="Mark as watched"
+                activeLabel="Remove from watched"
+                icon={<CheckCircle className="h-4 w-4" />}
+                activeIcon={<CheckCircle className="h-4 w-4 stroke-primary text-primary" />}
+              />
 
-            {initialWatched}
+              {initialWatched}
 
-            <QuickListButton
-              listType="WATCHLIST"
-              tmdbId={id}
-              mediaType={mediaType}
-              title={title}
-              posterPath={posterPath}
-              releaseYear={releaseYear}
-              initialActive={initialWatchlisted}
-              variant="outline"
-              size="icon"
-              className={outlineToggleClass}
-              label="Add to watch later"
-              activeLabel="Remove from watch later"
-              icon={<Bookmark className="h-4 w-4" />}
-              activeIcon={<Bookmark className="h-4 w-4 fill-primary text-primary" />}
-            />
-            <QuickListButton
-              listType="FAVORITE"
-              tmdbId={id}
-              mediaType={mediaType}
-              title={title}
-              posterPath={posterPath}
-              releaseYear={releaseYear}
-              initialActive={initialFavorited}
-              variant="outline"
-              size="icon"
-              className={outlineToggleClass}
-              label="Add to favorites"
-              activeLabel="Remove from favorites"
-              icon={<Heart className="h-4 w-4" />}
-              activeIcon={<Heart className="h-4 w-4 fill-primary text-primary" />}
-            />
+              <QuickListButton
+                listType="WATCHLIST"
+                tmdbId={id}
+                mediaType={mediaType}
+                title={title}
+                posterPath={posterPath}
+                releaseYear={releaseYear}
+                initialActive={initialWatchlisted}
+                variant="outline"
+                size="icon"
+                className={outlineToggleClass}
+                label="Add to watch later"
+                activeLabel="Remove from watch later"
+                icon={<Bookmark className="h-4 w-4" />}
+                activeIcon={<Bookmark className="h-4 w-4 fill-primary text-primary" />}
+              />
+              <QuickListButton
+                listType="FAVORITE"
+                tmdbId={id}
+                mediaType={mediaType}
+                title={title}
+                posterPath={posterPath}
+                releaseYear={releaseYear}
+                initialActive={initialFavorited}
+                variant="outline"
+                size="icon"
+                className={outlineToggleClass}
+                label="Add to favorites"
+                activeLabel="Remove from favorites"
+                icon={<Heart className="h-4 w-4" />}
+                activeIcon={<Heart className="h-4 w-4 fill-primary text-primary" />}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -40,7 +40,7 @@ const charts = buildWatchedCharts(watched, movieGenres, tvGenres);
 
   return (
     <div className="h-full py-5">
-      <div className="max-w-6xl h-full mx-auto">
+      <div className="max-w-6xl px-4 sm:px-6 mx-auto h-full">
         <div className="flex flex-col h-full gap-6">
           <ProfileHeader profile={profile} />
           <WatchedStatsSection stats={stats} charts={charts} />

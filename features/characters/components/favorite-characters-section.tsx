@@ -33,7 +33,7 @@ export function FavoriteCharactersSection({ characters }: { characters: Favorite
         {characters.length === 0 ? (
           <p className="py-3 text-center text-sm text-muted-foreground">No favorite characters yet.</p>
         ) : (
-          <MediaCarousel itemsPerView={{ base: 2, sm: 3, md: 4, lg: 6, xl: 8 }} autoplay={false}>
+          <MediaCarousel itemsPerView={{ base: 3, sm: 4, md: 5, lg: 6, xl: 9 }} autoplay={false}>
             {characters.map((c) => (
               <PortraitTile
                 key={c.id}

@@ -26,13 +26,13 @@ export function PortraitTile({ href, imagePath, imageAlt, title, subtitle, actio
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
       ) : (
-        <div className="flex h-full items-center justify-center text-xl font-semibold text-muted-foreground">
+        <div className="flex h-full items-center justify-center text-base sm:text-xl font-semibold text-muted-foreground">
           {title.split(" ").map((n) => n[0]).slice(0, 2).join("")}
         </div>
       )}
       <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent px-2.5 pb-2.5 pt-12">
-        <p className="line-clamp-2 text-sm font-semibold leading-tight text-white">{title}</p>
-        {subtitle && <p className="mt-0.5 truncate text-xs text-white/70">{subtitle}</p>}
+        <p className="line-clamp-2 text-[0.8rem] sm:text-sm font-semibold leading-tight text-white">{title}</p>
+        {subtitle && <p className="mt-0.5 truncate text-[11px] sm:text-xs text-white/70">{subtitle}</p>}
       </div>
     </>
   );

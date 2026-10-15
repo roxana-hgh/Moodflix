@@ -15,8 +15,8 @@ export function WatchTrailerButton({ trailerKey, title }: WatchTrailerButtonProp
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} variant="secondary" className="gap-2 rounded-full">
-        <Play className="h-4 w-4 fill-current" /> Watch Trailer
+      <Button onClick={() => setOpen(true)} variant="secondary" className="gap-1 rounded-full w-fit">
+        <Play className="h-3.5 w-3.5 fill-current" />  <span className="text-xs sm:text-sm">Watch Trailer</span>
       </Button>
 
       <YoutubeDialog open={open} onOpenChange={setOpen} videoKey={trailerKey} title={`${title} — Trailer`} />
