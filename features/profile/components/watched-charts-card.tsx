@@ -140,7 +140,7 @@ export function WatchedChartsCard({ charts }: { charts: WatchedCharts }) {
   const reset = () => setExpanded(false);
 
   return (
-    <Card className="h-full bg-card/60 ">
+    <Card className="h-full bg-card/20 border border-border/50 shadow-none">
       <CardHeader className="gap-4">
         {/* Main view switcher: underline style */}
         <div role="tablist" className="flex gap-1 border-b">

@@ -25,9 +25,9 @@ export function ReviewsSection({
   createHref,
 }: ReviewsSectionProps) {
   const createButton = createHref ? (
-    <Button asChild size="sm" className="gap-1.5">
+    <Button asChild size="sm" className="gap-1">
       <Link href={createHref}>
-        <PenLine className="size-4" /> Write a review
+        <PenLine className="size-3.5" /> <span className="text-sm">Write a review</span>
       </Link>
     </Button>
   ) : null;
@@ -35,7 +35,7 @@ export function ReviewsSection({
   return (
     <SectionWrapper>
       <div className="mx-auto">
-        <SectionContext title={title} buttonText="See all" ButtonLink={seeAllHref} />
+        <SectionContext title={title} buttonText="See all" ButtonLink={seeAllHref} actions={createButton} />
 
         {reviews.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-3 text-center">
@@ -43,8 +43,8 @@ export function ReviewsSection({
             {createButton}
           </div>
         ) : (
-          <>
-            {createButton && <div className="mb-3 flex justify-end">{createButton}</div>}
+          <div className="relative">
+         
             <MediaCarousel
               itemsPerView={{ base: 1, sm: 1, md: 2, lg: 3, xl: 3 }}
               autoplay={false}
@@ -53,7 +53,7 @@ export function ReviewsSection({
                 <ReviewCard key={review.id} review={review} isAuthenticated={isAuthenticated} />
               ))}
             </MediaCarousel>
-          </>
+          </div>
         )}
       </div>
     </SectionWrapper>

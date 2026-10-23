@@ -28,7 +28,7 @@ function StatCard({
   );
 }
 
-export function WatchedStatsSection({ stats, charts }: { stats: WatchedStats; charts: WatchedCharts }) {
+export function WatchedStatsSection({ stats }: { stats: WatchedStats;}) {
   if (stats.total === 0) return null;
 
   const topGenreCount = stats.genres.all[0]?.count;
@@ -69,9 +69,7 @@ export function WatchedStatsSection({ stats, charts }: { stats: WatchedStats; ch
         />
       </div>
 
-      <div className="min-w-0">
-        <WatchedChartsCard charts={charts} />
-      </div>
+      
     </section>
   );
 }

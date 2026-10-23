@@ -15,6 +15,7 @@ import { getUserReviews } from "@/features/reviews/queries";
 import { ReviewsSection } from "@/features/reviews/components/reviews-section";
 import { getMovieGenres, getTVGenres } from "@/features/media/queries";
 import { WatchedStatsSection } from "@/features/profile/components/watched-stats-section";
+import { WatchedChartsCard } from "@/features/profile/components/watched-charts-card";
 
 async function ProfilePage() {
   const profile = await getCurrentUserProfile();
@@ -35,7 +36,7 @@ async function ProfilePage() {
   ]);
 
   const stats = buildWatchedStats(watched, movieGenres, tvGenres);
-const charts = buildWatchedCharts(watched, movieGenres, tvGenres);
+  const charts = buildWatchedCharts(watched, movieGenres, tvGenres);
 
 
   return (
@@ -43,7 +44,7 @@ const charts = buildWatchedCharts(watched, movieGenres, tvGenres);
       <div className="max-w-6xl px-4 sm:px-6 mx-auto h-full">
         <div className="flex flex-col h-full gap-6">
           <ProfileHeader profile={profile} />
-          <WatchedStatsSection stats={stats} charts={charts} />
+          <WatchedStatsSection stats={stats} />
           <SectionWrapper>
             <div className="  mx-auto">
               <SectionContext title="Watched" buttonText="See all" ButtonLink="/profile/watched" />
@@ -78,17 +79,6 @@ const charts = buildWatchedCharts(watched, movieGenres, tvGenres);
             </div>
           </SectionWrapper>
 
-          <FavoriteCharactersSection characters={characters} />
-
-          <ReviewsSection
-            title="Reviews"
-            seeAllHref="/profile/reviews"
-            reviews={reviews}
-            isAuthenticated
-            emptyText="You haven't written any reviews yet."
-            createHref="/reviews/new"
-          />
-
           <SectionWrapper>
             <div className="  mx-auto">
               <SectionContext title="Watchlist" buttonText="See all" ButtonLink="/profile/watchlist" />
@@ -103,6 +93,23 @@ const charts = buildWatchedCharts(watched, movieGenres, tvGenres);
                   ))}
                 </MediaCarousel>
               )}
+            </div>
+          </SectionWrapper>
+
+          <ReviewsSection
+            title="Reviews"
+            seeAllHref="/profile/reviews"
+            reviews={reviews}
+            isAuthenticated
+            emptyText="You haven't written any reviews yet."
+            createHref="/reviews/new"
+          />
+
+          <FavoriteCharactersSection characters={characters} />
+          <SectionWrapper>
+            <div className="mx-auto">
+              <SectionContext title="Watched Stats" />
+              <WatchedChartsCard charts={charts} />
             </div>
           </SectionWrapper>
 
