@@ -16,9 +16,12 @@ import { MediaCardWithActions } from "@/components/media/media-card-with-actions
 import { VideoGallery } from "@/features/media/components/video-gallery";
 import { ReviewsSection } from "@/features/media/components/reviews-section";
 import { getFavoriteCharacterNames } from "@/features/characters/queries";
+import { getMediaRatingStats, getMoodflixReviews, getUserRating } from "@/features/ratings/queries";
+import { RateMediaCard } from "@/features/ratings/components/rate-media-card";
 
 export async function MediaDetailView({ detail, initialFavorited, initialWatchlisted, initialWatched }: { detail: MediaDetail; initialFavorited: boolean; initialWatchlisted: boolean; initialWatched: boolean }) {
   const userId = await getCurrentUserId();
+  const listMediaType = toListMediaType(detail.mediaType);
 
   const allItems: MediaCardItem[] = [
     ...(detail.recommendations ?? []),
@@ -33,6 +36,15 @@ export async function MediaDetailView({ detail, initialFavorited, initialWatchli
     ])
     : [new Set<string>(), new Set<string>(), [] as string[]];
 
+  const [moodflixStats, moodflixReviews, myRating] = await Promise.all([
+    getMediaRatingStats(detail.id, listMediaType),
+    getMoodflixReviews(detail.id, listMediaType),
+    userId ? getUserRating(userId, detail.id, listMediaType) : Promise.resolve(null),
+  ]);
+
+  // Moodflix comments first (newest), then TMDB's.
+  const allReviews = [...moodflixReviews, ...detail.reviews];
+
   const isFavorited = (item: MediaCardItem) =>
     favoritedKeys.has(toFavoritedKey(item.id, toListMediaType(item.mediaType)));
   const isWatched = (item: MediaCardItem) =>
@@ -44,6 +56,7 @@ export async function MediaDetailView({ detail, initialFavorited, initialWatchli
         initialFavorited={initialFavorited}
         initialWatchlisted={initialWatchlisted}
         initialWatched={initialWatched}
+        moodflixRating={moodflixStats}
         detail={detail}
       />
 
@@ -57,11 +70,27 @@ export async function MediaDetailView({ detail, initialFavorited, initialWatchli
         />
         <BackdropGallery backdrops={detail.backdrops} title={detail.title} />
         <VideoGallery videos={detail.videos} title={detail.title} />
-        {detail.reviews.length > 0 && (
+
+        <SectionWrapper>
+
+          <RateMediaCard
+            key={`${myRating?.score ?? "none"}-${myRating?.comment ?? ""}`}
+            tmdbId={detail.id}
+            mediaType={listMediaType}
+            title={detail.title}
+            posterPath={detail.posterPath}
+            releaseYear={detail.releaseYear}
+            isSignedIn={!!userId}
+            initialRating={myRating}
+          />
+        </SectionWrapper>
+
+        {allReviews.length > 0 && (
           <SectionWrapper>
-            <ReviewsSection reviews={detail.reviews} />
+            <ReviewsSection reviews={allReviews} />
           </SectionWrapper>
         )}
+
         {detail.recommendations.length > 0 && (
           <SectionWrapper>
             <SectionContext title="Recommendations" />

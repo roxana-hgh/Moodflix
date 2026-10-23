@@ -280,6 +280,7 @@ function resolveAvatarUrl(avatarPath: string | null): string | null {
 }
 export type Review = {
   id: string;
+  source: "tmdb" | "moodflix";
   author: string;
   username: string | null;
   avatarUrl: string | null;
@@ -297,6 +298,7 @@ function toReview(raw: TMDBReview): Review {
 
   return {
     id: raw.id,
+    source: "tmdb",
     author,
     username,
     avatarUrl: resolveAvatarUrl(raw.author_details.avatar_path),

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "media_rating" ALTER COLUMN "score" SET DATA TYPE DOUBLE PRECISION;

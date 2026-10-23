@@ -64,6 +64,21 @@ function StarRow({
     );
 }
 
+function SourceTag({ source }: { source: Review["source"] }) {
+  return (
+    <span
+      className={cn(
+        "rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide",
+        source === "moodflix"
+          ? "border-primary/30 bg-primary/10 text-primary"
+          : "border-sky-400/30 bg-sky-400/10 text-sky-400"
+      )}
+    >
+      {source === "moodflix" ? "Moodflix" : "TMDB"}
+    </span>
+  );
+}
+
 function ReviewCard({ review }: { review: Review }) {
     const [expanded, setExpanded] = useState(false);
     const [isClamped, setIsClamped] = useState(false);
@@ -115,11 +130,15 @@ function ReviewCard({ review }: { review: Review }) {
                 />
 
                 <div className="relative flex items-center justify-between gap-3">
-                    {review.rating !== null ? (
-                        <StarRow rating={review.rating} starClass={tone.star} />
-                    ) : (
-                        <span className="text-xs font-medium text-muted-foreground">Review</span>
-                    )}
+                    <div className="flex items-center gap-2.5">
+    {review.rating !== null ? (
+      <StarRow rating={review.rating} starClass={tone.star} />
+    ) : (
+      <span className="text-xs font-medium text-muted-foreground">Review</span>
+    )}
+    <SourceTag source={review.source} />
+  </div>
+                  
 
                     {review.rating !== null && (
                         <span

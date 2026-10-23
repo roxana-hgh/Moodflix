@@ -37,6 +37,7 @@ model User {
   reviews            Review[]
   reviewLikes        ReviewLike[]
   reviewComments     ReviewComment[]
+  mediaRatings       MediaRating[]
 
   @@unique([email])
   @@map("user")
@@ -257,4 +258,20 @@ model ReviewImage {
 
   @@index([userId])
   @@map("review_image")
+}
+
+model MediaRating {
+  id        String        @id @default(cuid())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tmdbId    Int
+  mediaType ListMediaType
+  score     Float
+  comment   String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@unique([userId, tmdbId, mediaType])
+  @@index([tmdbId, mediaType, createdAt])
+  @@map("media_rating")
 }

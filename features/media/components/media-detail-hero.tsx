@@ -9,12 +9,15 @@ import { QuickListButton } from "@/features/lists/components/quick-list-button";
 import { AddToListDialog } from "@/features/lists/components/add-to-list-dialog";
 import type { MediaDetail } from "../types";
 import { WatchTrailerButton } from "@/features/media/components/watch-trailer-button";
+import { RatingSummary } from "@/features/ratings/components/rating-summary";
+import type { RatingStats } from "@/features/ratings/types";
 
 interface MediaDetailHeroProps {
   detail: MediaDetail;
   initialFavorited?: boolean;
   initialWatchlisted?: boolean;
   initialWatched?: boolean;
+  moodflixRating: RatingStats
 }
 
 export function MediaDetailHero({
@@ -22,6 +25,7 @@ export function MediaDetailHero({
   initialFavorited = false,
   initialWatchlisted = false,
   initialWatched = false,
+  moodflixRating
 }: MediaDetailHeroProps) {
   const {
     id,
@@ -99,6 +103,10 @@ export function MediaDetailHero({
             </Badge>
           </div>
 
+          <RatingSummary
+            tmdb={{ average: voteAverage ? Math.round(voteAverage * 10) / 10 : null, count: detail.voteCount }}
+            moodflix={moodflixRating}
+          />
           {genres.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {genres.map((genre) => (
@@ -110,6 +118,7 @@ export function MediaDetailHero({
               ))}
             </div>
           )}
+
 
           <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground ">{overview}</p>
           <div className="w-full flex flex-col sm:flex-row sm:items-center gap-2">
