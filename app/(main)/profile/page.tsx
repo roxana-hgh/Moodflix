@@ -3,7 +3,6 @@ import { getCurrentUserProfile } from "@/features/profile/queries";
 import { ProfileHeader } from "@/features/profile/components/profile-header";
 import { getRecentListsWithPreview, getUserListByType } from "@/features/lists/queries";
 import { buildWatchedCharts, buildWatchedStats, toListCardItem } from "@/features/lists/types";
-
 import { MediaCardCompact } from "@/components/media/media-card-compact";
 import { MediaCarousel } from "@/components/shared/Slider/media-carousel";
 import SectionWrapper from "@/components/layout/SectionWrapper";

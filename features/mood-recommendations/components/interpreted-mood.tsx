@@ -16,7 +16,7 @@ export function InterpretedMood({ genres, keywordTerms }: InterpretedMoodProps) 
       {terms.map((term) => (
         <span
           key={term}
-          className="text-sm text-accent-foreground bg-accent border border-border rounded-full px-3 py-1"
+          className="text-xs text-accent-foreground bg-accent border border-border rounded-full px-2 py-0.5"
         >
           {term}
         </span>

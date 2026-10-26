@@ -26,7 +26,7 @@ export function SearchResultsDropdown({
   if (trimmed.length < 2) return null;
 
   return (
-    <div className="w-full rounded-2xl border bg-card p-2 shadow-sm">
+    <div className="w-full rounded-xl border bg-card/95 backdrop-blur-3xl p-2 shadow-sm">
       {isLoading ? (
         <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
           <Loader2 className="size-4 animate-spin" />
@@ -39,7 +39,7 @@ export function SearchResultsDropdown({
               <Link
                 href={`/${item.mediaType === "tv" ? "tv" : "movie"}/${item.id}`}
                 onClick={onSelect}
-                className="flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-secondary"
+                className="flex items-center gap-3 rounded-md p-1.5 transition-colors hover:bg-secondary/50"
               >
                 <div className="relative h-14 w-10 shrink-0 overflow-hidden rounded-md bg-muted">
                   {item.posterPath && (

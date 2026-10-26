@@ -22,16 +22,32 @@ export const TMDB_GENRES = [
   "Western",
 ] as const;
 
-// Raw user input from the mood search bar
-export const moodInputSchema = z.object({
-  mood: z
-    .string()
-    .trim()
-    .min(3, "Tell us a bit more about the mood")
-    .max(200, "Keep it under 200 characters"),
-});
+export type TmdbGenre = (typeof TMDB_GENRES)[number];
+
+export const MAX_MOOD_SELECTIONS = 5;
+
+// Raw user input from the mood search bar: picked chips + optional free text.
+// Chip ids are validated against `constants.ts` at resolve time (unknown ids are dropped),
+// so this schema stays free of a circular import.
+export const moodInputSchema = z
+  .object({
+    text: z.string().trim().max(200, "Keep it under 200 characters").default(""),
+    selections: z
+      .array(z.string().max(40))
+      .max(MAX_MOOD_SELECTIONS, `Pick up to ${MAX_MOOD_SELECTIONS}`)
+      .default([]),
+    mediaType: z.enum(["movie", "tv", "both"]).default("both"),
+    personalize: z.boolean().default(true),
+  })
+  .refine((v) => v.text.length >= 3 || v.selections.length > 0, {
+    message: "Pick a mood or tell us a bit more",
+    path: ["text"],
+  });
 
 export type MoodInput = z.infer<typeof moodInputSchema>;
+
+// What the search bar hands to the page (personalize is added by the page).
+export type MoodSearchRequest = Pick<MoodInput, "text" | "selections" | "mediaType">;
 
 // Structured output we ask the LLM for
 export const llmMoodOutputSchema = z.object({

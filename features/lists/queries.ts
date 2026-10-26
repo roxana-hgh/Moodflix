@@ -6,14 +6,14 @@ import {
   toListItemSummary,
   toListWithPreview,
   sortListsForDisplay,
+  toListDetail,
   type ListSummary,
   type ListItemSummary,
   type ListWithPreview,
   type ListMediaType,
   type ListType,
-  toListDetail,
-  ListDetail,
-  GenreStat,
+  type ListDetail,
+  type GenreStat,
 } from "./types";
 
 export async function getUserLists(userId: string): Promise<ListSummary[]> {
@@ -49,6 +49,7 @@ export async function getListWithItems(
 
   return { list, isOwner };
 }
+
 export async function getUserListByType(
   userId: string,
   type: Extract<ListType, "WATCHLIST" | "FAVORITE" | "WATCHED">
@@ -180,9 +181,13 @@ export async function getUserListDetailByType(
   return toListDetail(list, true);
 }
 
-export async function getWatchedGenreStats(userId: string): Promise<GenreStat[]> {
+/** Per-genre counts for one of the user's system lists (genre ids are per media type). */
+export async function getGenreStats(
+  userId: string,
+  type: Extract<ListType, "FAVORITE" | "WATCHED">
+): Promise<GenreStat[]> {
   const items = await prisma.listItem.findMany({
-    where: { list: { userId, type: "WATCHED" } },
+    where: { list: { userId, type } },
     select: { genreIds: true, mediaType: true },
   });
 
@@ -196,4 +201,9 @@ export async function getWatchedGenreStats(userId: string): Promise<GenreStat[]>
     }
   }
   return [...counts.values()];
+}
+
+// Thin wrapper — keeps the profile page's existing call unchanged.
+export async function getWatchedGenreStats(userId: string): Promise<GenreStat[]> {
+  return getGenreStats(userId, "WATCHED");
 }

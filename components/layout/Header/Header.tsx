@@ -134,7 +134,7 @@ function Header() {
               <div
                 className={cn(
                   "flex items-center overflow-hidden rounded-full transition-all duration-200",
-                  isSearchOpen ? "w-72 bg-secondary border px-3" : "w-9"
+                  isSearchOpen ? "w-72 bg-secondary/90 backdrop-blur-2xl border px-3" : "w-9"
                 )}
               >
                 {isSearchOpen && <Search className="size-4 text-primary shrink-0" />}
