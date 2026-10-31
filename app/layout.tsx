@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Roboto } from "next/font/google";
 import "@/app/globals.css";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/app/providers";
+import { captureInstallPromptScript } from "@/features/pwa/capture-install-prompt";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -12,6 +13,15 @@ const roboto = Roboto({
 export const metadata: Metadata = {
   title: "Moodflix",
   description: "",
+  appleWebApp: {
+    capable: true,
+    title: "Moodflix",
+    statusBarStyle: "black",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#09090b",
 };
 
 export default function RootLayout({
@@ -25,6 +35,9 @@ export default function RootLayout({
       className={cn("dark", roboto.variable)}
       suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: captureInstallPromptScript }} />
+      </head>
       <body
         className={cn(" font-sans antialiased")}
         suppressHydrationWarning
