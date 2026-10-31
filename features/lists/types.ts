@@ -177,6 +177,7 @@ export interface WatchedStats {
   movies: number;
   shows: number;
   thisMonth: number;
+  lastMonth: number;
   topGenre: string | null;
   totalMinutes: number;
   movieMinutes: number;
@@ -223,9 +224,12 @@ export function buildWatchedStats(
     tv: new Map<string, number>(),
   };
 
+  const previousMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
   let movies = 0;
   let shows = 0;
   let thisMonth = 0;
+  let lastMonth = 0;
   let movieMinutes = 0;
   let tvMinutes = 0;
   let ratingSum = 0;
@@ -241,6 +245,13 @@ export function buildWatchedStats(
       item.addedAt.getMonth() === now.getMonth()
     ) {
       thisMonth++;
+    }
+
+    if (
+      item.addedAt.getFullYear() === previousMonth.getFullYear() &&
+      item.addedAt.getMonth() === previousMonth.getMonth()
+    ) {
+      lastMonth++;
     }
 
     if (item.runtimeMinutes) {
@@ -280,6 +291,7 @@ export function buildWatchedStats(
     movies,
     shows,
     thisMonth,
+    lastMonth,
     topGenre: genres.all[0]?.name ?? null,
     genres,
     totalMinutes: movieMinutes + tvMinutes,
