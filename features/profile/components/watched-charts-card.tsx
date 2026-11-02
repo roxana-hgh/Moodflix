@@ -109,10 +109,10 @@ function tooltipTitle(_: unknown, payload: readonly { payload?: ChartDatum }[] |
 
 function InsightPanel({ insight }: { insight: ReturnType<typeof getInsight> }) {
   return (
-    <aside className="flex flex-col gap-5 border-b bg-linear-to-br from-primary/10 to-transparent p-5 md:border-r md:border-b-0">
+    <aside className="flex flex-col gap-4 sm:gap-5 border-b bg-linear-to-br from-primary/8 to-transparent p-5 md:border-r md:border-b-0">
       <div className="min-w-0">
         <p className="text-xs text-muted-foreground">{insight.eyebrow}</p>
-        <p className="mt-2 text-3xl font-semibold leading-tight tracking-tight wrap-break-word">{insight.value}</p>
+        <p className="mt-2 text-2xl sm:text-3xl font-semibold leading-tight tracking-tight wrap-break-word">{insight.value}</p>
         <p className="mt-1 text-sm text-muted-foreground">{insight.caption}</p>
       </div>
 
@@ -225,7 +225,7 @@ function TrendArea({ data, config }: { data: ChartDatum[]; config: ChartConfig }
   );
 }
 
-const SLOT_WIDTH = 76; // عرض هر ستون؛ با داده‌ی کم نمودار فشرده می‌مونه
+const SLOT_WIDTH = 76; 
 
 function Columns({ data, config }: { data: ChartDatum[]; config: ChartConfig }) {
   const max = Math.max(...data.map((d) => d.value));

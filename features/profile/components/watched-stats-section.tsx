@@ -45,7 +45,7 @@ function TimeWatchedCard({ stats, monthlyHours }: { stats: WatchedStats; monthly
   const { totalMinutes, movieMinutes, tvMinutes } = stats;
 
   return (
-    <div className="col-span-2 flex min-w-0 flex-col gap-5 rounded-xl border bg-linear-to-br from-primary/15 via-card/60 to-card/40 p-5 lg:row-span-2">
+    <div className="col-span-2 flex min-w-0 flex-col gap-5 rounded-xl border bg-linear-to-br from-primary/12 via-card/60 to-card/40 p-5 lg:row-span-2">
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/15 text-primary">
           <Clock className="h-4 w-4" />
@@ -55,7 +55,7 @@ function TimeWatchedCard({ stats, monthlyHours }: { stats: WatchedStats; monthly
 
       <div className="flex items-end justify-between gap-4">
         <div className="min-w-0">
-          <p className="truncate text-5xl font-semibold tracking-tight">
+          <p className="truncate text-2xl sm:text-3xl font-semibold tracking-tight">
             {totalMinutes ? formatDuration(totalMinutes) : "—"}
           </p>
           <p className="mt-1.5 text-xs text-muted-foreground">Estimated from runtimes</p>
@@ -99,12 +99,12 @@ function StatTile({
   return (
     <div className="flex min-w-0 flex-col gap-3 rounded-xl border bg-card/40 p-4 transition-colors hover:border-primary/30">
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
-          <Icon className="h-4 w-4" />
+        <span className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+          <Icon className="size-3.5" />
         </span>
         <span className="truncate">{label}</span>
       </div>
-      <p className="truncate text-2xl font-semibold leading-none tracking-tight">{value}</p>
+      <p className="truncate text-base sm:text-lg lg:text-xl font-semibold leading-none tracking-tight">{value}</p>
       {meter !== undefined && (
         <div className="h-1.5 rounded-full bg-primary/15" aria-hidden>
           <div className="h-full rounded-full bg-primary" style={{ width: `${Math.min(meter, 1) * 100}%` }} />

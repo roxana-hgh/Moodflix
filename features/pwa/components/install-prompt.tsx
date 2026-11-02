@@ -148,12 +148,12 @@ export function InstallPrompt() {
   };
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 top-[calc(var(--header-height)+0.5rem)] z-40 flex justify-center px-4">
+    <div className="pointer-events-none fixed inset-x-0 top-2 z-40 flex justify-center px-3">
       <div
         role="region"
         aria-label="Install Moodflix"
         className={cn(
-          "pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-2xl border bg-popover/85 p-3 shadow-2xl shadow-black/40 backdrop-blur-xl duration-300 motion-reduce:animate-none",
+          "pointer-events-auto flex w-full max-w-md items-center gap-2 rounded-2xl border bg-popover/85 p-2.5 shadow-2xl shadow-black/40 backdrop-blur-xl duration-300 motion-reduce:animate-none",
           isClosing
             ? "animate-out fade-out slide-out-to-top-full fill-mode-forwards ease-in"
             : "animate-in fade-in slide-in-from-top-full ease-out"
@@ -162,10 +162,10 @@ export function InstallPrompt() {
         <Image
           src="/icons/icon-192.png"
           alt=""
-          width={44}
-          height={44}
+          width={42}
+          height={42}
           unoptimized
-          className="size-11 shrink-0 rounded-xl"
+          className="size-9 shrink-0 rounded-xl"
         />
 
         <div className="min-w-0 flex-1">
@@ -176,20 +176,20 @@ export function InstallPrompt() {
         </div>
 
         {platform === "native" && (
-          <Button size="sm" className="shrink-0 rounded-full" onClick={install}>
-            <Download />
-            Install
+          <Button size="sm" className="shrink-0 rounded-full flex gap-0.5" onClick={install}>
+            <Download className="size-3.5" />
+            <span className="text-xs">Install</span>
           </Button>
         )}
 
         <Button
           variant="ghost"
           size="icon"
-          className="size-8 shrink-0 rounded-full text-muted-foreground"
+          className="size-7 shrink-0 rounded-full text-muted-foreground"
           onClick={() => setIsClosing(true)}
           aria-label="Dismiss"
         >
-          <X className="size-4" />
+          <X className="size-3" />
         </Button>
       </div>
     </div>
