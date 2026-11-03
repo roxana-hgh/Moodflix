@@ -131,8 +131,6 @@ async function CommunitySection({ detail }: { detail: MediaDetail }) {
           tmdbId={detail.id}
           mediaType={listMediaType}
           title={detail.title}
-          posterPath={detail.posterPath}
-          releaseYear={detail.releaseYear}
           isSignedIn={!!userId}
           initialRating={myRating}
         />
