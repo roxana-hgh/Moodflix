@@ -1,32 +1,33 @@
-import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import type { Metadata } from "next";
-import { getMovieDetails } from "@/features/media/queries";
+import { notFound } from "next/navigation";
+import { MediaDetailSkeleton } from "@/features/media/components/media-detail-skeleton";
 import { MediaDetailView } from "@/features/media/components/media-detail-view";
-import { getCurrentUserId } from "@/lib/auth";
-import { getItemListMembership } from "@/features/lists/queries";
-import { toListMediaType } from "@/features/lists/types";
+import { getMovieDetails, getTrendingMovies } from "@/features/media/queries";
 
-interface MoviePageProps {
-  params: Promise<{ id: string }>;
+export const instant = true;
+
+/** Prerender this week's trending titles at build; every other id is rendered on first visit and then cached. */
+export async function generateStaticParams() {
+  const trending = await getTrendingMovies("week");
+  return trending.slice(0, 10).map((movie) => ({ id: String(movie.id) }));
 }
 
-export async function generateMetadata({ params }: MoviePageProps): Promise<Metadata> {
-  const { id } = await params;
-  const movie = await getMovieDetails(id).catch(() => null);
-  return movie
-    ? { title: `${movie.title} | Moodflix`, description: movie.overview }
-    : { title: "Movie | Moodflix" };
+export async function generateMetadata({ params }: PageProps<"/movie/[id]">): Promise<Metadata> {
+  const movie = await getMovieDetails((await params).id);
+  return movie ? { title: `${movie.title} | Moodflix`, description: movie.overview } : { title: "Movie | Moodflix" };
 }
 
-export default async function MoviePage({ params }: MoviePageProps) {
-  const { id } = await params;
-  const movie = await getMovieDetails(id).catch(() => null);
+export default function MoviePage({ params }: PageProps<"/movie/[id]">) {
+  return (
+    <Suspense fallback={<MediaDetailSkeleton />}>
+      <MovieDetail params={params} />
+    </Suspense>
+  );
+}
+
+async function MovieDetail({ params }: Pick<PageProps<"/movie/[id]">, "params">) {
+  const movie = await getMovieDetails((await params).id);
   if (!movie) notFound();
-
-   const userId = await getCurrentUserId();
-  const membership = userId
-    ? await getItemListMembership(userId, movie.id, toListMediaType(movie.mediaType))
-    : { favorited: false, watchlisted: false, watched: false };
-
-  return <MediaDetailView  detail={movie} initialFavorited={membership.favorited } initialWatched={membership.watched} initialWatchlisted={membership.watchlisted} />;
+  return <MediaDetailView detail={movie} />;
 }

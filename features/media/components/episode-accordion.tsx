@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/accordion";
 
 import type { EpisodeSummary } from "../types";
-import { tmdbImageUrl } from "@/utils/image";
+import { tmdbImageUrl } from "@/lib/image";
 
 export function EpisodeAccordion({ episodes }: { episodes: EpisodeSummary[] }) {
   return (

@@ -17,7 +17,7 @@ import { BulletListInput } from "./bullet-list-input";
 import { MediaPicker } from "./media-picker";
 import { RatingInput } from "./rating-input";
 import { ReviewEditor } from "./review-editor";
-import { toPlainJson } from "@/utils/tiptap";
+import { toPlainJson } from "@/lib/tiptap";
 
 interface ReviewFormProps {
   initial?: { id: string; status: "DRAFT" | "PUBLISHED"; data: ReviewInput };

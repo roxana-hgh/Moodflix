@@ -1,27 +1,17 @@
-import { getTVGenres } from "@/features/media/queries";
-import { TVDiscoverBrowser } from "@/features/media/components/tv-discover-browser";
-import { searchParamsToFilters } from "@/features/media/schema";
+import type { Metadata } from "next";
+import { DiscoverPage } from "@/features/media/components/discover-page";
 
-interface TvShowsPageProps {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}
+export const instant = true;
 
-async function TvShowsPage({ searchParams }: TvShowsPageProps) {
-  const [genres, params] = await Promise.all([getTVGenres(), searchParams]);
-  const initialFilters = searchParamsToFilters(params);
+export const metadata: Metadata = { title: "TV Shows | Moodflix" };
 
+export default function TvShowsPage({ searchParams }: PageProps<"/shows">) {
   return (
-    <div className="h-full py-5">
-      <div className="container h-full mx-auto">
-        <div className="flex flex-col h-full justify-end gap-2 min-h-10 lg:min-h-10">
-          <h2 className="text-lg lg:text-2xl text-primary font-semibold">TV Shows</h2>
-          <p className="text-sm md:text-base text-muted-foreground">Find your next series to get lost in.</p>
-        </div>
-
-        <TVDiscoverBrowser genres={genres} initialFilters={initialFilters} />
-      </div>
-    </div>
+    <DiscoverPage
+      mediaType="tv"
+      title="TV Shows"
+      description="Find your next series to get lost in."
+      searchParams={searchParams}
+    />
   );
 }
-
-export default TvShowsPage;

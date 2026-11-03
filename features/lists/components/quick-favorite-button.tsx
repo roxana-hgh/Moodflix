@@ -9,7 +9,6 @@ interface QuickFavoriteButtonProps {
   title: string;
   posterPath: string | null;
   releaseYear: string | null;
-  initialFavorited: boolean;
 }
 
 export function QuickFavoriteButton(props: QuickFavoriteButtonProps) {
@@ -21,7 +20,6 @@ export function QuickFavoriteButton(props: QuickFavoriteButtonProps) {
       title={props.title}
       posterPath={props.posterPath}
       releaseYear={props.releaseYear}
-      initialActive={props.initialFavorited}
       label="Add to favorites"
       activeLabel="Remove from favorites"
       className="h-7 w-7 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"

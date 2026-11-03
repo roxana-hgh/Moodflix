@@ -1,58 +1,62 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import 'server-only';
+import "server-only";
+import { TMDB_REVALIDATE, TMDB_TAG, type TmdbRevalidate } from "./cache";
 
-const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+// Overridable for a proxy (where TMDB is blocked) or a local mock.
+const TMDB_BASE_URL = process.env.TMDB_API_BASE_URL ?? "https://api.themoviedb.org/3";
 
-type TmdbMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+export type TmdbParams = Record<string, string | number | boolean | undefined>;
 
-interface TmdbRequestOptions {
-  method?: TmdbMethod;
-  params?: Record<string, string | number | boolean | undefined>;
-  body?: unknown;
-  cache?: RequestCache; // mutually exclusive with `next` — Next.js throws if both are set
-  next?: NextFetchRequestConfig;
+export class TmdbError extends Error {
+  constructor(
+    readonly endpoint: string,
+    readonly status: number,
+    body: string,
+  ) {
+    super(`TMDB GET ${endpoint} failed (${status}): ${body}`);
+    this.name = "TmdbError";
+  }
 }
 
-function buildUrl(endpoint: string, params?: TmdbRequestOptions['params']) {
+export function isTmdbNotFound(err: unknown): boolean {
+  return err instanceof TmdbError && err.status === 404;
+}
+
+// Sorted keys give one URL (and so one cache entry) for the same params in any order.
+function buildUrl(endpoint: string, params?: TmdbParams) {
   const url = new URL(`${TMDB_BASE_URL}${endpoint}`);
   if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined) url.searchParams.set(key, String(value));
-    });
+    for (const key of Object.keys(params).sort()) {
+      const value = params[key];
+      if (value !== undefined && value !== "") url.searchParams.set(key, String(value));
+    }
   }
   return url.toString();
 }
 
-// services/tmdb/client.ts
-export async function serverApi<T = unknown>(
-  endpoint: string,
-  { method = 'GET', params, body, cache, next }: TmdbRequestOptions = {}
-): Promise<T> {
+interface TmdbFetchOptions {
+  params?: TmdbParams;
+  /** How long the response stays in the persistent fetch cache. */
+  revalidate: TmdbRevalidate;
+}
+
+/**
+ * The only place that talks to TMDB. Server-only, so the token never reaches the browser.
+ * Every response goes through the fetch Data Cache, which persists across requests,
+ * restarts and instances.
+ */
+export async function tmdbFetch<T>(endpoint: string, { params, revalidate }: TmdbFetchOptions): Promise<T> {
   const token = process.env.TMDB_API_TOKEN;
-  if (!token) throw new Error('TMDB_API_TOKEN is not set');
+  if (!token) throw new Error("TMDB_API_TOKEN is not set");
 
-  try {
-    const res = await fetch(buildUrl(endpoint, params), {
-      method,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        accept: 'application/json',
-      },
-      body: body ? JSON.stringify(body) : undefined,
-      cache,
-      next,
-    });
+  const res = await fetch(buildUrl(endpoint, params), {
+    headers: { Authorization: `Bearer ${token}`, accept: "application/json" },
+    cache: "force-cache",
+    next: { revalidate: TMDB_REVALIDATE[revalidate], tags: [TMDB_TAG] },
+  });
 
-    if (!res.ok) {
-      const errText = await res.text();
-      throw new Error(`TMDB ${method} ${endpoint} failed (${res.status}): ${errText}`);
-    }
-
-    return res.json() as Promise<T>;
-  } catch (err) {
-    // Surface the real cause instead of swallowing it
-    console.error('[serverApi] fetch error:', err, (err as any)?.cause);
-    throw err;
+  if (!res.ok) {
+    throw new TmdbError(endpoint, res.status, await res.text());
   }
+
+  return res.json() as Promise<T>;
 }

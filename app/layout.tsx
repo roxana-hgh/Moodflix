@@ -4,6 +4,7 @@ import "@/app/globals.css";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/app/providers";
 import { captureInstallPromptScript } from "@/features/pwa/capture-install-prompt";
+import { InlineScript } from "@/components/shared/inline-script";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -36,7 +37,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: captureInstallPromptScript }} />
+        <InlineScript html={captureInstallPromptScript} />
       </head>
       <body
         className={cn(" font-sans antialiased")}

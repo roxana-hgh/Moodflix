@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MAX_MOOD_SELECTIONS, type MoodSearchRequest } from "../schema";
-import { MoodPicker } from "@/features/mood-recommendations/components/MoodPicker";
+import { MoodPicker } from "@/features/mood-recommendations/components/mood-picker";
 
 
 const MEDIA_TYPES = [

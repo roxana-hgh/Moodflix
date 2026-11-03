@@ -21,11 +21,16 @@ function SourceStat({ label, dotClass, stats }: { label: string; dotClass: strin
   );
 }
 
-export function RatingSummary({ tmdb, moodflix }: { tmdb: RatingStats; moodflix: RatingStats }) {
+/** Pass `moodflix={null}` while the Moodflix stats are still loading. */
+export function RatingSummary({ tmdb, moodflix }: { tmdb: RatingStats; moodflix: RatingStats | null }) {
   return (
     <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-[11px] text-muted-foreground">
       <SourceStat label="TMDB" dotClass="bg-sky-400" stats={tmdb} />
-      <SourceStat label="Moodflix" dotClass="bg-primary" stats={moodflix} />
+      {moodflix ? (
+        <SourceStat label="Moodflix" dotClass="bg-primary" stats={moodflix} />
+      ) : (
+        <span className="h-3 w-28 animate-pulse rounded bg-muted" aria-hidden />
+      )}
     </div>
   );
 }

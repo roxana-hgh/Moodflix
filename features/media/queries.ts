@@ -1,114 +1,196 @@
-import 'server-only';
-import { serverApi } from '@/services/tmdb/client';
-import { CastMember, toMediaCardItem, toMovieDetail, toSeasonDetail, toTVDetail } from './types';
-import type {
-  TMDBPaginatedResponse,
-  TMDBTVResult,
-  TMDBMovieResult,
-  TMDBMovieDetails,
-  TMDBTVDetails,
-  TMDBGenre,
-  TMDBSeasonDetails,
-} from '@/services/tmdb/types';
-import type { MediaCardItem } from '@/types/media';
-import { buildDiscoverMovieParams, buildDiscoverTVParams } from '@/features/media/schema';
-import type { MediaDiscoverFilters, TVDiscoverFilters } from '@/features/media/schema';
+import "server-only";
+import { cacheLife, cacheTag } from "next/cache";
+import { isTmdbNotFound, tmdb } from "@/services/tmdb";
+import type { TMDBGenre, TMDBMovieDetails, TMDBPaginatedResponse, TMDBTVDetails } from "@/services/tmdb/types";
+import type { MediaCardItem } from "@/types/media";
+import { buildDiscoverMovieParams, buildDiscoverTVParams } from "./schema";
+import type { MediaDiscoverFilters } from "./schema";
+import {
+  toMediaCardItem,
+  toMovieDetail,
+  toSeasonDetail,
+  toTVDetail,
+  type CastMember,
+  type MediaDetail,
+  type SeasonDetail,
+} from "./types";
 
-export async function getTrendingTv(window: 'day' | 'week'): Promise<MediaCardItem[]> {
-  const data = await serverApi<TMDBPaginatedResponse<TMDBTVResult>>(`/trending/tv/${window}`, {
-    next: { revalidate: 3600 },
-  });
+// Every function here is a `'use cache'` boundary: results are shared by all users
+// and land in the static shell, so a page only reaches TMDB on a cold cache.
+// Results are mapped before they are cached, which keeps the in-memory entries small.
 
+type MediaKind = "movie" | "tv";
+
+const tag = {
+  list: (name: string) => `tmdb:list:${name}`,
+  detail: (type: MediaKind, id: number) => `tmdb:${type}:${id}`,
+  person: (id: number) => `tmdb:person:${id}`,
+};
+
+function toId(id: string | number): number | null {
+  const n = Number(id);
+  return Number.isInteger(n) && n > 0 ? n : null;
+}
+
+/** Returns null for TMDB 404s so a bad id is cached instead of retried. */
+async function orNullOnNotFound<T>(request: Promise<T>): Promise<T | null> {
+  try {
+    return await request;
+  } catch (err) {
+    if (isTmdbNotFound(err)) return null;
+    throw err;
+  }
+}
+
+// ───────────────────────── Lists ─────────────────────────
+
+export async function getTrendingMovies(window: "day" | "week"): Promise<MediaCardItem[]> {
+  "use cache";
+  cacheLife("tmdb-list");
+  cacheTag(tag.list(`trending-movie-${window}`));
+
+  const data = await tmdb.movie.trending(window);
   return data.results.map(toMediaCardItem);
 }
 
-export async function getTrendingMovies(window: 'day' | 'week'): Promise<MediaCardItem[]> {
-  const data = await serverApi<TMDBPaginatedResponse<TMDBMovieResult>>(`/trending/movie/${window}`, {
-    next: { revalidate: 3600 },
-  });
+export async function getTrendingTv(window: "day" | "week"): Promise<MediaCardItem[]> {
+  "use cache";
+  cacheLife("tmdb-list");
+  cacheTag(tag.list(`trending-tv-${window}`));
 
+  const data = await tmdb.tv.trending(window);
   return data.results.map(toMediaCardItem);
 }
 
-const DETAIL_APPEND = "credits,images,recommendations,similar,videos,reviews";
+export async function getPopularMovies(page = 1): Promise<MediaCardItem[]> {
+  "use cache";
+  cacheLife("tmdb-list");
+  cacheTag(tag.list("popular-movie"));
 
-export async function getMovieDetails(id: string | number) {
-  const raw = await serverApi<TMDBMovieDetails>(`/movie/${id}`, {
-    params: { append_to_response: DETAIL_APPEND },
-    next: { revalidate: 60 * 60 * 12 },
-  });
-
-  return toMovieDetail(raw);
+  const data = await tmdb.movie.popular(page);
+  return data.results.map((item) => toMediaCardItem({ ...item, media_type: "movie" }));
 }
 
-export async function getTVDetails(id: string | number) {
-  const raw = await serverApi<TMDBTVDetails>(`/tv/${id}`, {
-    params: { append_to_response: DETAIL_APPEND },
-    next: { revalidate: 60 * 60 * 12 },
-  });
+export async function getPopularTv(page = 1): Promise<MediaCardItem[]> {
+  "use cache";
+  cacheLife("tmdb-list");
+  cacheTag(tag.list("popular-tv"));
 
-  return toTVDetail(raw);
+  const data = await tmdb.tv.popular(page);
+  return data.results.map((item) => toMediaCardItem({ ...item, media_type: "tv" }));
 }
 
-export async function discoverTVShows(
-  filters: TVDiscoverFilters,
-  page = 1
-): Promise<TMDBPaginatedResponse<MediaCardItem>> {
-  const data = await serverApi<TMDBPaginatedResponse<TMDBTVResult>>('/discover/tv', {
-    params: buildDiscoverTVParams(filters, page),
-    next: { revalidate: 3600 },
-  });
+export async function getTopRatedMovies(page = 1): Promise<MediaCardItem[]> {
+  "use cache";
+  cacheLife("tmdb-list");
+  cacheTag(tag.list("top-rated-movie"));
 
-  return {
-    ...data,
-    // discover/tv doesn't return media_type — inject it before mapping,
-    // same gotcha as the recommendations endpoint
-    results: data.results.map((item) => toMediaCardItem({ ...item, media_type: 'tv' })),
-  };
+  const data = await tmdb.movie.topRated(page);
+  return data.results.map((item) => toMediaCardItem({ ...item, media_type: "movie" }));
+}
+
+export async function getTopRatedTv(page = 1): Promise<MediaCardItem[]> {
+  "use cache";
+  cacheLife("tmdb-list");
+  cacheTag(tag.list("top-rated-tv"));
+
+  const data = await tmdb.tv.topRated(page);
+  return data.results.map((item) => toMediaCardItem({ ...item, media_type: "tv" }));
+}
+
+// ───────────────────────── Discover ─────────────────────────
+
+export type DiscoverPage = TMDBPaginatedResponse<MediaCardItem>;
+
+export async function discoverMovies(filters: MediaDiscoverFilters, page = 1): Promise<DiscoverPage> {
+  "use cache";
+  cacheLife("tmdb-list");
+  cacheTag(tag.list("discover-movie"));
+
+  const data = await tmdb.movie.discover(buildDiscoverMovieParams(filters, page));
+  // discover doesn't return media_type, so inject it before mapping
+  return { ...data, results: data.results.map((item) => toMediaCardItem({ ...item, media_type: "movie" })) };
+}
+
+export async function discoverTVShows(filters: MediaDiscoverFilters, page = 1): Promise<DiscoverPage> {
+  "use cache";
+  cacheLife("tmdb-list");
+  cacheTag(tag.list("discover-tv"));
+
+  const data = await tmdb.tv.discover(buildDiscoverTVParams(filters, page));
+  return { ...data, results: data.results.map((item) => toMediaCardItem({ ...item, media_type: "tv" })) };
+}
+
+// ───────────────────────── Genres ─────────────────────────
+
+export async function getMovieGenres(): Promise<TMDBGenre[]> {
+  "use cache";
+  cacheLife("tmdb-static");
+  cacheTag(tag.list("genres-movie"));
+
+  return (await tmdb.movie.genres()).genres;
 }
 
 export async function getTVGenres(): Promise<TMDBGenre[]> {
-  const data = await serverApi<{ genres: TMDBGenre[] }>('/genre/tv/list', {
-    next: { revalidate: 60 * 60 * 24 }, // genre list is basically static
-  });
+  "use cache";
+  cacheLife("tmdb-static");
+  cacheTag(tag.list("genres-tv"));
 
-  return data.genres;
+  return (await tmdb.tv.genres()).genres;
 }
 
+// ───────────────────────── Details ─────────────────────────
 
-export async function discoverMovies(
-  filters: MediaDiscoverFilters,
-  page = 1
-): Promise<TMDBPaginatedResponse<MediaCardItem>> {
-  const data = await serverApi<TMDBPaginatedResponse<TMDBMovieResult>>('/discover/movie', {
-    params: buildDiscoverMovieParams(filters, page),
-    next: { revalidate: 3600 },
-  });
+export async function getMovieDetails(id: string | number): Promise<MediaDetail | null> {
+  "use cache";
+  cacheLife("tmdb-detail");
+  const movieId = toId(id);
+  if (!movieId) return null;
+  cacheTag(tag.detail("movie", movieId));
 
-  return {
-    ...data,
-    results: data.results.map((item) => toMediaCardItem({ ...item, media_type: 'movie' })),
-  };
+  const raw = await orNullOnNotFound(tmdb.movie.details(movieId));
+  return raw ? toMovieDetail(raw) : null;
 }
 
-export async function getMovieGenres(): Promise<TMDBGenre[]> {
-  const data = await serverApi<{ genres: TMDBGenre[] }>('/genre/movie/list', {
-    next: { revalidate: 60 * 60 * 24 },
-  });
+export async function getTVDetails(id: string | number): Promise<MediaDetail | null> {
+  "use cache";
+  cacheLife("tmdb-detail");
+  const tvId = toId(id);
+  if (!tvId) return null;
+  cacheTag(tag.detail("tv", tvId));
 
-  return data.genres;
+  const raw = await orNullOnNotFound(tmdb.tv.details(tvId));
+  return raw ? toTVDetail(raw) : null;
 }
 
-export async function getMediaGenreIds(
-  type: 'MOVIE' | 'TV',
-  id: number
-): Promise<number[]> {
-  const path = type === 'MOVIE' ? `/movie/${id}` : `/tv/${id}`;
-  const data = await serverApi<{ genres: TMDBGenre[] }>(path, {
-    next: { revalidate: 60 * 60 * 12 },
-  });
-  return data.genres.map((g) => g.id);
+export async function getSeasonDetail(tvId: string | number, seasonNumber: string | number): Promise<SeasonDetail | null> {
+  "use cache";
+  cacheLife("tmdb-detail");
+  const id = toId(tvId);
+  const season = Number(seasonNumber);
+  if (!id || !Number.isInteger(season) || season < 0) return null;
+  cacheTag(tag.detail("tv", id));
+
+  const raw = await orNullOnNotFound(tmdb.tv.season(id, season));
+  return raw ? toSeasonDetail(raw) : null;
 }
+
+/** Full cast (the detail page keeps only the first 12). Reuses the cached details response. */
+export async function getMediaCast(type: MediaKind, id: number): Promise<CastMember[]> {
+  "use cache";
+  cacheLife("tmdb-detail");
+  cacheTag(tag.detail(type, id));
+
+  const raw: TMDBMovieDetails | TMDBTVDetails = type === "movie" ? await tmdb.movie.details(id) : await tmdb.tv.details(id);
+  return raw.credits.cast.map((member) => ({
+    id: member.id,
+    name: member.name,
+    character: member.character,
+    profilePath: member.profile_path,
+  }));
+}
+
+// ───────────────────────── List item metadata ─────────────────────────
 
 export interface MediaMeta {
   genreIds: number[];
@@ -116,14 +198,16 @@ export interface MediaMeta {
   voteAverage: number | null;
 }
 
-export async function getMediaMeta(type: 'MOVIE' | 'TV', id: number): Promise<MediaMeta> {
-  if (type === 'MOVIE') {
-    const d = await serverApi<{
-      genres: TMDBGenre[];
-      runtime: number | null;
-      vote_average: number;
-    }>(`/movie/${id}`, { next: { revalidate: 60 * 60 * 12 } });
+export const EMPTY_MEDIA_META: MediaMeta = { genreIds: [], runtimeMinutes: null, voteAverage: null };
 
+/** Display fields cached on `ListItem`. Reuses the cached details response. */
+export async function getMediaMeta(type: "MOVIE" | "TV", id: number): Promise<MediaMeta> {
+  "use cache";
+  cacheLife("tmdb-detail");
+  cacheTag(tag.detail(type === "MOVIE" ? "movie" : "tv", id));
+
+  if (type === "MOVIE") {
+    const d = await tmdb.movie.details(id);
     return {
       genreIds: d.genres.map((g) => g.id),
       runtimeMinutes: d.runtime || null,
@@ -131,16 +215,8 @@ export async function getMediaMeta(type: 'MOVIE' | 'TV', id: number): Promise<Me
     };
   }
 
-  const d = await serverApi<{
-    genres: TMDBGenre[];
-    episode_run_time: number[];
-    number_of_episodes: number;
-    last_episode_to_air: { runtime: number | null } | null;
-    vote_average: number;
-  }>(`/tv/${id}`, { next: { revalidate: 60 * 60 * 12 } });
-
+  const d = await tmdb.tv.details(id);
   const perEpisode = d.episode_run_time?.[0] || d.last_episode_to_air?.runtime || null;
-
   return {
     genreIds: d.genres.map((g) => g.id),
     runtimeMinutes: perEpisode && d.number_of_episodes ? perEpisode * d.number_of_episodes : null,
@@ -148,71 +224,14 @@ export async function getMediaMeta(type: 'MOVIE' | 'TV', id: number): Promise<Me
   };
 }
 
-export const EMPTY_MEDIA_META: MediaMeta = { genreIds: [], runtimeMinutes: null, voteAverage: null };
+// ───────────────────────── Search ─────────────────────────
 
+export async function searchMedia(query: string): Promise<MediaCardItem[]> {
+  "use cache";
+  cacheLife("tmdb-list");
 
-export async function getPopularMovies(page = 1): Promise<MediaCardItem[]> {
-  const data = await serverApi<TMDBPaginatedResponse<TMDBMovieResult>>('/movie/popular', {
-    params: { page },
-    next: { revalidate: 3600 },
-  });
-
-  return data.results.map((item) => toMediaCardItem({ ...item, media_type: 'movie' }));
-}
-
-export async function getPopularTv(page = 1): Promise<MediaCardItem[]> {
-  const data = await serverApi<TMDBPaginatedResponse<TMDBTVResult>>('/tv/popular', {
-    params: { page },
-    next: { revalidate: 3600 },
-  });
-
-  return data.results.map((item) => toMediaCardItem({ ...item, media_type: 'tv' }));
-}
-
-export async function getTopRatedMovies(page = 1): Promise<MediaCardItem[]> {
-  const data = await serverApi<TMDBPaginatedResponse<TMDBMovieResult>>('/movie/top_rated', {
-    params: { page },
-    next: { revalidate: 3600 },
-  });
-
-  return data.results.map((item) => toMediaCardItem({ ...item, media_type: 'movie' }));
-}
-
-export async function getTopRatedTv(page = 1): Promise<MediaCardItem[]> {
-  const data = await serverApi<TMDBPaginatedResponse<TMDBTVResult>>('/tv/top_rated', {
-    params: { page },
-    next: { revalidate: 3600 },
-  });
-
-  return data.results.map((item) => toMediaCardItem({ ...item, media_type: 'tv' }));
-}
-
-export async function getSeasonDetail(tvId: number, seasonNumber: number) {
-  const raw = await serverApi<TMDBSeasonDetails>(`/tv/${tvId}/season/${seasonNumber}`);
-  return toSeasonDetail(raw);
-}
-
-type TMDBCreditsResponse = {
-  cast: {
-    id: number;
-    name: string;
-    character: string;
-    profile_path: string | null;
-  }[];
-};
-
-export async function getMediaCast(
-  type: 'movie' | 'tv',
-  id: number
-): Promise<CastMember[]> {
-  const data = await serverApi<TMDBCreditsResponse>(`/${type}/${id}/credits`, {
-    next: { revalidate: 60 * 60 * 12 },
-  });
-
-  return data.cast.map((member) => ({
-    id: member.id,
-    name: member.name,
-    character: member.character,
-    profilePath: member.profile_path,
-  }));
+  const data = await tmdb.search.multi(query);
+  return data.results
+    .filter((result) => result.media_type === "movie" || result.media_type === "tv")
+    .map(toMediaCardItem);
 }

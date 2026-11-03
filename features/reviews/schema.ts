@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { extractPlainText, type TiptapNode } from "@/utils/tiptap";
+import { extractPlainText, type TiptapNode } from "@/lib/tiptap";
 
 export const RATING_CRITERIA = [
   { key: "directing", label: "Directing" },

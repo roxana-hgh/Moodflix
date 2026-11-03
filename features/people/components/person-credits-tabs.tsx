@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 
 import type { PersonCreditItem } from "../types";
-import type { CreditStatusMaps } from "../queries";
 
 import { cn } from "@/lib/utils";
 import { MediaCardWithActions } from "@/components/media/media-card-with-actions";
@@ -29,10 +28,9 @@ function sortCredits(items: PersonCreditItem[], sort: SortOption) {
 interface PersonCreditsTabsProps {
   movieCredits: PersonCreditItem[];
   tvCredits: PersonCreditItem[];
-  status: CreditStatusMaps;
 }
 
-export function PersonCreditsTabs({ movieCredits, tvCredits, status }: PersonCreditsTabsProps) {
+export function PersonCreditsTabs({ movieCredits, tvCredits }: PersonCreditsTabsProps) {
   const [mediaType, setMediaType] = useState<"movie" | "tv">(
     movieCredits.length > 0 ? "movie" : "tv"
   );
@@ -96,8 +94,6 @@ export function PersonCreditsTabs({ movieCredits, tvCredits, status }: PersonCre
                   posterPath={credit.posterPath}
                   releaseYear={credit.releaseYear}
                   voteAverage={credit.voteAverage}
-                  initialFavorited={status.favoritedKeys.has(key)}
-                  initialWatched={status.watchedKeys.has(key)}
                 />
               );
             })}

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { tmdbImageUrl } from "@/utils/image";
+import { tmdbImageUrl } from "@/lib/image";
 import type { SeasonDetail } from "../types";
 
 export function SeasonHeader({ season }: { season: SeasonDetail }) {

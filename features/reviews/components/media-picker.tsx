@@ -19,8 +19,8 @@ import { useDebounce } from "@/hooks/use-debounce";
 
 import type { MediaCardItem } from "@/types/media";
 import type { ReviewMediaItem } from "../types";
-import { tmdbImageUrl } from "@/utils/image";
-import { useSearchMedia } from "@/features/search/hook";
+import { tmdbImageUrl } from "@/lib/image";
+import { useSearchMedia } from "@/features/search/hooks";
 
 interface PosterThumbProps {
   posterPath: string | null;

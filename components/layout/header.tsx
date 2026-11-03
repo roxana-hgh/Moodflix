@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { Search, X, Menu, User as UserIcon, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,8 +28,9 @@ import { cn } from "@/lib/utils";
 import { useDebounce } from "@/hooks/use-debounce";
 
 import { SearchResultsDropdown } from "@/features/search/components/search-results-dropdown";
-import { useSearchMedia } from "@/features/search/hook";
+import { useSearchMedia } from "@/features/search/hooks";
 import { authClient } from "@/lib/auth-client";
+import { listsKeys } from "@/features/lists/keys";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -48,6 +50,7 @@ function getInitials(name: string) {
 
 function Header() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { data: session, isPending } = authClient.useSession();
 
   const [isScrolled, setIsScrolled] = useState(false);
@@ -93,6 +96,7 @@ function Header() {
 
   const handleLogout = async () => {
     await authClient.signOut();
+    queryClient.removeQueries({ queryKey: listsKeys.library });
     setIsMenuOpen(false);
     router.push("/");
     router.refresh();

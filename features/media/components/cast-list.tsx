@@ -1,4 +1,4 @@
-import { MediaCarousel } from "@/components/shared/Slider/media-carousel";
+import { MediaCarousel } from "@/components/shared/media-carousel";
 
 import { FavoriteCharacterButton } from "@/features/characters/components/favorite-character-button";
 import type { CastMember } from "../types";

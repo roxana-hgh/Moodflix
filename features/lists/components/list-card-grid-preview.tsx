@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Heart, Bookmark } from "lucide-react";
-import { tmdbImageUrl } from "@/utils/image";
+import { tmdbImageUrl } from "@/lib/image";
 import type { ListWithPreview } from "../types";
 
 interface ListCardGridPreviewProps {

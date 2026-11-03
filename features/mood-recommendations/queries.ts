@@ -3,8 +3,8 @@ import { getMovieGenres, getTVGenres } from "@/features/media/queries";
 import { getGenreStats } from "@/features/lists/queries";
 import { withGenreNames } from "@/features/lists/types";
 import type { LlmMoodOutput } from "@/features/mood-recommendations/schema";
-import type { TMDBPaginatedResponse, TMDBKeyword } from "@/services/tmdb/types";
-import { serverApi } from "@/services/tmdb/client";
+import { cacheLife } from "next/cache";
+import { tmdb } from "@/services/tmdb";
 
 
 // TMDB's TV genre list merges/renames a few movie genres.
@@ -47,25 +47,24 @@ export async function resolveGenreIds(
 }
 
 
+/** A term like "forest" always resolves to the same keyword id, so it is cached for a long time. */
+async function getKeywordId(term: string): Promise<number | null> {
+  "use cache";
+  cacheLife("tmdb-static");
+
+  const data = await tmdb.search.keyword(term);
+  return data.results[0]?.id ?? null;
+}
+
 export async function resolveKeywordIds(keywordTerms: string[]): Promise<number[]> {
   if (keywordTerms.length === 0) {
     return [];
   }
 
-  const results = await Promise.all(
-    keywordTerms.map(async (term) => {
-      const data = await serverApi<TMDBPaginatedResponse<TMDBKeyword>>("/search/keyword", {
-        params: { query: term },
-        // a term like "forest" always resolves to the same keyword id — safe to cache
-        next: { revalidate: 60 * 60 * 24 },
-      });
-
-      return data.results[0]?.id;
-    })
-  );
+  const results = await Promise.all(keywordTerms.map((term) => getKeywordId(term.trim().toLowerCase())));
 
   // drop terms with no match, dedupe in case two terms resolve to the same id
-  return [...new Set(results.filter((id): id is number => id !== undefined))];
+  return [...new Set(results.filter((id): id is number => id !== null))];
 }
 
 

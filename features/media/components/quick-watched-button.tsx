@@ -10,7 +10,6 @@ interface QuickWatchedButtonProps {
   title: string;
   posterPath: string | null;
   releaseYear: string | null;
-  initialWatched: boolean;
 }
 
 export function QuickWatchedButton(props: QuickWatchedButtonProps) {
@@ -22,7 +21,6 @@ export function QuickWatchedButton(props: QuickWatchedButtonProps) {
       title={props.title}
       posterPath={props.posterPath}
       releaseYear={props.releaseYear}
-      initialActive={props.initialWatched}
       label="Mark as watched"
       activeLabel="Remove from watched"
       className="h-7 w-7 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { timeAgo } from "@/utils/format";
+import { timeAgo } from "@/lib/format";
 import { addReviewComment, deleteReviewComment } from "../actions";
 import type { ReviewCommentItem } from "../types";
 import { Badge } from "@/components/ui/badge";

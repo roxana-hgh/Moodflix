@@ -6,13 +6,13 @@ import { Search, Plus, Check, ListPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { tmdbImageUrl } from "@/utils/image";
+import { tmdbImageUrl } from "@/lib/image";
 import { useDebounce } from "@/hooks/use-debounce";
 
 import { useAddItemToList, useRemoveItemFromList } from "../hooks";
 import { toListMediaType, type ListItemSummary } from "../types";
 import type { MediaCardItem } from "@/types/media";
-import { useSearchMedia } from "@/features/search/hook";
+import { useSearchMedia } from "@/features/search/hooks";
 
 interface AddRemoveMediaDialogProps {
   listId: string;

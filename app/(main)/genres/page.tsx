@@ -1,6 +1,9 @@
 import { getMovieGenres, getTVGenres } from "@/features/media/queries";
 import { GenreBrowser } from "@/features/media/components/genre-browser";
 
+export const instant = true;
+
+// Both genre lists are cached for a week, so this page is fully prerendered.
 async function GenresPage() {
   const [movieGenres, tvGenres] = await Promise.all([getMovieGenres(), getTVGenres()]);
 

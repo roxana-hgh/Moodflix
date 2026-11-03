@@ -13,7 +13,7 @@ import { ReviewTitlesPanel } from "@/features/reviews/components/review-titles-p
 import { getReviewBySlug, getReviewComments } from "@/features/reviews/queries";
 import { getCurrentUserId } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import { tmdbImageUrl } from "@/utils/image";
+import { tmdbImageUrl } from "@/lib/image";
 
 interface ReviewPageProps {
   params: Promise<{ slug: string }>;

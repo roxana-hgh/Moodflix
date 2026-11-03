@@ -7,7 +7,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
-import { CropArea, getCroppedImageBlob } from "@/components/utils/crop-image";
+import { CropArea, getCroppedImageBlob } from "@/features/profile/crop-image";
 
 
 interface ImageCropDialogProps {

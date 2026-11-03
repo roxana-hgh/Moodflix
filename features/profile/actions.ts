@@ -1,7 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import { revalidatePath } from "next/cache";
+import { refresh } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/services/db/prisma";
 import { uploadImage, deleteImage } from "@/services/cloudinary/upload";
@@ -37,7 +37,7 @@ export async function updateProfile(input: UpdateProfileInput): Promise<ActionRe
     },
   });
 
-  revalidatePath("/profile");
+  refresh();
   return { success: true };
 }
 
@@ -68,7 +68,7 @@ export async function uploadAvatar(formData: FormData): Promise<ActionResult<{ u
 
   if (current?.avatarPublicId) await deleteImage(current.avatarPublicId).catch(() => {});
 
-  revalidatePath("/profile");
+  refresh();
   return { success: true, data: { url } };
 }
 
@@ -88,7 +88,7 @@ export async function removeAvatar(): Promise<ActionResult> {
 
   if (current?.avatarPublicId) await deleteImage(current.avatarPublicId).catch(() => {});
 
-  revalidatePath("/profile");
+  refresh();
   return { success: true };
 }
 
@@ -119,7 +119,7 @@ export async function uploadBanner(formData: FormData): Promise<ActionResult<{ u
 
   if (current?.bannerPublicId) await deleteImage(current.bannerPublicId).catch(() => {});
 
-  revalidatePath("/profile");
+  refresh();
   return { success: true, data: { url } };
 }
 
@@ -139,6 +139,6 @@ export async function removeBanner(): Promise<ActionResult> {
 
   if (current?.bannerPublicId) await deleteImage(current.bannerPublicId).catch(() => {});
 
-  revalidatePath("/profile");
+  refresh();
   return { success: true };
 }

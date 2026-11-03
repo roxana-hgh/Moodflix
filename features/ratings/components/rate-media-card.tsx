@@ -6,12 +6,12 @@ import Link from "next/link";
 import { Flame, Frown, Loader2, LogIn, Meh, Minus, Plus, Smile, Sparkles, ThumbsUp, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { tmdbImageUrl } from "@/utils/image";
+import { tmdbImageUrl } from "@/lib/image";
 
 import { deleteRating, upsertRating } from "../actions";
 import type { UserRating } from "../types";
 import { scoreLabel, scoreTone } from "@/features/ratings/rating-tone";
-import SectionContext from "@/components/layout/SectionContext";
+import SectionContext from "@/components/layout/section-context";
 
 const STEP = 0.5;
 const THUMB = 24; // px — must match the size-6 thumb classes below

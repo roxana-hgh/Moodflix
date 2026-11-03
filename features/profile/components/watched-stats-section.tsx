@@ -1,5 +1,5 @@
 import { ArrowDownRight, ArrowUpRight, CalendarCheck, Clock, Film, Minus, Sparkles, Star, type LucideIcon } from "lucide-react";
-import { formatDuration } from "@/utils/format";
+import { formatDuration } from "@/lib/format";
 import type { ChartDatum, WatchedStats } from "@/features/lists/types";
 
 const SPARK_WIDTH = 148;

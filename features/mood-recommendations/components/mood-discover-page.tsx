@@ -9,7 +9,7 @@ import { InterpretedMood } from "./interpreted-mood";
 import { MoodLoadingState } from "./mood-loading-state";
 import { MoodResultsGrid } from "./mood-results-grid";
 import type { MediaCardItem } from "@/types/media";
-import { TasteIndicator } from "@/features/mood-recommendations/components/TasteIndicator";
+import { TasteIndicator } from "@/features/mood-recommendations/components/taste-indicator";
 
 export function MoodDiscoverPage() {
   const [isPending, startTransition] = useTransition();

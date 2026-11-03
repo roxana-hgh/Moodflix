@@ -13,12 +13,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { tmdbImageUrl } from "@/utils/image";
+import { tmdbImageUrl } from "@/lib/image";
 
 import { FavoriteCharacterButton } from "./favorite-character-button";
 import { toCharacterKey } from "../keys";
-import { useSearchMedia } from "@/features/search/hook";
-import { useMediaCast } from "@/features/media/hook";
+import { useSearchMedia } from "@/features/search/hooks";
+import { useMediaCast } from "@/features/media/hooks";
 
 type Selected = { tmdbId: number; mediaType: "movie" | "tv"; title: string };
 

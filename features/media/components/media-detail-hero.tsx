@@ -3,29 +3,23 @@ import Link from "next/link";
 import { Calendar, Clock, ListPlus, Heart, Bookmark, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { tmdbImageUrl } from "@/utils/image";
+import { tmdbImageUrl } from "@/lib/image";
 import { RatingRing } from "./rating-ring";
 import { QuickListButton } from "@/features/lists/components/quick-list-button";
 import { AddToListDialog } from "@/features/lists/components/add-to-list-dialog";
 import type { MediaDetail } from "../types";
 import { WatchTrailerButton } from "@/features/media/components/watch-trailer-button";
-import { RatingSummary } from "@/features/ratings/components/rating-summary";
-import type { RatingStats } from "@/features/ratings/types";
+import type { ReactNode } from "react";
 
 interface MediaDetailHeroProps {
   detail: MediaDetail;
-  initialFavorited?: boolean;
-  initialWatchlisted?: boolean;
-  initialWatched?: boolean;
-  moodflixRating: RatingStats
+  /** Streams in separately: Moodflix ratings change on every vote. */
+  ratingSummary: ReactNode;
 }
 
 export function MediaDetailHero({
   detail,
-  initialFavorited = false,
-  initialWatchlisted = false,
-  initialWatched = false,
-  moodflixRating
+  ratingSummary,
 }: MediaDetailHeroProps) {
   const {
     id,
@@ -54,7 +48,7 @@ export function MediaDetailHero({
             src={tmdbImageUrl(backdropPath, "original")}
             alt=""
             fill
-            priority
+            preload
             className="object-cover object-top"
           />
         )}
@@ -103,10 +97,7 @@ export function MediaDetailHero({
             </Badge>
           </div>
 
-          <RatingSummary
-            tmdb={{ average: voteAverage ? Math.round(voteAverage * 10) / 10 : null, count: detail.voteCount }}
-            moodflix={moodflixRating}
-          />
+          {ratingSummary}
           {genres.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {genres.map((genre) => (
@@ -145,7 +136,6 @@ export function MediaDetailHero({
                 title={title}
                 posterPath={posterPath}
                 releaseYear={releaseYear}
-                initialActive={initialWatched}
                 variant="outline"
                 size="icon"
                 className={outlineToggleClass}
@@ -155,7 +145,6 @@ export function MediaDetailHero({
                 activeIcon={<CheckCircle className="h-4 w-4 stroke-primary text-primary" />}
               />
 
-              {initialWatched}
 
               <QuickListButton
                 listType="WATCHLIST"
@@ -164,7 +153,6 @@ export function MediaDetailHero({
                 title={title}
                 posterPath={posterPath}
                 releaseYear={releaseYear}
-                initialActive={initialWatchlisted}
                 variant="outline"
                 size="icon"
                 className={outlineToggleClass}
@@ -180,7 +168,6 @@ export function MediaDetailHero({
                 title={title}
                 posterPath={posterPath}
                 releaseYear={releaseYear}
-                initialActive={initialFavorited}
                 variant="outline"
                 size="icon"
                 className={outlineToggleClass}

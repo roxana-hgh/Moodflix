@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 
 import type { Person } from "../types";
-import { tmdbImageUrl } from "@/utils/image";
+import { tmdbImageUrl } from "@/lib/image";
 import { PersonBio } from "@/features/people/components/person-bio";
 
 function formatDate(dateStr: string | null) {

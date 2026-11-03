@@ -5,18 +5,18 @@ import type { Prisma } from "@/lib/generated/prisma/client";
 import { getCurrentUserId } from "@/lib/auth";
 import { prisma } from "@/services/db/prisma";
 import { deleteImage } from "@/services/cloudinary/upload";
-import { slugify } from "@/utils/slugify";
-import { collectImageSrcs, extractPlainText, type TiptapNode } from "@/utils/tiptap";
+import { slugify } from "@/lib/slugify";
+import { collectImageSrcs, extractPlainText, type TiptapNode } from "@/lib/tiptap";
 import { commentInputSchema, saveReviewSchema } from "./schema";
 import type { ActionResult } from "./types";
 
 const UNAUTHORIZED = "Please sign in first.";
 
+// "/" and "/profile" are left out on purpose: their reviews render per request anyway,
+// and revalidating those routes would also discard the cached TMDB data they read.
 function revalidateReviewPaths(slug: string) {
-  revalidatePath("/");
   revalidatePath("/reviews");
   revalidatePath(`/reviews/${slug}`);
-  revalidatePath("/profile");
   revalidatePath("/profile/reviews");
 }
 

@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import SectionWrapper from "@/components/layout/SectionWrapper";
-import { MediaCarousel } from "@/components/shared/Slider/media-carousel";
+import SectionWrapper from "@/components/layout/section-wrapper";
+import { MediaCarousel } from "@/components/shared/media-carousel";
 import { FavoriteCharacterButton } from "./favorite-character-button";
 import { toCharacterKey } from "../keys";
 import type { FavoriteCharacter } from "../schema";
 import { PortraitTile } from "@/features/media/components/portrait-tile";
 import { AddCharacterDialog } from "@/features/characters/components/add-character-dialog";
-import SectionContext from "@/components/layout/SectionContext";
+import SectionContext from "@/components/layout/section-context";
 
 export function characterHref(c: FavoriteCharacter) {
   return `/${c.mediaType === "movie" ? "movies" : "tv"}/${c.mediaTmdbId}`;

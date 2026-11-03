@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ListCardGridPreview } from "./list-card-grid-preview";
 import type { ListWithPreview } from "../types";
-import SectionWrapper from "@/components/layout/SectionWrapper";
-import SectionContext from "@/components/layout/SectionContext";
+import SectionWrapper from "@/components/layout/section-wrapper";
+import SectionContext from "@/components/layout/section-context";
 
 interface RecentListsSectionProps {
     lists: ListWithPreview[];

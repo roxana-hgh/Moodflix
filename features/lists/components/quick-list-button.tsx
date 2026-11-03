@@ -1,20 +1,19 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
-import { useToggleQuickList } from "../hooks";
-import { toListMediaType } from "../types";
+import { useIsInLibrary, useToggleQuickList } from "../hooks";
+import { toListMediaType, type SystemListType } from "../types";
 
 interface QuickListButtonProps {
-  listType: "FAVORITE" | "WATCHLIST" | "WATCHED";
+  listType: SystemListType;
   tmdbId: number;
   mediaType: "movie" | "tv";
   title: string;
   posterPath: string | null;
   releaseYear: string | null;
-  initialActive: boolean;
   icon: ReactNode;
   activeIcon?: ReactNode;
   label: string;
@@ -24,6 +23,7 @@ interface QuickListButtonProps {
   size?: "default" | "icon";
 }
 
+/** Toggles a title in one of the viewer's system lists. State comes from the viewer library. */
 export function QuickListButton({
   listType,
   tmdbId,
@@ -31,7 +31,6 @@ export function QuickListButton({
   title,
   posterPath,
   releaseYear,
-  initialActive,
   icon,
   activeIcon,
   label,
@@ -42,7 +41,8 @@ export function QuickListButton({
 }: QuickListButtonProps) {
   const router = useRouter();
   const { data: session, isPending: sessionLoading } = authClient.useSession();
-  const [active, setActive] = useState(initialActive);
+  const listMediaType = toListMediaType(mediaType);
+  const active = useIsInLibrary(listType, tmdbId, listMediaType);
   const { mutate, isPending } = useToggleQuickList();
 
   function handleClick() {
@@ -52,18 +52,7 @@ export function QuickListButton({
       return;
     }
 
-    const next = !active;
-    setActive(next); // optimistic
-
-    mutate(
-      { listType, tmdbId, mediaType: toListMediaType(mediaType), title, posterPath, releaseYear },
-      {
-        onError: () => setActive(!next),
-        onSuccess: (result) => {
-          if (result.success) setActive(result.data.added);
-        },
-      }
-    );
+    mutate({ listType, tmdbId, mediaType: listMediaType, title, posterPath, releaseYear });
   }
 
   return (
@@ -74,6 +63,7 @@ export function QuickListButton({
       disabled={isPending}
       onClick={handleClick}
       className={className}
+      data-active={active}
     >
       {active && activeIcon ? activeIcon : icon}
       <span className="sr-only">{active ? activeLabel ?? label : label}</span>

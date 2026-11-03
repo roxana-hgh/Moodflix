@@ -172,6 +172,7 @@ export interface TMDBTVDetails {
   last_air_date: string;
   number_of_seasons: number;
   number_of_episodes: number;
+  episode_run_time?: number[]; // deprecated by TMDB and often empty, so last_episode_to_air is the fallback
   status: string;
   homepage: string | null;
   genres: TMDBGenre[];

@@ -1,7 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { auth, getCurrentUserId } from "@/lib/auth";
+import { refresh } from "next/cache";
+import { getCurrentUserId } from "@/lib/auth";
 import { prisma } from "@/services/db/prisma";
 import {
   createListSchema,
@@ -18,22 +18,15 @@ import {
   type DeleteListInput,
 } from "./schema";
 import {
+  EMPTY_VIEWER_LIBRARY,
   toListSummary,
   type ListSummary,
   type ListMediaType,
   type ListWithPreview,
+  type ViewerLibrary,
 } from "./types";
-import {
-  getItemListIds,
-  getFavoritedKeys,
-  getUserListsWithPreview,
-  getWatchedKeys,
-} from "./queries";
-import {
-  EMPTY_MEDIA_META,
-  getMediaGenreIds,
-  getMediaMeta,
-} from "@/features/media/queries";
+import { getItemListIds, getUserListsWithPreview, getViewerLibrary } from "./queries";
+import { EMPTY_MEDIA_META, getMediaMeta } from "@/features/media/queries";
 
 type ActionResult<T = void> =
   { success: true; data: T } | { success: false; error: string };
@@ -46,14 +39,9 @@ async function requireUserId(): Promise<string> {
   return userId;
 }
 
-function revalidateListPaths(listId?: string) {
-  revalidatePath("/lists");
-  revalidatePath("/watchlist");
-  revalidatePath("/favorites");
-  revalidatePath("/watched");
-  revalidatePath("/profile");
-  if (listId) revalidatePath(`/lists/${listId}`);
-}
+// After a mutation, refresh() re-renders the open page. List pages read the database per
+// request, so nothing cached needs purging; revalidatePath would also discard the cached
+// TMDB data those routes read (e.g. genre lists on /profile).
 
 export async function createCustomList(
   input: CreateListInput,
@@ -73,7 +61,7 @@ export async function createCustomList(
     include: { _count: { select: { items: true } } },
   });
 
-  revalidateListPaths();
+  refresh();
   return { success: true, data: toListSummary(list) };
 }
 
@@ -97,7 +85,7 @@ export async function updateList(
     include: { _count: { select: { items: true } } },
   });
 
-  revalidateListPaths(listId);
+  refresh();
   return { success: true, data: toListSummary(updated) };
 }
 
@@ -117,7 +105,7 @@ export async function deleteList(
 
   await prisma.list.delete({ where: { id: listId } });
 
-  revalidateListPaths(listId);
+  refresh();
   return { success: true, data: undefined };
 }
 
@@ -152,7 +140,7 @@ export async function addItemToList(
     update: {},
   });
 
-  revalidateListPaths(listId);
+  refresh();
   return { success: true, data: undefined };
 }
 
@@ -170,7 +158,7 @@ export async function removeItemFromList(
 
   await prisma.listItem.deleteMany({ where: { listId, tmdbId, mediaType } });
 
-  revalidateListPaths(listId);
+  refresh();
   return { success: true, data: undefined };
 }
 
@@ -196,7 +184,7 @@ export async function toggleQuickList(
 
   if (existing) {
     await prisma.listItem.delete({ where: { id: existing.id } });
-    revalidateListPaths(list.id);
+    refresh();
     return { success: true, data: { added: false } };
   }
   const meta = await getMediaMeta(mediaType, tmdbId).catch(
@@ -214,7 +202,7 @@ export async function toggleQuickList(
       ...meta,
     },
   });
-  revalidateListPaths(list.id);
+  refresh();
   return { success: true, data: { added: true } };
 }
 
@@ -247,20 +235,9 @@ export async function getItemListIdsAction(
   return { success: true, data: listIds };
 }
 
-export async function getFavoritedKeysAction(
-  items: { tmdbId: number; mediaType: ListMediaType }[],
-): Promise<ActionResult<string[]>> {
+/** The viewer's saved titles, for the client-side library. Empty when signed out. */
+export async function getViewerLibraryAction(): Promise<ActionResult<ViewerLibrary>> {
   const userId = await getCurrentUserId();
-  if (!userId) return { success: true, data: [] };
-  const keys = await getFavoritedKeys(userId, items);
-  return { success: true, data: Array.from(keys) };
-}
-
-export async function getWatchedKeysAction(
-  items: { tmdbId: number; mediaType: ListMediaType }[],
-): Promise<ActionResult<string[]>> {
-  const userId = await getCurrentUserId();
-  if (!userId) return { success: true, data: [] };
-  const keys = await getWatchedKeys(userId, items);
-  return { success: true, data: Array.from(keys) };
+  if (!userId) return { success: true, data: EMPTY_VIEWER_LIBRARY };
+  return { success: true, data: await getViewerLibrary(userId) };
 }

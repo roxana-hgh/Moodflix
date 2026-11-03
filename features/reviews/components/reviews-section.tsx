@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { PenLine } from "lucide-react";
-import SectionContext from "@/components/layout/SectionContext";
-import SectionWrapper from "@/components/layout/SectionWrapper";
-import { MediaCarousel } from "@/components/shared/Slider/media-carousel";
+import SectionContext from "@/components/layout/section-context";
+import SectionWrapper from "@/components/layout/section-wrapper";
+import { MediaCarousel } from "@/components/shared/media-carousel";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { ReviewCardItem } from "../types";
 import { ReviewCard } from "./review-card";
 
@@ -55,6 +56,21 @@ export function ReviewsSection({
             </MediaCarousel>
           </div>
         )}
+      </div>
+    </SectionWrapper>
+  );
+}
+/** Same footprint as ReviewsSection, for Suspense fallbacks. */
+export function ReviewsSectionSkeleton({ title }: { title: string }) {
+  return (
+    <SectionWrapper>
+      <div className="mx-auto">
+        <SectionContext title={title} />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-56 rounded-2xl" />
+          ))}
+        </div>
       </div>
     </SectionWrapper>
   );

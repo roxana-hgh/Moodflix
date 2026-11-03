@@ -1,14 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { refresh } from "next/cache";
 import { prisma } from "@/services/db/prisma";
 import { getCurrentUserId } from "@/lib/auth";
 import { deleteRatingSchema, upsertRatingSchema } from "./schema";
 import type { ActionResult } from "./types";
-
-function detailPath(mediaType: "MOVIE" | "TV", tmdbId: number) {
-  return mediaType === "MOVIE" ? `/movies/${tmdbId}` : `/tv/${tmdbId}`;
-}
 
 export async function upsertRating(input: unknown): Promise<ActionResult> {
   const userId = await getCurrentUserId();
@@ -26,7 +22,8 @@ export async function upsertRating(input: unknown): Promise<ActionResult> {
     update: { score, comment },
   });
 
-  revalidatePath(detailPath(mediaType, tmdbId));
+  // Ratings render per request; refresh() updates the open page without purging cached TMDB data.
+  refresh();
   return { ok: true };
 }
 
@@ -40,6 +37,6 @@ export async function deleteRating(input: unknown): Promise<ActionResult> {
 
   await prisma.mediaRating.deleteMany({ where: { userId, tmdbId, mediaType } });
 
-  revalidatePath(detailPath(mediaType, tmdbId));
+  refresh();
   return { ok: true };
 }

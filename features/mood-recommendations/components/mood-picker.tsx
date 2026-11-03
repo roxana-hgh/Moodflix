@@ -31,7 +31,7 @@ import { cn } from "@/lib/utils";
 import { ExpandToggle } from "@/components/shared/expand-toggle";
 
 import { MAX_MOOD_SELECTIONS } from "../schema";
-import { MOOD_GROUPS, MOOD_OPTIONS } from "@/features/mood-recommendations/Constants";
+import { MOOD_GROUPS, MOOD_OPTIONS } from "@/features/mood-recommendations/constants";
 
 // Static lookup (no dynamic class/icon construction). Unknown ids fall back to Sparkles.
 const ICONS: Record<string, LucideIcon> = {

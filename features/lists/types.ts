@@ -146,6 +146,13 @@ export function toFavoritedKey(
   return `${mediaType}-${tmdbId}`;
 }
 
+export type SystemListType = Extract<ListType, "WATCHLIST" | "FAVORITE" | "WATCHED">;
+
+/** The viewer's saved titles per system list, as `toFavoritedKey` strings. */
+export type ViewerLibrary = Record<SystemListType, string[]>;
+
+export const EMPTY_VIEWER_LIBRARY: ViewerLibrary = { FAVORITE: [], WATCHED: [], WATCHLIST: [] };
+
 export interface GenreStat {
   genreId: number;
   mediaType: ListMediaType;

@@ -1,4 +1,4 @@
-import SignUpForm from "@/features/auth/components/SignUpForm";
+import SignUpForm from "@/features/auth/components/sign-up-form";
 import Link from "next/link";
 
 function RegisterPage() {

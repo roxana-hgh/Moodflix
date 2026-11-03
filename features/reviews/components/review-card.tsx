@@ -4,8 +4,8 @@ import { ChevronRight, MessageCircle, Star } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { timeAgo } from "@/utils/format";
-import { tmdbImageUrl } from "@/utils/image";
+import { timeAgo } from "@/lib/format";
+import { tmdbImageUrl } from "@/lib/image";
 import { mediaHref, type ReviewCardItem } from "../types";
 import { ReviewLikeButton } from "./review-like-button";
 

@@ -1,35 +1,33 @@
-import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import type { Metadata } from "next";
-import { getTVDetails } from "@/features/media/queries";
+import { notFound } from "next/navigation";
+import { MediaDetailSkeleton } from "@/features/media/components/media-detail-skeleton";
 import { MediaDetailView } from "@/features/media/components/media-detail-view";
-import { getCurrentUserId } from "@/lib/auth";
-import { toListMediaType } from "@/features/lists/types";
-import { getItemListMembership } from "@/features/lists/queries";
+import { getTrendingTv, getTVDetails } from "@/features/media/queries";
 
+export const instant = true;
 
-
-interface TVPageProps {
-  params: Promise<{ id: string }>;
+/** Prerender this week's trending shows at build; every other id is rendered on first visit and then cached. */
+export async function generateStaticParams() {
+  const trending = await getTrendingTv("week");
+  return trending.slice(0, 10).map((show) => ({ id: String(show.id) }));
 }
 
-export async function generateMetadata({ params }: TVPageProps): Promise<Metadata> {
-  const { id } = await params;
-  const show = await getTVDetails(id).catch(() => null);
-  return show
-    ? { title: `${show.title} | Moodflix`, description: show.overview }
-    : { title: "TV Show | Moodflix" };
+export async function generateMetadata({ params }: PageProps<"/tv/[id]">): Promise<Metadata> {
+  const show = await getTVDetails((await params).id);
+  return show ? { title: `${show.title} | Moodflix`, description: show.overview } : { title: "TV Show | Moodflix" };
 }
 
-export default async function TVPage({ params }: TVPageProps) {
-  const { id } = await params;
-  const show = await getTVDetails(id).catch(() => null);
+export default function TVPage({ params }: PageProps<"/tv/[id]">) {
+  return (
+    <Suspense fallback={<MediaDetailSkeleton />}>
+      <TVDetail params={params} />
+    </Suspense>
+  );
+}
+
+async function TVDetail({ params }: Pick<PageProps<"/tv/[id]">, "params">) {
+  const show = await getTVDetails((await params).id);
   if (!show) notFound();
-
-   const userId = await getCurrentUserId();
-  const membership = userId
-    ? await getItemListMembership(userId, show.id, toListMediaType(show.mediaType))
-    : { favorited: false, watchlisted: false , watched: false};
-
-  return <MediaDetailView detail={show}  initialFavorited={membership.favorited}
-        initialWatchlisted={membership.watchlisted} initialWatched={membership.watched} />;
+  return <MediaDetailView detail={show} />;
 }

@@ -13,22 +13,14 @@ import {
   getTasteProfile,
   type TasteProfile,
 } from "./queries";
-import { MOOD_GROUPS, resolveMoodOptions, type MoodOption } from "./Constants";
-import { serverApi } from "@/services/tmdb/client";
+import { MOOD_GROUPS, resolveMoodOptions, type MoodOption } from "./constants";
+import { tmdb } from "@/services/tmdb";
 import { toMediaCardItem } from "@/features/media/types";
 import { getCurrentUserId } from "@/lib/auth";
-import {
-  getFavoritedKeys,
-  getWatchedKeys,
-  toFavoritedKey,
-} from "@/features/lists/queries";
+import { getFavoritedKeys, getWatchedKeys } from "@/features/lists/queries";
 import type { MediaCardItem } from "@/types/media";
-import type {
-  TMDBPaginatedResponse,
-  TMDBMovieResult,
-  TMDBTVResult,
-} from "@/services/tmdb/types";
-import { toListMediaType } from "@/features/lists/types";
+import type { TMDBMovieResult, TMDBTVResult } from "@/services/tmdb/types";
+import { toFavoritedKey, toListMediaType } from "@/features/lists/types";
 
 type Interpreted = { genres: string[]; keywordTerms: string[] };
 
@@ -99,14 +91,7 @@ function buildHintedMood(
 }
 
 async function fallbackTextSearch(rawMood: string): Promise<MediaCardItem[]> {
-  const [movies, tv] = await Promise.all([
-    serverApi<TMDBPaginatedResponse<TMDBMovieResult>>("/search/movie", {
-      params: { query: rawMood },
-    }),
-    serverApi<TMDBPaginatedResponse<TMDBTVResult>>("/search/tv", {
-      params: { query: rawMood },
-    }),
-  ]);
+  const [movies, tv] = await Promise.all([tmdb.search.movie(rawMood), tmdb.search.tv(rawMood)]);
 
   return [
     ...movies.results.map((m) =>
@@ -194,8 +179,8 @@ function buildVariants(genreIds: number[], keywordIds: number[]): DiscoverVarian
   });
 }
 
-async function discoverPools<T extends Scorable>(
-  path: "/discover/movie" | "/discover/tv",
+async function discoverPools<T extends TMDBMovieResult | TMDBTVResult>(
+  mediaType: "movie" | "tv",
   args: {
     genreIds: number[];
     keywordIds: number[];
@@ -208,17 +193,17 @@ async function discoverPools<T extends Scorable>(
   // Promise.all keeps variant order, so earlier (tighter) pools win when we dedupe.
   return Promise.all(
     variants.map(async (variant) => {
-      const data = await serverApi<TMDBPaginatedResponse<T>>(path, {
-        params: {
-          with_genres: variant.genres,
-          with_keywords: variant.keywords,
-          without_keywords: args.withoutKeywordIds.join("|") || undefined, // exclude if ANY avoid-term matches
-          sort_by: args.sortBy,
-          "vote_count.gte": MIN_VOTE_COUNT,
-          include_adult: false,
-        },
-      });
-      return { items: data.results, bonus: variant.bonus };
+      const params = {
+        with_genres: variant.genres,
+        with_keywords: variant.keywords,
+        without_keywords: args.withoutKeywordIds.join("|") || undefined, // exclude if ANY avoid-term matches
+        sort_by: args.sortBy,
+        "vote_count.gte": MIN_VOTE_COUNT,
+        include_adult: false,
+      };
+      // Goes through the fetch Data Cache, so repeated moods reuse earlier responses.
+      const data = mediaType === "movie" ? await tmdb.movie.discover(params) : await tmdb.tv.discover(params);
+      return { items: data.results as T[], bonus: variant.bonus };
     }),
   );
 }
@@ -306,7 +291,7 @@ async function discoverFromMood(
 
   const [moviePools, tvPools] = await Promise.all([
     wantMovies
-      ? discoverPools<TMDBMovieResult>("/discover/movie", {
+      ? discoverPools<TMDBMovieResult>("movie", {
           genreIds: movieGenreIds,
           keywordIds,
           withoutKeywordIds,
@@ -314,7 +299,7 @@ async function discoverFromMood(
         })
       : Promise.resolve<Pool<TMDBMovieResult>[]>([]),
     wantTv
-      ? discoverPools<TMDBTVResult>("/discover/tv", {
+      ? discoverPools<TMDBTVResult>("tv", {
           genreIds: tvGenreIds,
           keywordIds,
           withoutKeywordIds,

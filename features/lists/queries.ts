@@ -7,6 +7,8 @@ import {
   toListWithPreview,
   sortListsForDisplay,
   toListDetail,
+  toFavoritedKey,
+  EMPTY_VIEWER_LIBRARY,
   type ListSummary,
   type ListItemSummary,
   type ListWithPreview,
@@ -14,6 +16,8 @@ import {
   type ListType,
   type ListDetail,
   type GenreStat,
+  type SystemListType,
+  type ViewerLibrary,
 } from "./types";
 
 export async function getUserLists(userId: string): Promise<ListSummary[]> {
@@ -104,10 +108,6 @@ export async function getWatchedKeys(
   items: { tmdbId: number; mediaType: ListMediaType }[]
 ): Promise<Set<string>> {
   return getKeysByListType(userId, items, "WATCHED");
-}
-
-export function toFavoritedKey(tmdbId: number, mediaType: ListMediaType): string {
-  return `${tmdbId}:${mediaType}`;
 }
 
 export async function getItemListIds(
@@ -203,7 +203,19 @@ export async function getGenreStats(
   return [...counts.values()];
 }
 
-// Thin wrapper — keeps the profile page's existing call unchanged.
-export async function getWatchedGenreStats(userId: string): Promise<GenreStat[]> {
-  return getGenreStats(userId, "WATCHED");
+/**
+ * Every title in the viewer's three system lists, in one query. The client keeps
+ * this as a set, so grids on any page can show saved state without their own query.
+ */
+export async function getViewerLibrary(userId: string): Promise<ViewerLibrary> {
+  const items = await prisma.listItem.findMany({
+    where: { list: { userId, type: { in: ["FAVORITE", "WATCHED", "WATCHLIST"] } } },
+    select: { tmdbId: true, mediaType: true, list: { select: { type: true } } },
+  });
+
+  const library: ViewerLibrary = { FAVORITE: [], WATCHED: [], WATCHLIST: [] };
+  for (const item of items) {
+    library[item.list.type as SystemListType].push(toFavoritedKey(item.tmdbId, item.mediaType as ListMediaType));
+  }
+  return items.length ? library : EMPTY_VIEWER_LIBRARY;
 }

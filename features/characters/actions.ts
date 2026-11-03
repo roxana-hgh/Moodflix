@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { refresh } from "next/cache";
 import { prisma } from "@/services/db/prisma";
 
 import { characterInputSchema, type CharacterInput } from "./schema";
@@ -33,9 +33,8 @@ export async function toggleFavoriteCharacter(
     });
   }
 
-  revalidatePath("/profile");
-  revalidatePath("/profile/characters");
-  revalidatePath(`/${mediaType === "movie" ? "movies" : "tv"}/${identity.mediaTmdbId}`);
+  // Favorite characters render per request; refresh() updates the open page only.
+  refresh();
 
   return { success: true, data: { isFavorite: count === 0 } };
 }
